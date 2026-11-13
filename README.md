@@ -1,7 +1,7 @@
-Vault Snapshot
+Vault
 ================
 
-A ledger in a letter. Inspired by the quiet discipline of a bank vault, Vault Snapshot turns one Google Sheet into a structured email of your entire financial life, designed for those who prioritise ownership of their data, clarity over noise, and the plain sincerity of the early internet, rejecting finance-app bloat: function over form.
+A ledger in a letter. Inspired by the quiet discipline of a bank vault, Vault turns one Google Sheet into a structured email of your entire financial life, designed for those who prioritise ownership of their data, clarity over noise, and the plain sincerity of the early internet, rejecting finance-app bloat: function over form.
 
 ![Preview of the snapshot email](preview.png)
 
@@ -190,4 +190,4 @@ Licence
 
 Copyright (C) 2026 Floydimus.
 
-Vault Snapshot is free software: you may redistribute and/or modify it under the terms of the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html) as published by the Free Software Foundation. Any distributed version, modified or not, must remain open under the same licence; it can never be made closed-source or proprietary. It is distributed WITHOUT ANY WARRANTY, and it is not financial or tax advice. See the [LICENSE](LICENSE) file for the full text.
+Vault is free software: you may redistribute and/or modify it under the terms of the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html) as published by the Free Software Foundation. Any distributed version, modified or not, must remain open under the same licence; it can never be made closed-source or proprietary. It is distributed WITHOUT ANY WARRANTY, and it is not financial or tax advice. See the [LICENSE](LICENSE) file for the full text.
