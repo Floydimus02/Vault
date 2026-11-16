@@ -4,8 +4,9 @@ Vault Snapshot
 A ledger in a letter. Inspired by the quiet discipline of a bank vault, Vault Snapshot turns one Google Sheet into a structured email of your entire financial life, designed for those who prioritise ownership of their data, clarity over noise, and the plain sincerity of the early internet, rejecting finance-app bloat: function over form.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="preview-dark.png">
-  <img src="preview.png" alt="Preview of the snapshot email">
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/preview-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/preview.png">
+  <img src="https://raw.githubusercontent.com/Floydimus02/Vault/main/preview.png" alt="Preview of the snapshot email">
 </picture>
 
 Function
