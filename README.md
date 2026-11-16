@@ -1,11 +1,8 @@
 Vault Snapshot
 ================
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/banner-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/banner.png">
-  <img src="https://raw.githubusercontent.com/Floydimus02/Vault/main/banner.png" alt="Vault: a ledger in a letter">
-</picture>
+![Vault: a ledger in a letter](banner.png#gh-light-mode-only)
+![Vault: a ledger in a letter](banner-dark.png#gh-dark-mode-only)
 
 A ledger in a letter. Inspired by the quiet discipline of a bank vault, Vault Snapshot turns one Google Sheet into a structured email of your entire financial life, designed for those who prioritise ownership of their data, clarity over noise, and the plain sincerity of the early internet, rejecting finance-app bloat: function over form.
 
@@ -77,11 +74,8 @@ You need only a Google account. No coding and no installation.
 
 A section without enough data is left out. The 24-hour, 7-day, 30-day and 30-day-trend figures appear once the script has run for that long.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/preview-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/preview.png">
-  <img src="https://raw.githubusercontent.com/Floydimus02/Vault/main/preview.png" alt="Preview of the snapshot email">
-</picture>
+![Preview of the snapshot email](preview.png#gh-light-mode-only)
+![Preview of the snapshot email](preview-dark.png#gh-dark-mode-only)
 
 ## Changed the sheet's layout?
 
