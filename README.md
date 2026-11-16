@@ -1,9 +1,12 @@
-Vault
+Vault Snapshot
 ================
 
-A ledger in a letter. Inspired by the quiet discipline of a bank vault, Vault turns one Google Sheet into a structured email of your entire financial life, designed for those who prioritise ownership of their data, clarity over noise, and the plain sincerity of the early internet, rejecting finance-app bloat: function over form.
+A ledger in a letter. Inspired by the quiet discipline of a bank vault, Vault Snapshot turns one Google Sheet into a structured email of your entire financial life, designed for those who prioritise ownership of their data, clarity over noise, and the plain sincerity of the early internet, rejecting finance-app bloat: function over form.
 
-![Preview of the snapshot email](preview.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="preview-dark.png">
+  <img src="preview.png" alt="Preview of the snapshot email">
+</picture>
 
 Function
 --------
@@ -27,7 +30,7 @@ Form
 | `Vault-template.xlsx` | The spreadsheet to start from, filled with made-up example data |
 | `Code.gs` | The script that reads the sheet and sends the email |
 | `PROMPT.md` | A ready-made prompt for an AI assistant, if you change the sheet's layout |
-| `preview.png` | What the email looks like |
+| `preview.png`, `preview-dark.png` | What the email looks like, in light and dark |
 | `LICENSE` | GNU General Public License v3.0 |
 
 You need only a Google account. No coding and no installation.
@@ -190,4 +193,4 @@ Licence
 
 Copyright (C) 2026 Floydimus.
 
-Vault is free software: you may redistribute and/or modify it under the terms of the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html) as published by the Free Software Foundation. Any distributed version, modified or not, must remain open under the same licence; it can never be made closed-source or proprietary. It is distributed WITHOUT ANY WARRANTY, and it is not financial or tax advice. See the [LICENSE](LICENSE) file for the full text.
+Vault Snapshot is free software: you may redistribute and/or modify it under the terms of the [GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.html) as published by the Free Software Foundation. Any distributed version, modified or not, must remain open under the same licence; it can never be made closed-source or proprietary. It is distributed WITHOUT ANY WARRANTY, and it is not financial or tax advice. See the [LICENSE](LICENSE) file for the full text.
