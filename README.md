@@ -3,7 +3,7 @@
 
 ### A ledger in a letter.
 
-Know where every rupee is, what it earns and what it costs you. Every single day.
+Where every rupee goes, and how it grows. Every single day.
 
 <a href="https://github.com/Floydimus02/Vault/stargazers"><img src="https://img.shields.io/github/stars/Floydimus02/Vault?style=social" alt="GitHub stars"></a>
 
