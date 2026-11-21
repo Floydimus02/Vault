@@ -1,327 +1,160 @@
-Vault
-=====
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/banner-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/banner.png">
+    <img src="https://raw.githubusercontent.com/Floydimus02/Vault/main/banner.png" alt="Vault: a ledger in a letter">
+  </picture>
+</p>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/banner-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/banner.png">
-  <img src="https://raw.githubusercontent.com/Floydimus02/Vault/main/banner.png" alt="Vault: a ledger in a letter">
-</picture>
+<h3 align="center"><i>A ledger in a letter.</i></h3>
 
-**A ledger in a letter.** Vault turns one Google Sheet into two views of your entire financial life: a structured **email** that arrives when you choose, and a private **web app** you can open on any phone or computer. Both run inside your own Google account. Nothing leaves it.
+<p align="center">Your finances from 10,000 feet down to 10 mm, built on one Google Sheet that only you can see.</p>
 
-**[Open the live demo →](https://floydimus02.github.io/Vault/)** (made-up data, works on any device)
+<p align="center">
+  <a href="https://floydimus02.github.io/Vault/"><b>Try the demo</b></a> &nbsp;·&nbsp; <a href="#get-started"><b>Get started</b></a>
+</p>
 
-[Why Vault](#why-vault) · [What you get](#what-you-get) · [Set up](#set-up-about-15-minutes) · [Use](#how-to-use-it) · [Modify](#how-to-modify-it) · [Sheet layout](#sheet-layout) · [Help](#something-not-working)
+<br>
 
----
+## Money lives everywhere
 
-Why Vault
----------
+Where it comes from, how much is taxed, how much remains, where it is spent, where and when it is invested, how it performs, and how much is taxed again. Collating all of it, organising it and making sense of it, so every rupee works for you and every leak gets fixed, is tedious. And spreadsheet rows get boring very quickly.
 
-### Function
+The tenet is simple: don't sit on cash, make money work for you. Vault gives you the view from 10,000 feet down to 10 mm, so nothing escapes your radar and you can build the wealth you want.
 
-| | What it means for you |
-|---|---|
-| **Extremely structured** | Every figure sits in a fixed place: net worth, then income, tax, spend, investments and checks. Each deep dive follows the same order: details, performance, comparison, ledger. |
-| **Little technical knowledge needed** | Copy a spreadsheet, paste two files, click Deploy. No installs, no servers, no coding. |
-| **Privacy first** | The script runs in your Google account, as you, and only you can open the app. No outside service, library, tracker or database. |
-| **Your data, your structure** | The script finds tabs and columns by their names, so you can add rows, columns and tabs freely. A ready-made AI prompt adapts it to a different layout. |
-| **Build once, use anywhere** | One web app link works on a desktop browser, mobile web, Android and iPhone (add it to your home screen). The email reads well in any mail app. |
-| **Real time, mostly** | The app reads the sheet every time you open it or tap refresh. Market prices follow `GOOGLEFINANCE`, which can lag up to 20 minutes; fund NAVs update once a day. |
-| **A deep dive into everything** | Every holding down to each purchase lot, gain, XIRR and tax if sold today. Salary, tax, spend, loan, rewards, insurance and locker, each with its own page. |
+It is for personal finance enthusiasts who love to capture every detail, for those who want discipline but don't know where to start, and for those with no visibility of their money. Vault brings method to the madness, structure to the data and clarity to the ambiguity.
 
-### Form
+## So I built Vault
 
-- **Top-down hierarchy.** What moves daily comes first, then money as it flows: in, taxed, spent, saved.
-- **Calm and legible.** Light grey cards on white, one accent colour, a single typeface. Light and dark themes follow your device.
-- **Plain language.** Every note gives the definition or the logic in one line, not a reference to a cell.
-- **Silence over blanks.** A section without data stays hidden instead of showing an empty figure.
-- **Privacy at a glance.** One tap hides large amounts: above ₹25 L on Home, and ₹1 Cr or more everywhere else.
+I have tracked my finances for years, changing what I captured, how and when. As a visual thinker, I always wanted to *see* my money: where I stand, where I want to be, and the decisions that bridge the two.
 
----
-
-What you get
-------------
+**Version 1** was an automated email. **Version 2** is a web app on Google Apps Script. It works on any device, can sit behind your own domain, and carries Google's security: nobody but you can open the sheet or the app.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/docs/img/app-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/docs/img/app-light.png">
-  <img src="https://raw.githubusercontent.com/Floydimus02/Vault/main/docs/img/app-light.png" alt="The Vault web app: Home, Invest, a holding and Check">
+  <img src="https://raw.githubusercontent.com/Floydimus02/Vault/main/docs/img/app-light.png" alt="Vault on a phone: Home, Invest, a holding and Check">
 </picture>
+
+## What it does
+
+Built function first.
+
+<table>
+  <tr>
+    <td width="33%" valign="top"><b>Net worth, every day</b><br>A snapshot at midnight. A trend over 7 days, 30 days or 12 month ends, with changes since the last close.</td>
+    <td width="33%" valign="top"><b>Every detail, one tap deep</b><br>Income, tax, spend, holdings, loan, rewards, insurance and locker, each with its own deep dive.</td>
+    <td width="33%" valign="top"><b>Private in public</b><br>One toggle hides amounts above ₹25 L on Home and ₹1 Cr elsewhere, so you can open it anywhere.</td>
+  </tr>
+  <tr>
+    <td valign="top"><b>Only you get in</b><br>The app runs as you and opens only for you. No server, database, tracker or outside service.</td>
+    <td valign="top"><b>Live on refresh</b><br>Every open reads the sheet afresh. Prices follow <code>GOOGLEFINANCE</code>, which can lag, or any better source you plug in.</td>
+    <td valign="top"><b>Simple to own</b><br>A sheet, a script and a page. Easy to build, change and deploy. Your data keeps whatever structure you like.</td>
+  </tr>
+  <tr>
+    <td valign="top"><b>Your rules for net worth</b><br>Track anything without counting it, such as stock appreciation rights.</td>
+    <td valign="top"><b>No empty boxes</b><br>A missing value is skipped, not shown as a blank.</td>
+    <td valign="top"><b>Every holding, every lot</b><br>Gain, XIRR, long or short term, tax if sold today, and how it did against a fixed deposit after tax.</td>
+  </tr>
+  <tr>
+    <td valign="top"><b>Tax, worked out</b><br>Both regimes, advance tax due and any interest, from your payslips and payouts. Past years kept.</td>
+    <td valign="top"><b>Spend with pace</b><br>The month so far against your usual, a month-end estimate, and every category's trend.</td>
+    <td valign="top"><b>Home loan, in full</b><br>Outstanding, rate history, EMIs and interest left, what a prepayment saves, and an alert if the EMI account runs low.</td>
+  </tr>
+  <tr>
+    <td valign="top"><b>Rewards that don't lapse</b><br>Points in rupees, oldest redeemed first, with expiry dates.</td>
+    <td valign="top"><b>Insurance with a memory</b><br>Cover per person, renewal alerts 30 days out, and premium growth over the years.</td>
+    <td valign="top"><b>Ratios with bands</b><br>Savings, emergency cover, liquidity, debt and housing, each marked healthy or off target.</td>
+  </tr>
+</table>
+
+## How it feels
+
+Minimal and visual, with as much care for how it works as for how it looks. Tap search and the bottom bar turns into a search field, suggesting from your own holdings, payees, policies and locker items, and forgiving typos. Deep dives open as bottom sheets, so you never lose your place; going back returns you to where you were. Light and dark follow your device.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/docs/img/app-dark-2.png">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/docs/img/app-light-2.png">
-  <img src="https://raw.githubusercontent.com/Floydimus02/Vault/main/docs/img/app-light-2.png" alt="The Vault web app: Income, Spend, Home loan and Search">
+  <img src="https://raw.githubusercontent.com/Floydimus02/Vault/main/docs/img/app-light-2.png" alt="Vault on a phone: Income, Spend, Home loan and Search">
 </picture>
 
-### Two ways to see it
+**[Try the demo](https://floydimus02.github.io/Vault/)**. It runs on made-up numbers; Vault makes the most sense with your own.
 
-| | Email | Web app |
-|---|---|---|
-| What | One long, ordered letter | Six tabs with deep-dive pages and bottom sheets |
-| When | On the schedule you set, e.g. every morning | Whenever you open it |
-| Where | Any mail app | Any browser; add to home screen on Android or iPhone |
-| Needs | `Code.gs` | `Code.gs` and `Index.html` |
+## Get started
 
-You can use either one, or both. They read the same sheet and share the same calculations.
+You need a Google account and about 15 minutes.
 
-### The web app
+**1. Copy the sheet**
+1. Download [`Vault-template.xlsx`](Vault-template.xlsx).
+2. In [Google Drive](https://drive.google.com): **New → File upload**, and choose it.
+3. Open it and click **File → Save as Google Sheets**. Use this copy from now on.
 
-| Tab | What you see |
+**2. Add the script**
+1. In the sheet: **Extensions → Apps Script**.
+2. Delete everything in `Code.gs`, paste in [`Code.gs`](Code.gs) from this repository, and save.
+3. Near the top, set `RECIPIENTS` to your email address, or leave it blank to send only to yourself.
+
+**3. Approve it once**
+1. In the bar above the code, choose `sendSnapshot` and click **Run**.
+2. Allow the permissions: **Review permissions → your account → Advanced → Go to project → Allow**. The script reads your sheet, keeps one hidden history tab and emails you.
+3. Check your inbox for the first snapshot.
+
+**4. Schedule it**
+
+Click the clock icon (**Triggers**) and add two triggers:
+
+| Function | Event source | Type | Time |
+|---|---|---|---|
+| `recordDailyClose` | Time-driven | Day timer | Midnight to 1am |
+| `sendSnapshot` | Time-driven | Any | Whenever you want the email. Skip it if you only want the app. |
+
+**5. Turn on the web app**
+1. In Apps Script, click **+** next to Files → **HTML**, and name it `Index`.
+2. Delete what's in it, paste in [`Index.html`](Index.html), and save.
+3. **Deploy → New deployment →** gear icon **→ Web app**. Set **Execute as: Me** and **Who has access: Only myself**. Click **Deploy**.
+4. Open the **Web app URL** and bookmark it. To use your own domain, point it at this URL.
+5. On your phone, open the same URL signed in to the same Google account, then add it to your home screen: Safari → Share → **Add to Home Screen**, or Chrome → ⋮ → **Add to home screen**.
+
+**6. Put your money in**
+1. Replace the example rows with yours, tab by tab. Keep the tab names, headings and row labels; the script finds everything by them. Delete any tab you don't need and its section disappears.
+2. For live prices, use formulas such as `=GOOGLEFINANCE("INDEXNSE:NIFTY_50")` in the Markets block on **Portfolio**, and `=GOOGLEFINANCE("NSE:ITC")` in each holding's **Current Price**.
+
+## Day to day
+
+**Updates on its own**
+
+| What | When |
 |---|---|
-| **Home** | Net worth with changes since the last close, over 7 and 30 days; assets and liabilities; the last 7 days of daily change, with where net worth is headed over the next 7 and a likely range; markets with symbols and dates; top movers; a line for any event in the next 2 days; an alert if the EMI account runs low. |
-| **Income** | The year's income by month, actual and estimated; each source opens its own page. **Salary** opens payslips: any month or year, gross → tax → net, and the annual view against the same months last year. **SGB interest** groups coupons by bond; **REIT** and **dividends** list every payout with TDS. **Tax**: liability under both regimes, advance tax due and any interest, the full computation for this and past years. |
-| **Spend** | Spend this month so far, the month's estimate, and the monthly average. Categories sorted by size, for the month or the year, each with its items and 6-month trend. Home loan EMI with the account's balance. Rewards and vouchers in rupees, with expiries. |
-| **Invest** | Total assets and returns. Allocation by purpose, asset class, liquidity and custodian. Holdings by type, with EPF split into employee, employer and pension. |
-| **Holding page** | Details; gain and XIRR; performance against a fixed deposit with tax on exit; the ledger of every lot with units, entry price, value, gain and a long or short term tag. EPF shows its passbook by year; PPF its deposits and interest. |
-| **Home loan page** | Outstanding against sanctioned, rate history, EMIs left, interest left, the linked bank account, and every EMI and prepayment, sortable. |
-| **Check** | Personal ratios with a healthy band; insurance cover per person, with premiums paid and the next due date; the locker page with what's inside, the last visit and the full log. |
-| **Search** | Tap it and the bar turns into a search field with suggestions from your own data. Finds holdings, spends, payouts, policies and locker items, even with typos. |
+| Net worth snapshot | Every night at midnight |
+| Prices and NAVs | As `GOOGLEFINANCE` refreshes |
+| Every figure, ratio and estimate | Each time you open the app or tap refresh |
+| The email | On your schedule |
 
-### The email
+**You update**
 
-<details>
-<summary>See the full email</summary>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/preview-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Floydimus02/Vault/main/preview.png">
-  <img src="https://raw.githubusercontent.com/Floydimus02/Vault/main/preview.png" alt="Preview of the snapshot email">
-</picture>
-</details>
-
-| # | Section | What you see |
+| Cadence | What | Where |
 |---|---|---|
-| 1 | Net worth and target | Total, assets and liabilities; changes since the last close, over 7 and 30 days and since your last review; progress towards your target |
-| 2 | Daily change | 30 days of daily moves, with the best and worst day |
-| 3 | Markets and movers | Indices, currencies, gold, silver, inflation, repo rate; top gainers and losers |
-| 4 | Cash flow, salary, tax | Income, tax, take-home, spend and savings since 1 April; advance tax due |
-| 5 | Spend | This month, average, year to date, top and bottom categories |
-| 6 | Loans, allocation, liquidity, returns | Outstanding and EMIs left; where your money sits; best and worst XIRR |
-| 7 | Rewards, ratios, locker | Points and vouchers with expiry; personal ratios; last locker visit |
+| Monthly | Payslip | **CoI** tab, the month's column |
+| Monthly | Spend | **Expenses** tab, the month's column |
+| Monthly | Loan statement lines | **Loan schedule** |
+| Monthly | EPF passbook | **EPF** |
+| When it happens | A buy or sell | Its block on **XIRR**, and its units on **Portfolio** |
+| When it happens | Dividend, SGB coupon or REIT payout | **Dividends & payouts** |
+| When it happens | Reward points earned or redeemed | **Rewards ledger**, and the balance on **Net worth** |
+| When it happens | Insurance renewal | **Insurance premiums** |
+| When it happens | Locker visit or event | **Locker log**, **Events** |
+| At each review | Values at review and the review date | **Net worth**: `Amount: T - X`, `Last updated` |
+| Every April | New financial year | Copy the **Expenses** and **CoI** tabs, renamed for the new year |
 
----
+## Make it yours
 
-What's in this repository
--------------------------
+1. **Change a setting.** Open `Code.gs` and edit `CONFIG` at the top: email recipients, time zone, what's left out of net worth (`EXCLUDE`), rewards, the EMI alert, and how many days ahead events show.
+2. **Change the look.** Edit the colour tokens under `:root` at the top of `Index.html`; `html.dark` holds the dark theme.
+3. **Fit a different sheet.** Run `describeWorkbook` in Apps Script, then follow [`PROMPT.md`](PROMPT.md). An AI assistant rewrites only the parts that read your sheet.
+4. **Publish it.** After any change: **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**. The URL stays the same. To check first, open **Deploy → Test deployments**.
 
-| File | What it is |
-|---|---|
-| `Vault-template.xlsx` | The spreadsheet to start from, filled with made-up example data on every tab |
-| `Code.gs` | The script: reads the sheet, sends the email and serves the web app |
-| `Index.html` | The web app's page |
-| `PROMPT.md` | A ready-made prompt for an AI assistant, if your sheet's layout differs |
-| `docs/` | The live demo (GitHub Pages): the same page reading `docs/data.json`, made from the template |
-| `banner*.png`, `preview*.png`, `docs/img/` | The pictures on this page |
-| `LICENSE` | GNU General Public License v3.0 |
+<br>
 
-You need only a Google account.
+## Licence
 
----
-
-Set up (about 15 minutes)
--------------------------
-
-### 1. Copy the sheet
-
-1. Download `Vault-template.xlsx`.
-2. In [Google Drive](https://drive.google.com), click **New → File upload** and choose it.
-3. Open it, then click **File → Save as Google Sheets**. Work in this Google Sheets copy from now on.
-
-You can keep the example data for a first look, then replace it with yours (step 6).
-
-### 2. Add the script
-
-1. In your Google Sheet, click **Extensions → Apps Script**.
-2. Delete everything in `Code.gs`, paste the full contents of `Code.gs` from this repository, and click the save icon.
-3. Near the top, find `RECIPIENTS: '',`. Put your email address between the quotes, or leave it empty to send only to yourself.
-
-### 3. Approve it once
-
-1. In the bar above the code, pick **`sendSnapshot`** and click **Run**.
-2. Google asks for permission: **Review permissions → your account → Advanced → Go to project → Allow**. The script needs to read your sheet, add one hidden history tab and send email as you.
-3. Check your inbox. That's the email working.
-
-### 4. Schedule it
-
-Click the clock icon on the left (**Triggers**) → **Add trigger**, twice:
-
-| Function | Event source | Type | Time | Why |
-|---|---|---|---|---|
-| `recordDailyClose` | Time-driven | Day timer | 11pm to midnight | Records net worth once a day. Every "since last close", trend and mover uses it. Sends nothing. |
-| `sendSnapshot` | Time-driven | Any | Any, e.g. 8am to 9am | Sends the email. Add one per time you want it. Skip if you only want the app. |
-
-### 5. Turn on the web app
-
-1. In Apps Script, click **+** next to Files → **HTML**. Name it `Index` (capital I; the editor adds `.html`).
-2. Delete what's in it, paste the full contents of `Index.html`, and save.
-3. Click **Deploy → New deployment**. Click the gear → **Web app**. Set **Execute as: Me** and **Who has access: Only myself**. Click **Deploy**.
-4. Open the **Web app URL** it shows. Bookmark it.
-5. On your phone, open the same URL and sign in with the same Google account:
-   - **iPhone**: Safari → Share → **Add to Home Screen**.
-   - **Android**: Chrome → ⋮ → **Add to home screen**.
-
-### 6. Make it yours
-
-Replace the example rows with your own, tab by tab. Keep the tab names, column headings and row labels, because the script finds everything by those words ([Sheet layout](#sheet-layout)). Delete any tab you don't need; its section simply disappears.
-
-To make market prices live, replace the numbers in the Markets block on the **Portfolio** tab with formulas such as:
-
-```
-=GOOGLEFINANCE("INDEXNSE:NIFTY_50")          Nifty 50
-=GOOGLEFINANCE("CURRENCY:USDINR")            USD/INR
-```
-
-And for each mutual fund or stock, put its price in the **Current Price** column the same way, e.g. `=GOOGLEFINANCE("NSE:ITC")`.
-
----
-
-How to use it
--------------
-
-| You want to | Do this |
-|---|---|
-| See today's position | Open the app, or read the morning email |
-| Get the newest numbers while the app is open | Tap refresh ↻ in the top bar |
-| Hide large amounts before showing your screen | Tap the eye in the top bar |
-| Switch light and dark | Tap the moon or sun in the top bar |
-| Look into anything | Tap a row with › to open its page or sheet; tap ⓘ for the working |
-| Find something | Tap Search; type a holding, payee, insurer or locker item |
-| Record a new purchase | Add a row to the holding's block on the **XIRR** tab and update its units on **Portfolio** |
-| Log a month's spend | Fill the month's column on **Expenses** |
-| Add a payslip | Fill the month's column in the payslip register on **CoI** |
-| Record a locker visit | Add a row on **Locker log** with what was inside before and after |
-| Track something without counting it in net worth | Keep it on the **Net worth** tab and add its name to `EXCLUDE` in `Code.gs` |
-
-Things update by themselves: the daily close at 11 PM, prices through `GOOGLEFINANCE`, and every calculation each time you open the app or the email goes out.
-
----
-
-How to modify it
-----------------
-
-After any change to `Code.gs` or `Index.html`, save, then publish it: **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**. Your app's URL stays the same. To check a change before publishing, open **Deploy → Test deployments**; that URL always runs the latest saved code.
-
-| You want to change | Where | What to edit |
-|---|---|---|
-| Who gets the email | `Code.gs`, top | `RECIPIENTS` |
-| When the email arrives | Apps Script → Triggers | Edit or add a `sendSnapshot` trigger |
-| A tab's name | `Code.gs`, `CONFIG.TABS` | The pattern that matches it, e.g. `loan: /loan schedule/i` |
-| What counts in net worth | `Code.gs`, `EXCLUDE` | Holdings matching it are tracked on Invest only |
-| Which rows count as rewards | `Code.gs`, `REWARDS` | Words in the vehicle or instrument name |
-| The EMI low-balance alert | `Code.gs`, `EMI_GUARD` | Account, minimum balance, EMI day, days before |
-| Events on Home | `Code.gs`, `APP.EVENT_DAYS_AHEAD` | How many days ahead an event shows |
-| Trend and projection | `Code.gs`, `APP.TREND_DAYS`, `APP.PROJECT_DAYS` | Days shown and days projected |
-| How many movers | `Code.gs`, `APP.MOVERS` | Count by size of the day's move |
-| Healthy bands for ratios | `Code.gs`, `RATIO_BANDS_` and the ratio list in `appCheck_` | Thresholds per ratio |
-| Tax rules | `Code.gs`, `readIncomeTax_` (slabs, rebate, surcharge, cess) and `appTaxRule_` (holding periods) | Rates and limits |
-| Colours, fonts, spacing | `Index.html`, `:root` at the top of the `<style>` block | The colour tokens; `html.dark` for dark mode |
-| Your sheet's layout is different | `PROMPT.md` | Run `describeWorkbook`, give the output to an AI assistant, paste back the code it returns |
-
-<details>
-<summary>All settings at the top of Code.gs</summary>
-
-| Setting | Default | What it does |
-|---|---|---|
-| `RECIPIENTS` | empty (you) | Who gets the email |
-| `TIMEZONE` | `Asia/Kolkata` | Time zone for dates and the financial year |
-| `SPREADSHEET_ID` | empty (this sheet) | Set only if the script lives outside the sheet |
-| `LOG_TAB` | `_vault_snapshot_log` | The hidden history tab |
-| `LOG_KEEP_ROWS` | `800` | Rows of history to keep |
-| `TREND_DAYS` | `30` | Days in the email's trend chart |
-| `TOP_MOVERS`, `TOP_XIRR` | `3` | Gainers, losers and best and worst returns in the email |
-| `ITR_FILING_DATE` | empty (31 July) | Filing date for interest under section 424 |
-| `EXCLUDE` | stock appreciation rights | Holdings tracked but left out of net worth |
-| `CLOSE_LABEL` | `11 PM` | Shown in the email; match it to the daily close trigger |
-| `REWARDS`, `REWARD_EXPIRY_YEARS` | see file | Reward rows and how long points last |
-| `EMI_GUARD` | see file | The EMI account alert |
-| `APP` | see file | Web app: event days, movers, trend days, projection days |
-</details>
-
----
-
-Sheet layout
-------------
-
-The script finds tabs by name and columns and rows by their labels. Upper and lower case don't matter, and you can add your own columns and tabs around them. The template follows this layout exactly.
-
-| Tab name contains | Needed? | Feeds |
-|---|---|---|
-| `net worth` | Yes | Everything: holdings, net worth, allocation, movers, target |
-| `portfolio` | No | Units and prices, markets, EPF split, totals |
-| `xirr` (exact) | No | Purchase lots, XIRR and exit tax on each holding page |
-| `expense` + year, e.g. `Expenses FY 26 - 27` | No | Spend, EMI, premiums paid |
-| `coi` + year, e.g. `CoI FY 26 - 27` | No | Salary, payslips, tax; earlier years for history |
-| `dividend` or `payout` | No | SGB, REIT and dividend income |
-| `epf` (exact) | No | EPF passbook |
-| `loan schedule` | No | Home loan page |
-| `rewards ledger` | No | Reward points and expiries |
-| `income & estimations` | No | Insurance cover (the `Person`, `Category`, `Type`, `Cover`, `Insurer` block) |
-| `events` (exact) | No | The event line on Home |
-| `locker` | No | Locker page |
-
-<details>
-<summary>Key columns and labels</summary>
-
-**Net worth.** Headings `L1: Group` (Asset or Liability), `L2: Class`, `L3: Category`, `Custodian`, `L4: Vehicle`, `L5: Instrument`, `Amount: T` (value now), `Amount: T - X` (value at your last review), `XIRR`, `> FD?` (its formula holds your FD rate, e.g. `6.25%`), `> CPI?`, `Taxation` (a rate such as `0.125` for equity rules, `Slab rate` or `Tax free`), `Liquidity` (Tier 1 = instant), `Function` (Safety counts towards emergency cover), `Goal / Comments` (put an expiry in square brackets, e.g. `[30 Jun 2027]`). Below the holdings: `Last updated` and `Target net worth by 31st Mar 2028`, values in column C.
-
-**Linking a holding to its lots.** Point `Amount: T` at its Portfolio row (e.g. `=Portfolio!H2`) and `XIRR` at its XIRR block's Today row (e.g. `=XIRR!H73`). That's how the holding page finds units, cost and every purchase.
-
-**XIRR.** One block per holding: rows of `Date`, `Side` (Buy, Sell, Deposit, Interest), `Quantity`, `Price`, `Amount` (negative for money in), then a `Today` row whose `Quantity` is `=SUM(...)` of the block.
-
-**Expenses.** Month headings April to March, a `Total` column, a `Monthly Avg` column and a `Total` row. Rows filled in ahead for later months count as fixed costs.
-
-**CoI.** A `SELECT TAX REGIME` cell with `New Regime` or `Old Regime`, tax inputs, and a payslip register with an `INCOME` block and a `DEDUCTIONS` block. Earlier years can use the simpler layout of `CoI FY 25 - 26` in the template.
-
-**Loan schedule.** Loan details at the top (`Provisioning bank`, `Sanctioned amount`, `Current RoI`, `EMI amount`, `NACH debit from`), then the bank statement from `Post Date`. EMIs, prepayments and rate changes are read from the statement's descriptions.
-</details>
-
----
-
-Demo and GitHub Pages
----------------------
-
-The [live demo](https://floydimus02.github.io/Vault/) is the real web app page, reading a snapshot of the template's made-up data (`docs/data.json`) instead of a Google Sheet. It is hosted free on GitHub Pages from the `docs/` folder.
-
-To host it from your own copy of this repository: **Settings → Pages → Build and deployment → Deploy from a branch → `main` / `/docs` → Save**.
-
-**Your own Vault doesn't go on GitHub Pages.** Pages serves public files only, so it cannot read your Google Sheet, and anything placed there can be read by anyone. Your personal app stays on its Apps Script URL, where Google checks it is you before it opens.
-
----
-
-Something not working?
-----------------------
-
-| Problem | Fix |
-|---|---|
-| No email arrived | Check spam. Then in Apps Script open **Executions** (the list icon) to see the error. |
-| A section is missing | Its tab or label wasn't found. **Executions** names it; see [Sheet layout](#sheet-layout). |
-| "Authorisation required" | Run `sendSnapshot` once by hand and allow the permissions. |
-| "No HTML file named Index was found" | The HTML file must be named exactly `Index`. |
-| The app still shows the old version | Deploy → Manage deployments → ✏️ → Version: **New version**. Check with the /dev URL under Test deployments. |
-| "Since last close" or the trend is empty | Add the `recordDailyClose` trigger. They fill in from the second night. |
-| Market prices are blank | `GOOGLEFINANCE` can lag. Open the sheet, wait for prices, then refresh. |
-
----
-
-Your privacy
-------------
-
-- The script runs in your own Google account, as you. It uses no outside service, library or server.
-- The web app is deployed as **Only myself**: Google asks you to sign in, so nobody else can open it and search engines can't index it.
-- The daily close adds a row to a hidden tab, `_vault_snapshot_log`, in your sheet. It holds your figures, so share the sheet with care.
-- The template, the demo and every picture here use only made-up data.
-
-Limits
-------
-
-- Tax rules are simplified (Income-tax Act, 2025, as applied from FY 2026-27). Marginal relief and some income heads aren't modelled. Treat figures as estimates, not tax advice.
-- Projections are a straight line through the last 7 days, not a forecast.
-- `GOOGLEFINANCE` prices refresh on Google's schedule.
-
-Licence
--------
-[![Licence: GPL-3.0](https://img.shields.io/badge/Licence-GPL--3.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0.html)
-
-Free software under the GNU General Public License v3.0. See `LICENSE`. Distributed without any warranty. Not financial or tax advice.
+Free software under the [GNU General Public License v3.0](LICENSE). Distributed without any warranty. Not financial or tax advice.
