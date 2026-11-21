@@ -1,16 +1,11 @@
-<p align="center">
-  <img src="assets/banner-light.png#gh-light-mode-only" alt="Vault: a ledger in a letter">
-  <img src="assets/banner-dark.png#gh-dark-mode-only" alt="Vault: a ledger in a letter">
-</p>
+<img src="assets/banner-light.png#gh-light-mode-only" alt="Vault: a ledger in a letter">
+<img src="assets/banner-dark.png#gh-dark-mode-only" alt="Vault: a ledger in a letter">
 
-<p align="center">
-  <a href="https://github.com/Floydimus02/Vault/stargazers"><img src="https://img.shields.io/github/stars/Floydimus02/Vault?style=social" alt="GitHub stars"></a>
-</p>
+### A ledger in a letter.
 
-<h3 align="center">A ledger in a letter.</h3>
-<p align="center">Know where every rupee is, what it earns and what it costs you. Every single day.</p>
+Know where every rupee is, what it earns and what it costs you. Every single day.
 
-<br>
+<a href="https://github.com/Floydimus02/Vault/stargazers"><img src="https://img.shields.io/github/stars/Floydimus02/Vault?style=social" alt="GitHub stars"></a>
 
 ## Your money is leaking. Quietly.
 
@@ -97,7 +92,7 @@ Version 1 was a daily email. Version 2 is an app that lives on any device, opens
 
 ## Every day you don't look, the leaks win
 
-**[Try the live demo →](https://floydimus02.github.io/Vault/)**
+<a href="https://floydimus02.github.io/Vault/" target="_blank" rel="noopener"><b>Try the live demo →</b></a>
 
 It runs on made-up money. With yours in it, it hits differently.
 
@@ -193,6 +188,12 @@ Click the clock icon (**Triggers**) and add two triggers:
 3. **Fit a different sheet.** Run `describeWorkbook` in Apps Script, then follow [`PROMPT.md`](PROMPT.md). An AI assistant rewrites only the parts that read your sheet.
 4. **Publish it.** After any change: **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**. The URL stays the same. To check first, open **Deploy → Test deployments**.
 
-## Licence
+## License
 
-Free software under the [GNU General Public License v3.0](LICENSE). Distributed without any warranty. Not financial or tax advice.
+[![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+Copyright (C) 2026 Floydimus.
+
+Vault is free software under the GNU General Public License v3.0. Any distributed version, modified or not, must remain open under the same license; it can never be made closed-source or proprietary. It is distributed without any warranty. See [LICENSE](LICENSE) for the full text.
+
+Vault is not financial or tax advice.
