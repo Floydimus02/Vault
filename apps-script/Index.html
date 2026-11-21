@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Vault</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,300,0,0&display=block">
+<style>
+:root{--bg:#FFFFFF;--card:#F0F3F8;--well:#FFFFFF;--ink:#050A1A;--mute:#56637D;--line:#DCE2EB;--soft:#C9D1DD;--acc:#C4005A;--acc2:#E0127A;--pos:#0B7A5C;--posbg:#DDF4EC;--neg:#C42020;--negbg:#FDE4E4;--amber:#8A5800;--amberbg:#FCEFC7;--blue:#1F5BD8;--bluebg:#E3EEFF;--chip:#F0F3F8;--proj:#E4E8EF;--projb:#B8C0CC;--scrim:rgba(5,10,26,.45);--shadow:0 8px 24px rgba(5,10,26,.08)}
+html.dark{--bg:#0A0A0C;--card:#17171B;--well:#232329;--ink:#F5F6F8;--mute:#9AA3B2;--line:#2B2B32;--soft:#3A3A44;--acc:#E0007A;--acc2:#F0359A;--pos:#4FD1A5;--posbg:#10302A;--neg:#FF8A80;--negbg:#3A1717;--amber:#F2B53A;--amberbg:#3A2C0E;--blue:#8AB4FF;--bluebg:#162545;--chip:#1F1F24;--proj:#1F1F24;--projb:#45454F;--scrim:rgba(0,0,0,.6);--shadow:0 8px 24px rgba(0,0,0,.4)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Inter,'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
+body{display:flex;justify-content:center}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+.ms{font-family:'Material Symbols Outlined';font-weight:300;font-style:normal;font-size:22px;line-height:1;display:inline-block;white-space:nowrap;font-feature-settings:'liga';font-variation-settings:'wght' 300;-webkit-font-smoothing:antialiased}
+.app{width:100%;max-width:480px;height:100dvh;position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--bg)}
+@media (min-width:600px){.app{border-left:1px solid var(--line);border-right:1px solid var(--line)}}
+header.top{display:flex;align-items:center;justify-content:space-between;padding:12px 8px 10px 16px;flex:none;border-bottom:1px solid var(--line)}
+header.top.back{padding-left:6px}
+.hl{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:40px;height:40px;border-radius:10px;background:linear-gradient(145deg,var(--acc2),var(--acc));color:#FFF;font-weight:800;font-size:21px;line-height:40px;text-align:center;flex:none;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.35)}
+h1{margin:0;font-size:22px;font-weight:800;line-height:1.2;letter-spacing:-.5px}
+.hsub{font-size:13px;color:var(--mute)}
+main > *{flex:none}
+main{flex:1;overflow-y:auto;padding:14px 14px 28px;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch}
+.card{--chip:var(--well);background:var(--card);border:0;border-radius:14px;padding:18px 18px 16px}
+.ttl{font-size:15px;font-weight:500;color:var(--mute);margin:0;display:flex;align-items:center;gap:8px}
+.ttl .ms{font-size:20px;color:var(--mute)}
+.card > .ttl:first-child,.card > div:first-child:has(> .ttl){padding-bottom:12px;margin-bottom:14px !important;border-bottom:1px solid var(--line)}
+.lead{font-size:13px;color:var(--mute);margin:-6px 0 12px}
+.sh{font-size:12px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--mute);margin:0}
+.th{font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--mute)}
+.note{font-size:13px;color:var(--mute);margin:10px 0 0;line-height:1.45}
+.small{font-size:12px;color:var(--mute)}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.pos{color:var(--pos)}.neg{color:var(--neg)}.amb{color:var(--amber)}.mute{color:var(--mute)}
+.ib{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:12px;background:transparent;color:var(--ink);cursor:pointer;padding:0;flex:none}
+.ib .ms{font-size:24px}
+.ib:hover{background:var(--chip)}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stat{display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat .l{font-size:12px;color:var(--mute)}
+.stat .n{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}
+.stat .s{font-size:12px;color:var(--mute)}
+.big{font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dp{display:inline-flex;align-items:center;gap:4px;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:700;white-space:nowrap}
+.dp.up{background:var(--posbg);color:var(--pos)}.dp.dn{background:var(--negbg);color:var(--neg)}
+.dp i{font-style:normal;font-weight:500;color:inherit;opacity:.75}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:4px 11px;font-size:12px;font-weight:700;white-space:nowrap}
+.pill.g{background:var(--posbg);color:var(--pos)}.pill.a{background:var(--amberbg);color:var(--amber)}.pill.r{background:var(--negbg);color:var(--neg)}.pill.m{background:var(--bluebg);color:var(--blue)}
+.chip{font-size:12px;font-weight:700;padding:5px 10px;border-radius:6px;background:var(--bluebg);color:var(--blue)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.row:last-child{border-bottom:0}
+.rowbtn{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;min-height:52px;padding:10px 0;border:0;border-bottom:1px solid var(--line);background:transparent;font-size:15px;text-align:left;cursor:pointer}
+.rowbtn:last-child{border-bottom:0}
+.rl{display:flex;flex-direction:column;gap:2px;min-width:0}
+.rl .sub{font-size:13px;color:var(--mute)}
+.rr{display:flex;align-items:center;gap:8px;flex:none}
+.chev{font-size:20px;color:var(--mute)}
+.grid3{display:grid;grid-template-columns:minmax(0,1fr) auto 96px;gap:10px;align-items:center}
+.grid3 .th{white-space:nowrap}
+.kvg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.kv{display:flex;flex-direction:column;gap:3px;min-width:0}
+.kv span:first-child{font-size:12px;color:var(--mute)}
+.kv span:nth-child(2){font-size:15px;font-weight:700}
+.trk{position:relative;display:block;height:6px;background:var(--chip);border-radius:999px}
+.fil{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--acc)}
+.fil.over{background:var(--neg)}
+.tick{position:absolute;top:-3px;width:2px;height:12px;border-radius:1px;background:var(--ink)}
+.bars{display:grid;gap:4px;align-items:end}
+.bars div{border-radius:4px 4px 0 0}
+.blab{display:grid;gap:4px;font-size:10px;color:var(--mute);text-align:center;padding-top:4px}
+.legend{font-size:12px;color:var(--mute);margin-top:8px;display:flex;gap:14px;flex-wrap:wrap}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+.box{margin-top:12px;padding:12px 14px;border-radius:12px;font-size:14px;font-weight:600;line-height:1.4}
+.box.a{background:var(--amberbg);color:var(--amber)}.box.r{background:var(--negbg);color:var(--neg)}
+.seg{display:flex;gap:4px;padding:4px;border-radius:12px;background:var(--chip)}
+.seg button{flex:1;min-height:40px;padding:0 6px;border:0;border-radius:9px;background:transparent;color:var(--mute);font-size:14px;font-weight:600;cursor:pointer;line-height:1.15;white-space:nowrap}
+.seg button.on{background:var(--ink);color:var(--bg);font-weight:700}
+.sel{font:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-height:40px}
+.mchips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.mchips button{flex:none;min-width:54px;min-height:40px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:14px;font-weight:600;cursor:pointer}
+.mchips button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hd{font-size:17px;font-weight:700;margin:0;display:flex;align-items:center;gap:10px}
+.step{font-size:12px;font-weight:800;width:24px;height:24px;border-radius:7px;background:linear-gradient(145deg,var(--acc2),var(--acc));color:#FFF;display:inline-flex;align-items:center;justify-content:center}
+.w{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:9px 0;border-bottom:1px solid var(--line)}
+.w.h{font-size:12px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--mute);padding-top:16px;border-bottom:0}
+.w.i{padding-left:12px}
+.w.s,.w.t{font-weight:700}
+.w.t{border-bottom:2px solid var(--ink)}
+.event{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:14px;background:var(--bg);border:1px solid var(--line)}
+.event .ms{color:var(--acc)}
+nav.tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;padding:8px 8px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bg);flex:none}
+nav.tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0;border:0;border-radius:12px;background:transparent;font-size:11px;font-weight:500;color:var(--mute);cursor:pointer}
+nav.tabs button.on{background:var(--ink);color:var(--bg);font-weight:700}
+.sheet{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;z-index:5}
+.sheet .scrim{position:absolute;inset:0;border:0;background:var(--scrim);cursor:pointer}
+.sheet section{position:relative;background:var(--bg);border-radius:22px 22px 0 0;max-height:88%;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.sheet section .card{--chip:var(--well)}
+.grab{display:flex;justify-content:center;padding-top:10px}.grab div{width:64px;height:4px;border-radius:2px;background:var(--line)}
+.sheet .shead{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 14px 12px 20px;margin-bottom:12px;border-bottom:1px solid var(--line)}
+.sheet .shead .ttl{font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(--ink)}
+.sheet .shead .ib{background:var(--chip)}
+.sheet .sbody{overflow-y:auto;padding:0 20px calc(22px + env(safe-area-inset-bottom))}
+.qbox{display:flex;align-items:center;gap:8px;height:52px;padding:0 4px 0 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+.qbox:focus-within{border-color:var(--ink)}
+.qbox input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:16px;color:var(--ink);outline:none}
+.tag{font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px}
+.tag.ex{background:var(--posbg);color:var(--pos)}.tag.cl{background:var(--amberbg);color:var(--amber)}
+.recent{display:flex;flex-wrap:wrap;gap:8px}
+.recent button{font-size:14px;font-weight:600;min-height:40px;padding:6px 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);cursor:pointer}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;height:100%;color:var(--mute);font-size:14px;text-align:center;padding:24px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+button.card{border:0}
+.ms.spin{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sbar{display:flex;align-items:center;gap:8px;padding:10px 10px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bg);flex:none}
+.sbar .field{flex:1;min-width:0;position:relative;display:flex;align-items:center;gap:8px;height:52px;padding:0 4px 0 14px;border:1.5px solid var(--ink);border-radius:14px;background:var(--bg)}
+.sbar .field.anim{animation:grow .34s cubic-bezier(.2,.8,.2,1);transform-origin:right center}
+.sbar input{flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:16px;color:var(--ink);outline:none}
+.sbar input::-webkit-search-cancel-button{display:none}
+.sbar .ph{position:absolute;left:46px;right:12px;top:50%;transform:translateY(-50%);color:var(--mute);font-size:16px;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .3s,transform .3s}
+.sbar .ph.out{opacity:0;transform:translateY(-110%)}
+.sbar .collapse{background:var(--chip);width:52px;height:52px;border-radius:14px}
+@keyframes grow{from{transform:scaleX(.16);opacity:.3}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.sbar .field.anim{animation:none}.sbar .ph{transition:none}}
+button.card.rowbtn{border-bottom:0}
+</style>
+</head>
+<body>
+<div class="app" id="app"><div class="center"><div class="logo">V</div>Reading your sheet…</div></div>
+<script>
+(function () {
+'use strict';
+/* ---------- State ---------- */
+var D = null, S = { tab: 'home', page: null, hid: null, sheet: null, taxFy: 0, payFy: 0, payMode: 'm', payMonth: null, alloc: 'fn', openType: null, loanView: 'now', spendView: 'm', nwRange: 'w', q: '', searchOpen: false, phI: 0 };
+var LS = { get: function (k, d) { try { var v = localStorage.getItem('vault_' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set: function (k, v) { try { localStorage.setItem('vault_' + k, JSON.stringify(v)); } catch (e) {} } };
+var mask = LS.get('mask', false), theme = LS.get('theme', null);
+function applyTheme() {
+  var dark = theme ? theme === 'dark' : !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.classList.toggle('dark', dark);
+  return dark;
+}
+applyTheme();
+if (window.matchMedia) try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (!theme) { applyTheme(); render(); } }); } catch (e) {}
+
+/* ---------- Formatting ---------- */
+var MONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+var FYM = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function grp(n) { var s = String(Math.round(Math.abs(n))), l = s.slice(-3), r = s.slice(0, -3); return (r ? r.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',' : '') + l; }
+// Masking: on Home, amounts above ₹25 L; on every other page, amounts of ₹1 Cr or more.
+function onHome() { return S.tab === 'home' && !S.page && !S.searchOpen; }
+function hidden(n) { return mask && (onHome() ? Math.abs(n) > 25e5 : Math.abs(n) >= 1e7); }
+var DOTS = '₹ ••••••';
+function inr(n, sign) { if (n == null || isNaN(n)) return '—'; if (hidden(n)) return DOTS; return (n < 0 ? '−' : sign && n > 0 ? '+' : '') + '₹' + grp(n); }
+function inrC(n, sign) { if (n == null || isNaN(n)) return '—'; if (hidden(n)) return DOTS; var a = Math.abs(n), s = n < 0 ? '−' : sign && n > 0 ? '+' : ''; return a >= 1e7 ? s + '₹' + (a / 1e7).toFixed(2) + ' Cr' : a >= 1e5 ? s + '₹' + (a / 1e5).toFixed(2) + ' L' : s + '₹' + grp(a); }
+function pct(p, d, sign) { if (p == null || isNaN(p)) return '—'; return (p < 0 ? '−' : sign && p > 0 ? '+' : '') + Math.abs(p * 100).toFixed(d == null ? 1 : d) + '%'; }
+function inrRange(lo, hi) {
+  if (hidden(lo) || hidden(hi)) return DOTS;
+  var u = Math.max(Math.abs(lo), Math.abs(hi)) >= 1e7 ? [1e7, ' Cr'] : Math.max(Math.abs(lo), Math.abs(hi)) >= 1e5 ? [1e5, ' L'] : null;
+  return u ? '₹' + (lo / u[0]).toFixed(2) + '–' + (hi / u[0]).toFixed(2) + u[1] : inr(lo) + '–' + grp(hi);
+}
+function xirr(p) { if (p == null || isNaN(p)) return '—'; var t = Math.trunc(p * 10000) / 100; return (t < 0 ? '−' : '') + Math.abs(t).toFixed(2) + '%'; }
+function cls(n) { return n > 0 ? 'pos' : n < 0 ? 'neg' : ''; }
+function day(k) { if (!k) return '—'; var p = k.split('-'); return Number(p[2]) + ' ' + MONS[Number(p[1]) - 1] + ' ' + p[0]; }
+function dayShort(k) { if (!k) return ''; var p = k.split('-'); return Number(p[2]) + ' ' + MONS[Number(p[1]) - 1]; }
+function monYr(k) { var p = k.split('-'); return MONS[Number(p[1]) - 1] + ' ' + p[0]; }
+function M(v) { return v; }
+function sum(a) { return a.reduce(function (s, x) { return s + (Number(x) || 0); }, 0); }
+function daysTo(k) { var t = new Date(D.today + 'T00:00:00'), d = new Date(k + 'T00:00:00'); return Math.round((d - t) / 864e5); }
+
+/* ---------- Data ---------- */
+function load(refresh) {
+  var ok = function (json) { var first = !D; D = JSON.parse(json); S._sugg = null; if (first) { S.taxFy = 0; S.payFy = 0; S.payMonth = null; } render(); };
+  var fail = function (e) { document.getElementById('app').innerHTML = '<div class="center"><div class="logo">V</div>Couldn\'t read the sheet.<br>' + esc(e && e.message || e) + '<button class="recent" data-act="reload" style="border:1px solid var(--line);border-radius:3px;padding:8px 14px;background:var(--card);cursor:pointer;font-weight:700">Try again</button></div>'; };
+  if (window.google && google.script && google.script.run) google.script.run.withSuccessHandler(ok).withFailureHandler(fail).getAppData(!!refresh);
+  else fetch('data.json').then(function (r) { return r.text(); }).then(ok).catch(fail);
+}
+
+/* ---------- Pieces ---------- */
+function themeBtn() { var dark = document.documentElement.classList.contains('dark'); return '<div style="display:flex"><button type="button" class="ib" aria-label="' + (mask ? 'Show large amounts' : 'Hide large amounts') + '" aria-pressed="' + mask + '" data-act="mask"><span class="ms">' + (mask ? 'visibility_off' : 'visibility') + '</span></button><button type="button" class="ib" aria-label="Read the sheet again" data-act="refresh"><span class="ms">refresh</span></button><button type="button" class="ib" aria-label="Switch theme" data-act="theme"><span class="ms">' + (dark ? 'light_mode' : 'dark_mode') + '</span></button></div>'; }
+function header(title, sub, opts) {
+  opts = opts || {};
+  if (opts.back) return '<header class="top back"><div class="hl"><button type="button" class="ib" aria-label="Back" data-act="back"><span class="ms">arrow_back</span></button><div class="rl"><h1>' + esc(title) + '</h1>' + (sub ? '<span class="hsub">' + esc(sub) + '</span>' : '') + '</div></div>' + themeBtn() + '</header>';
+  return '<header class="top"><div class="hl">' + (opts.logo ? '<div class="logo" aria-hidden="true">V</div>' : '') + '<div class="rl"><h1>' + esc(title) + '</h1>' + (sub ? '<span class="hsub">' + esc(sub) + '</span>' : '') + '</div></div>' + themeBtn() + '</header>';
+}
+function nav() {
+  var T = [['home', 'home', 'Home'], ['income', 'payments', 'Income'], ['spend', 'shopping_bag', 'Spend'], ['invest', 'trending_up', 'Invest'], ['check', 'fact_check', 'Check'], ['search', 'search', 'Search']];
+  var cur = S.page === 'payslips' || S.page === 'source' ? 'income' : S.page === 'loan' ? 'spend' : S.page === 'locker' || S.page === 'premiums' ? 'check' : S.page === 'holding' ? (S.tab === 'home' || S.tab === 'check' || S.tab === 'search' ? S.tab : 'invest') : S.tab;
+  return '<nav class="tabs" aria-label="Primary">' + T.map(function (t) { return '<button type="button" class="' + (cur === t[0] ? 'on' : '') + '"' + (cur === t[0] ? ' aria-current="page"' : '') + ' data-act="tab" data-v="' + t[0] + '"><span class="ms">' + t[1] + '</span>' + t[2] + '</button>'; }).join('') + '</nav>';
+}
+function stat(l, n, s, ncls) { return '<div class="stat"><span class="l">' + esc(l) + '</span><span class="n ' + (ncls || '') + '">' + n + '</span>' + (s != null ? '<span class="s">' + s + '</span>' : '') + '</div>'; }
+function bars(values, opts) {
+  opts = opts || {};
+  var mx = Math.max.apply(null, values.map(function (v) { return Math.abs(v || 0); }).concat([1])), h = opts.h || 56, n = values.length;
+  var out = '<div class="bars" style="grid-template-columns:repeat(' + n + ',minmax(0,1fr));height:' + (h + 18) + 'px" role="img" aria-label="' + esc(opts.label || 'Bar chart') + '">';
+  values.forEach(function (v, i) {
+    var est = opts.est && opts.est(i), hi = opts.hi == null || opts.hi === i;
+    var bg = est ? 'background:var(--proj);border:1px dashed var(--projb)' : 'background:' + (hi ? 'var(--acc)' : 'var(--soft)');
+    out += '<div style="height:' + Math.max(2, Math.round(Math.abs(v || 0) / mx * h)) + 'px;' + bg + '"></div>';
+  });
+  out += '</div>';
+  if (opts.labels) out += '<div class="blab" style="grid-template-columns:repeat(' + n + ',minmax(0,1fr))">' + opts.labels.map(function (l) { return '<span>' + esc(l) + '</span>'; }).join('') + '</div>';
+  return out;
+}
+
+/* ---------- Home ---------- */
+// Small symbol badges for the markets table: currency signs, and Au / Ag for gold and silver
+function mktBadge(label) {
+  var t = /^usd/i.test(label) ? ['$', 'var(--bluebg)', 'var(--blue)'] : /^eur/i.test(label) ? ['€', 'var(--bluebg)', 'var(--blue)'] : /^gbp/i.test(label) ? ['£', 'var(--bluebg)', 'var(--blue)'] :
+    /^gold/i.test(label) ? ['Au', '#F6E7B0', '#7A5A00'] : /^silver/i.test(label) ? ['Ag', '#E3E7EE', '#4A5568'] : /nifty|nasdaq/i.test(label) ? ['↗', 'var(--posbg)', 'var(--pos)'] : /inflation/i.test(label) ? ['%', 'var(--amberbg)', 'var(--amber)'] : /repo/i.test(label) ? ['₹', 'var(--amberbg)', 'var(--amber)'] : null;
+  return t ? '<span aria-hidden="true" style="flex:none;width:26px;height:26px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:' + t[1] + ';color:' + t[2] + '">' + t[0] + '</span>' : '';
+}
+function vHome() {
+  var H = D.home, now = new Date(D.at);
+  var dateStr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][now.getDay()] + ' ' + now.getDate() + ' ' + MONS[now.getMonth()];
+  var o = header('Vault', 'A ledger in a letter', { logo: true }) + '<main>';
+  (D.events || []).forEach(function (e) {
+    var when = e.days === 0 ? 'Today' : e.days === 1 ? 'Tomorrow' : 'In ' + e.days + ' days, ' + dayShort(e.date);
+    var bits = [e.start, e.venue, e.booked, e.tickets ? e.tickets + (e.tickets > 1 ? ' tickets' : ' ticket') : ''].filter(Boolean);
+    o += '<div class="event"><span class="ms">event</span><div class="rl"><span style="font-size:14px"><b>' + esc(when) + '</b> · ' + esc(e.name) + '</span><span class="sub">' + esc(bits.join(' · ')) + '</span></div></div>';
+  });
+  if (H.emiAlert) {
+    var A = H.emiAlert;
+    o += '<div class="box ' + (A.critical ? 'r' : 'a') + '" style="margin:0">' + (A.critical ? 'EMI at risk' : 'EMI account below ' + inr(A.min)) + ': ' + esc(A.bank) + ' holds ' + inr(A.bal) + ' against the ' + inr(A.emi) + ' EMI due ' + day(A.due) + '. Top up ' + inr(A.min - A.bal) + '.</div>';
+  }
+  o += '<section class="card"><h2 class="ttl">Net worth · ' + dateStr + '</h2>';
+  o += '<div class="big" style="font-size:40px;line-height:1.1;margin:0 0 14px">' + M(inrC(H.nw)) + '</div>';
+  if (H.deltas.length) o += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">' + H.deltas.map(function (x) { return '<span class="dp ' + (x.d >= 0 ? 'up' : 'dn') + ' num">' + inrC(x.d, true) + ' (' + pct(x.base ? x.d / Math.abs(x.base) : 0, 2, true) + ') <i>' + esc(x.l) + '</i></span>'; }).join('') + '</div>';
+  var ap = H.nw ? H.assets / H.nw : null, lp = H.nw ? H.liab / H.nw : null;
+  o += '<div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr));padding-top:12px;border-top:1px solid var(--line)">' + stat('Assets', M(inrC(H.assets)) + ' <span style="font-size:14px;font-weight:500;color:var(--mute)">' + pct(ap) + '</span>') + stat('Liabilities', M(inrC(H.liab)) + ' <span style="font-size:14px;font-weight:500;color:var(--mute)">' + pct(lp) + '</span>') + '</div></section>';
+  // Net worth trend: one value a day from the midnight log, or the value at each month end
+  var SR = H.series || [], R = S.nwRange || 'w', byK = {}; SR.forEach(function (x) { byK[x.k] = x.nw; });
+  var seg = '<div class="seg" role="group" aria-label="Period" style="width:168px">' + [['w', '7D'], ['m', '30D'], ['y', '12M']].map(function (x) { return '<button type="button" class="' + (R === x[0] ? 'on' : '') + '" aria-pressed="' + (R === x[0]) + '" data-act="nwrange" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>';
+  o += '<section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:10px"><h2 class="ttl">Net worth trend</h2>' + seg + '</div>';
+  var keys = [], labels = [], vals = [];
+  if (R === 'y') {
+    var ends = {}; SR.forEach(function (x) { ends[x.k.slice(0, 7)] = x; });
+    var t0 = new Date(D.today + 'T12:00:00');
+    for (var i = 11; i >= 0; i--) { var dt = new Date(t0.getFullYear(), t0.getMonth() - i, 1), mk = dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2), e = ends[mk]; keys.push(e ? e.k : null); labels.push(MONS[dt.getMonth()]); vals.push(e ? e.nw : null); }
+  } else {
+    var N = R === 'm' ? 30 : 7, t1 = new Date(D.today + 'T12:00:00').getTime();
+    for (var j = N - 1; j >= 0; j--) { var d0 = new Date(t1 - j * 864e5), k = d0.getFullYear() + '-' + ('0' + (d0.getMonth() + 1)).slice(-2) + '-' + ('0' + d0.getDate()).slice(-2); keys.push(k); vals.push(byK[k] != null ? byK[k] : null); labels.push(N === 7 || j % 7 === 0 ? dayShort(k) : ''); }
+  }
+  var have = vals.map(function (v, i) { return v == null ? null : { k: keys[i], v: v }; }).filter(Boolean);
+  if (have.length > 1) {
+    var f = have[0], l = have[have.length - 1], ch = l.v - f.v;
+    o += lineChart(labels, [{ name: 'Net worth', color: 'var(--acc)', values: vals }], { label: 'Net worth ' + (R === 'y' ? 'at each month end, last 12 months' : 'each day, last ' + (R === 'm' ? 30 : 7) + ' days'), dots: R === 'w' });
+    o += '<div class="stats" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);grid-template-columns:repeat(2,minmax(0,1fr))">' + stat('Change', inrC(ch, true), f.v ? '<span class="' + cls(ch) + '">' + pct(ch / Math.abs(f.v), 2, true) + '</span> since ' + (R === 'y' ? monYr(f.k) : dayShort(f.k)) : '', cls(ch)) +
+      stat(R === 'y' ? 'Highest month end' : 'Highest', M(inrC(Math.max.apply(null, have.map(function (x) { return x.v; })))), null) + '</div>';
+    o += '<p class="note">' + (R === 'y' ? 'Each point is net worth at the last log of the month; this month is today\'s value.' : 'Each point is net worth logged at midnight; today is the live value.') + '</p>';
+  } else o += '<p class="note" style="margin:0">Fills in from the midnight log. Two ' + (R === 'y' ? 'month ends' : 'days') + ' are needed for a line.</p>';
+  o += '</section>';
+  // Markets
+  if (H.markets.length) {
+    o += '<section class="card"><h2 class="ttl">Markets</h2><div class="lead">' + (H.marketsAgainst ? 'Change against the ' + dayShort(H.marketsAgainst) + ' close' : 'Day change') + '</div>';
+    o += '<div class="grid3" style="padding-bottom:6px;border-bottom:1px solid var(--line)"><span></span><span class="th" style="text-align:right">Level</span><span class="th" style="text-align:right">Since close</span></div>';
+    H.markets.forEach(function (m) {
+      var lvl = m.kind === 'pct' ? pct(m.val, 2) : m.kind === 'inr' ? inr(m.val) : m.kind === 'fx' ? '₹' + m.val.toFixed(2) : m.val.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+      o += '<div class="grid3" style="padding:8px 0;border-bottom:1px solid var(--line);font-size:14px"><span style="display:flex;align-items:center;gap:8px;min-width:0">' + mktBadge(m.label) + '<span>' + esc(m.label) + '</span></span><span class="num" style="text-align:right">' + lvl + '</span>' +
+        (m.pct != null ? '<span class="num ' + cls(m.pct) + '" style="text-align:right;font-weight:600">' + pct(m.pct, 2, true) + '</span>' : '<span class="small" style="text-align:right">' + (m.asOf ? 'as of ' + dayShort(m.asOf) : '') + '</span>') + '</div>';
+    });
+    o += '</section>';
+  }
+  // Movers
+  if (H.movers.length) {
+    o += '<section class="card"><h2 class="ttl">Top ' + H.movers.length + ' movers</h2><div class="lead">Each holding now against the ' + dayShort(H.lastClose) + ' close. Net worth moved ' + pct(H.moveShare, 2, true) + ', so ' + H.shown + ' are shown.</div>';
+    H.movers.forEach(function (x) {
+      o += '<button type="button" class="rowbtn" data-act="holding" data-v="' + esc(x.id) + '"><span class="rl"><span>' + esc(x.name) + '</span><span class="sub">' + esc(x.cls) + '</span></span><span class="num ' + cls(x.d) + '" style="font-weight:600">' + (inr(x.d, true)) + ' <span style="font-weight:400">(' + pct(x.p, 2, true) + ')</span></span></button>';
+    });
+    o += '</section>';
+  }
+  return o + '</main>';
+}
+
+/* ---------- Income ---------- */
+function vIncome() {
+  var I = D.income, o = header('Income') + '<main>';
+  if (I) {
+    var last = I.last, prevTot = last > 0 ? I.monthTot[last - 1] : null, ch = prevTot ? (I.monthTot[last] - prevTot) / prevTot : null;
+    o += '<section class="card"><h2 class="ttl" style="margin-bottom:12px">Income · ' + esc(I.fy) + '</h2><div class="stats">' +
+      stat('To date', inrC(I.toDate), 'Apr to ' + FYM[last]) + stat(FYM[last], inrC(I.monthTot[last]), ch == null ? '' : '<span class="' + cls(ch) + '">' + pct(ch, 1, true) + ' vs ' + FYM[last - 1] + '</span>') + stat('Full year, est.', inrC(I.fyEst), I.ahead + ' months ahead') + '</div>';
+    var vals = I.monthTot.map(function (v, j) { return j > last ? I.est : v; });
+    o += '<div style="margin-top:14px">' + bars(vals, { labels: FYM, est: function (j) { return j > last; }, label: 'Monthly income, actual and estimated' }) + '</div>';
+    o += '<div class="legend"><span><span class="sw" style="background:var(--acc)"></span>Actual</span><span><span class="sw" style="background:var(--proj);border:1px dashed var(--projb)"></span>Estimated from the ' + FYM[last] + ' payslip</span></div>';
+    var peak = I.monthTot.slice(0, last + 1).reduce(function (a, v, j) { return v > I.monthTot[a] ? j : a; }, 0);
+    o += '<p class="note">' + FYM[peak] + ' is the highest month so far at ' + inrC(I.monthTot[peak]) + '.</p></section>';
+    o += '<section class="card" style="padding-bottom:12px"><h2 class="ttl">By source · ' + FYM[last] + '</h2><div style="display:grid;grid-template-columns:minmax(0,1fr) auto 62px 16px;gap:8px;padding:10px 0 6px;border-bottom:1px solid var(--line)"><span class="th">Source</span><span class="th" style="text-align:right">Amount</span><span class="th" style="text-align:right">vs ' + FYM[Math.max(0, last - 1)] + '</span><span></span></div>';
+    I.sources.forEach(function (s, i) {
+      var a = s.monthly ? s.m[last] : s.fy, p = s.monthly && last > 0 && s.m[last - 1] ? (s.m[last] - s.m[last - 1]) / s.m[last - 1] : null;
+      o += '<button type="button" class="rowbtn" data-act="' + (s.id === 'salary' ? 'page' : 'source') + '" data-v="' + (s.id === 'salary' ? 'payslips' : esc(s.id)) + '" style="display:grid;grid-template-columns:minmax(0,1fr) auto 62px 16px;gap:8px"><span>' + esc(s.n) + (s.monthly ? '' : '<span class="small"> · FY</span>') + '</span><span class="num" style="text-align:right;font-weight:700">' + inr(a) + '</span><span class="num ' + cls(p) + '" style="text-align:right;font-weight:600">' + (p == null ? '—' : pct(p, 1, true)) + '</span><span class="ms chev" style="font-size:16px">chevron_right</span></button>';
+    });
+    o += '<p class="note" style="font-size:12px">Week-on-week appears only for sources logged weekly. None are.</p></section>';
+  }
+  o += vTax();
+  return o + '</main>';
+}
+function vTax() {
+  if (!D.tax || !D.tax.length) return '';
+  var T = D.tax[S.taxFy] || D.tax[0];
+  var o = '<section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:-8px 0 12px"><h2 class="ttl">Tax</h2><div style="display:flex;align-items:center;gap:2px"><label class="sr" for="taxfy">Financial year</label><select id="taxfy" class="sel" data-chg="taxfy">' +
+    D.tax.map(function (t, i) { return '<option value="' + i + '"' + (i === S.taxFy ? ' selected' : '') + '>' + esc(t.fy) + '</option>'; }).join('') + '</select><button type="button" class="ib" aria-label="Show computation of income" data-act="taxsheet" style="width:40px;height:40px"><span class="ms" style="font-size:20px">info</span></button></div></div>';
+  if (T.current) {
+    o += '<div class="stats">' + stat('Liability, est.', inrC(T.liab), (T.regime === 'old' ? 'Old' : 'New') + ' · ' + pct(T.liab / T.grossInc) + ' of income') + stat('Paid so far', inrC(T.paid), 'TDS ' + inrC(T.tds) + (T.adv ? ' · advance ' + inrC(T.adv) : '')) + stat(T.balance >= 0 ? 'Balance' : 'Overpaid', inrC(Math.abs(T.balance)), T.balance >= 0 ? 'still to pay' : 'refund due') + '</div>';
+    var other = T.regime === 'old' ? T.newTax : T.oldTax, save = other - T.liab;
+    o += '<div style="height:14px"></div><p class="sh">Regime comparison</p>';
+    o += '<div class="row"><span>' + (T.regime === 'old' ? 'Old' : 'New') + ' regime, yours</span><b class="num">' + inr(T.liab) + '</b></div>';
+    o += '<div class="row"><span>' + (T.regime === 'old' ? 'New' : 'Old') + ' regime would be</span><span class="num">' + inr(other) + ' <span class="' + (save >= 0 ? 'pos' : 'neg') + '">(' + (save >= 0 ? 'yours saves ' + inr(save) : 'it saves ' + inr(-save)) + ')</span></span></div>';
+    if (save >= 0 && T.regime === 'new') o += '<p class="note" style="margin-top:8px">The old regime needs ' + inrC(save / T.marginal) + ' more deductions to match.</p>';
+    else if (save < 0) o += '<p class="note" style="margin-top:8px">Switching regime saves ' + inr(-save) + '.</p>';
+    o += '<div style="height:16px"></div><p class="sh">Advance tax · on ' + inr(T.netDue) + ' left after TDS</p>';
+    if (!T.applies) o += '<p class="note pos" style="margin-top:6px">Below ₹10,000, so advance tax and its interest do not apply.</p>';
+    else {
+      o += '<div style="display:grid;grid-template-columns:62px minmax(0,1fr) minmax(0,1fr) 74px;gap:8px;padding:8px 0 6px;border-bottom:1px solid var(--line)"><span class="th">Due</span><span class="th" style="text-align:right">Required</span><span class="th" style="text-align:right">Paid</span><span></span></div>';
+      var next = null;
+      T.sched.forEach(function (s) {
+        var st = s.gap < 1 ? ['Covered', 'g'] : s.past ? ['Short', 'r'] : ['Due', 'a'];
+        if (!s.past && s.gap >= 1 && !next) next = s;
+        o += '<div style="display:grid;grid-template-columns:62px minmax(0,1fr) minmax(0,1fr) 74px;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;align-items:center"><span class="num">' + dayShort(s.due) + '</span><span class="num" style="text-align:right">' + inr(s.req) + '</span><span class="num" style="text-align:right">' + inr(s.paidCum) + '</span><span style="text-align:right"><span class="pill ' + st[1] + '">' + st[0] + '</span></span></div>';
+      });
+      if (next) o += '<div class="box a">Pay ' + inr(next.gap) + ' by ' + day(next.due) + ' to avoid ' + inr(next.int) + ' of interest under section 425.</div>';
+      if (T.s424) o += '<p class="note">Section 424 interest of ' + inr(T.s424) + ' applies if advance tax stays below 90% until filing on ' + day(T.filing) + '.</p>';
+    }
+  } else {
+    o += '<div class="stats">' + stat('Liability, final', inrC(T.liab), pct(T.liab / T.grossInc) + ' of income') + stat('Taxes paid', inrC((T.tds || 0) + (T.sat || 0)), 'TDS ' + inrC(T.tds) + (T.sat ? ' · self ' + inrC(T.sat) : '')) +
+      stat(T.balance < 0 ? 'Refund' : 'Balance', inr(Math.abs(T.balance)), T.balance < 0 ? 'due to you' : 'to pay') + '</div><div style="height:14px"></div>';
+    o += '<div class="row"><span>Gross income</span><b class="num">' + inr(T.grossInc) + '</b></div><div class="row"><span>Taxable income</span><b class="num">' + inr(T.taxable) + '</b></div><div class="row"><span>Effective rate</span><b class="num">' + pct(T.rate) + '</b></div>';
+    o += '<p class="note">Effective rate = final tax ÷ gross income.</p>';
+  }
+  return o + '</section>';
+}
+
+/* ---------- Income source ---------- */
+function vSource() {
+  var I = D.income, x = I && I.sources.find(function (z) { return z.id === S.hid; }), o = header(x ? x.n : 'Income', I ? I.fy : null, { back: true }) + '<main>';
+  if (!x) return o + '<p class="note">Source not found.</p></main>';
+  var L = x.lines || [];
+  if (!L.length) {
+    o += '<section class="card"><h2 class="ttl" style="margin-bottom:10px">' + esc(I.fy) + '</h2><div class="big" style="font-size:30px">' + inr(x.fy != null ? x.fy : sum(x.m)) + '</div><p class="note">Recorded as one figure for the year, with no dated entries, so there is no ledger to list.</p></section>';
+    return o + '</main>';
+  }
+  var fyNow = I.fy, inFy = L.filter(function (l) { return l.fy === fyNow; }), byFy = {};
+  L.forEach(function (l) { (byFy[l.fy] = byFy[l.fy] || []).push(l); });
+  var fys = Object.keys(byFy).sort().reverse(), last = L[0], tdsFy = sum(inFy.map(function (l) { return l.tds; }));
+  o += '<section class="card"><h2 class="ttl" style="margin-bottom:12px">' + esc(x.n) + ' · ' + esc(fyNow) + '</h2><div class="stats">' +
+    stat('This year', inr(sum(inFy.map(function (l) { return l.net; }))), inFy.length + (inFy.length === 1 ? ' payout' : ' payouts') + (tdsFy ? ' · TDS ' + inr(tdsFy) : '')) +
+    stat('All years', inrC(sum(L.map(function (l) { return l.net; }))), L.length + ' payouts since ' + monYr(L[L.length - 1].k)) +
+    stat('Latest', inr(last.net), dayShort(last.k) + ' ' + last.k.slice(0, 4)) + '</div>';
+  var fyAsc = fys.slice().reverse().slice(-6), vals = fyAsc.map(function (f) { return sum(byFy[f].map(function (l) { return l.net; })); });
+  o += '<div style="margin-top:14px">' + bars(vals, { labels: fyAsc.map(function (f) { return f.replace('FY ', ''); }), hi: fyAsc.indexOf(fyNow) >= 0 ? fyAsc.indexOf(fyNow) : vals.length - 1, label: x.n + ' by financial year' }) + '</div>';
+  var whats = {}; L.forEach(function (l) { whats[l.what] = (whats[l.what] || 0) + l.net; });
+  var top = Object.keys(whats).sort(function (a, b) { return whats[b] - whats[a]; });
+  if (top.length > 1) o += '<p class="note">' + esc(top[0]) + ' has paid the most, ' + inr(whats[top[0]]) + ' across ' + fys.length + (fys.length === 1 ? ' year' : ' years') + '.</p>';
+  o += '</section>';
+  o += '<section class="card" style="padding-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px"><h2 class="ttl">Ledger</h2><span class="small">' + (x.id === 'sgb' ? 'By bond' : 'Net of TDS') + '</span></div>';
+  if (x.id === 'sgb') {
+    // One row per bond, each opening its own list of coupons
+    top.forEach(function (w) {
+      var ls = L.filter(function (l) { return l.what === w; }), open = S.openEnt === w;
+      o += '<button type="button" class="rowbtn" aria-expanded="' + open + '" data-act="ent" data-v="' + esc(w) + '"><span class="rl"><b>' + esc(w) + '</b><span class="sub">' + ls.length + (ls.length === 1 ? ' payout' : ' payouts') + ' · last ' + day(ls[0].k) + '</span></span><span class="rr"><b class="num">' + inr(whats[w]) + '</b><span class="ms chev">' + (open ? 'expand_less' : 'expand_more') + '</span></span></button>';
+      if (open) o += '<div style="margin:0 0 8px;padding:2px 12px;border-radius:8px;background:var(--chip)">' + ls.map(function (l) { return '<div class="row" style="font-size:13px"><span class="rl"><span>' + day(l.k) + '</span><span class="sub">' + esc(l.fy) + '</span></span><span class="num">' + inr(l.net) + '</span></div>'; }).join('') + '</div>';
+    });
+    return o + '<p class="note" style="font-size:12px">Coupons are paid twice a year at a fixed rate on the issue price.</p></section></main>';
+  }
+  fys.forEach(function (f) {
+    o += '<p class="sh" style="margin:12px 0 2px;display:flex;justify-content:space-between"><span>' + esc(f) + '</span><span class="num">' + inr(sum(byFy[f].map(function (l) { return l.net; }))) + '</span></p>';
+    byFy[f].forEach(function (l) {
+      var sub = l.parts ? l.parts.map(function (p) { return p.n + ' ' + inr(p.gross); }).join(' · ') + (l.tds ? ' · TDS ' + inr(l.tds) : '') : '';
+      o += '<div class="row"><span class="rl"><span>' + esc(l.what) + '</span><span class="sub">' + day(l.k) + (l.q ? ' · ' + esc(l.q) : '') + (sub ? '<br>' + esc(sub) : '') + '</span></span><b class="num">' + inr(l.net) + '</b></div>';
+    });
+  });
+  o += '<p class="note" style="font-size:12px">Every payout received, net of TDS.' + (x.id === 'reit' ? ' SPV debt repayment returns capital; interest and dividends with TDS are taxable.' : '') + '</p></section>';
+  return o + '</main>';
+}
+
+/* ---------- Payslips ---------- */
+function payTable(earn, ded, gross, net, label) {
+  return '<section class="card"><p class="sh" style="margin-bottom:4px">Earnings' + (label ? ' · ' + label : '') + '</p>' + earn.map(function (x) { return '<div class="row"><span>' + esc(x[0]) + '</span><span class="num">' + inr(x[1]) + '</span></div>'; }).join('') + '<div class="row" style="font-weight:700"><span>Gross</span><span class="num">' + inr(gross) + '</span></div>' +
+    '<p class="sh" style="margin:16px 0 4px">Deductions</p>' + ded.map(function (x) { return '<div class="row"><span>' + esc(x[0]) + '</span><span class="num">' + inr(x[1]) + '</span></div>'; }).join('') + '<div class="row" style="font-weight:700"><span>Net pay</span><span class="num">' + inr(net) + '</span></div></section>';
+}
+function splitBar(gross, tds, net) {
+  var other = gross - tds - net;
+  return '<div style="display:flex;height:12px;gap:2px;border-radius:4px;overflow:hidden;margin-top:14px" role="img" aria-label="Gross split into TDS, other deductions and net pay"><div style="width:' + (tds / gross * 100) + '%;background:var(--ink)"></div><div style="width:' + (other / gross * 100) + '%;background:var(--soft)"></div><div style="width:' + (net / gross * 100) + '%;background:var(--acc)"></div></div>' +
+    '<div class="legend"><span><span class="sw" style="background:var(--ink)"></span>Tax (TDS)</span><span><span class="sw" style="background:var(--soft)"></span>PF and other</span><span><span class="sw" style="background:var(--acc)"></span>Net pay</span></div>';
+}
+function vPayslips() {
+  var P = D.payslips || [], o = header('Salary', null, { back: true }) + '<main>';
+  if (!P.length) return o + '<p class="note">No payslips found.</p></main>';
+  var Y = P[S.payFy] || P[0], mi = S.payMonth == null || !Y.months.some(function (m) { return m.i === S.payMonth; }) ? Y.months[Y.months.length - 1].i : S.payMonth;
+  o += '<div style="display:flex;gap:8px;align-items:center"><label class="small" style="display:flex;align-items:center;gap:6px">FY <select class="sel" data-chg="payfy">' + P.map(function (y, i) { return '<option value="' + i + '"' + (i === S.payFy ? ' selected' : '') + '>' + esc(y.fy.replace('FY ', '')) + '</option>'; }).join('') + '</select></label>';
+  o += '<div class="seg" role="group" aria-label="Period" style="flex:1"><button type="button" class="' + (S.payMode === 'm' ? 'on' : '') + '" aria-pressed="' + (S.payMode === 'm') + '" data-act="paymode" data-v="m">Monthly</button><button type="button" class="' + (S.payMode === 'a' ? 'on' : '') + '" aria-pressed="' + (S.payMode === 'a') + '" data-act="paymode" data-v="a">Annual</button></div></div>';
+  var delta = function (a, b) { return b ? '<span class="' + cls(a - b) + '">' + pct((a - b) / b, 1, true) + '</span>' : ''; };
+  if (S.payMode === 'm') {
+    var m = Y.months.find(function (x) { return x.i === mi; }), idx = Y.months.indexOf(m), prev = idx > 0 ? Y.months[idx - 1] : null;
+    o += '<div class="mchips">' + Y.months.map(function (x) { return '<button type="button" class="' + (x.i === mi ? 'on' : '') + '" aria-pressed="' + (x.i === mi) + '" data-act="paymonth" data-v="' + x.i + '">' + FYM[x.i] + '</button>'; }).join('') + '</div>';
+    var yr = mi < 9 ? Y.y : Y.y + 1, vsP = prev ? ' vs ' + FYM[prev.i] : '';
+    o += '<section class="card"><h2 class="ttl">' + ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'][mi] + ' ' + yr + '</h2><div class="stats">' +
+      stat('Gross pay', inr(m.gross), prev ? (m.gross === prev.gross ? 'same as ' + FYM[prev.i] : delta(m.gross, prev.gross) + vsP) : '') + stat('Tax', inr(m.tds), pct(m.tds / m.gross) + ' of gross') + stat('Net pay', inr(m.net), prev ? delta(m.net, prev.net) + vsP : pct(m.net / m.gross) + ' of gross') + '</div>' + splitBar(m.gross, m.tds, m.net) + '</section>';
+    o += payTable(m.earn, m.ded, m.gross, m.net);
+  } else {
+    var lastI = Y.months[Y.months.length - 1].i, complete = Y.months.length >= 12;
+    var tot = function (ms, k) { return sum(ms.map(function (x) { return x[k]; })); };
+    var g = tot(Y.months, 'gross'), t = tot(Y.months, 'tds'), n = tot(Y.months, 'net');
+    // Like for like: the previous year up to the same month
+    var prevY = P[S.payFy + 1], pm = prevY ? prevY.months.filter(function (x) { return x.i <= lastI; }) : [];
+    var pg = pm.length ? tot(pm, 'gross') : null, pt = pm.length ? tot(pm, 'tds') : null, pn = pm.length ? tot(pm, 'net') : null;
+    var span = 'Apr to ' + FYM[lastI], vs = prevY ? ' vs ' + prevY.fy.replace('FY ', '') : '';
+    o += '<section class="card"><h2 class="ttl">Salary · ' + esc(Y.fy) + (complete ? '' : ' · ' + span) + '</h2><div class="stats">' +
+      stat('Gross pay', inrC(g), pg ? delta(g, pg) + vs : Y.months.length + ' payslips') + stat('Tax', inrC(t), pt ? delta(t, pt) + vs : pct(t / g) + ' of gross') + stat('Net pay', inrC(n), pn ? delta(n, pn) + vs : pct(n / g) + ' of gross') + '</div>' + splitBar(g, t, n);
+    if (pg) o += '<p class="note">' + (complete ? 'Full year' : span) + ' against the same months of ' + esc(prevY.fy) + ': gross ' + inr(g - pg, true) + ', tax ' + inr(t - pt, true) + ', net ' + inr(n - pn, true) + '.</p>';
+    var vals = FYM.map(function (_, i) { var x = Y.months.find(function (m) { return m.i === i; }); return x ? x.gross : 0; });
+    o += '<div style="margin-top:14px">' + bars(vals, { labels: FYM, label: 'Gross pay by month' }) + '</div></section>';
+    var E = {}, Dd = {};
+    Y.months.forEach(function (x) { x.earn.forEach(function (r) { E[r[0]] = (E[r[0]] || 0) + r[1]; }); x.ded.forEach(function (r) { Dd[r[0]] = (Dd[r[0]] || 0) + r[1]; }); });
+    o += payTable(Object.keys(E).map(function (k) { return [k, E[k]]; }), Object.keys(Dd).map(function (k) { return [k, Dd[k]]; }), g, n, complete ? 'full year' : span);
+  }
+  return o + '</main>';
+}
+
+/* ---------- Spend ---------- */
+function vSpend() {
+  var X = D.spend || {}, o = header('Spend', X.month ? X.month + ' · day ' + X.day + ' of ' + X.dim : null) + '<main>';
+  if (X.month) {
+    var vsAvg = X.thisMonth - X.monthAvg, w = X.monthAvg ? Math.min(100, X.thisMonth / X.monthAvg * 100) : 0, we = X.monthAvg ? Math.min(100, X.estMonth / X.monthAvg * 100) : 0;
+    o += '<section class="card"><h2 class="ttl" style="margin-bottom:10px">Spent in ' + esc(X.month) + ' so far</h2><div class="big" style="font-size:30px">' + inr(X.thisMonth) + '</div>';
+    o += '<span class="trk" style="height:8px;margin-top:12px" role="img" aria-label="Spend so far against the monthly average, with the month\'s estimate marked"><span class="fil ' + (vsAvg > 0 ? 'over' : '') + '" style="width:' + w + '%"></span><span class="tick" style="left:' + we + '%;height:14px"></span></span>';
+    o += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-top:6px"><span>Bar: so far against the monthly average</span><span>Tick: month estimate</span></div>';
+    o += '<div class="stats" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">' +
+      stat(X.month + ', est.', inr(X.estMonth), 'fixed ' + inrC(X.fixedNow) + ' + rest at pace') +
+      stat('Monthly average', inr(X.monthAvg), esc(X.fy)) +
+      stat('So far vs average', '<span class="' + (vsAvg > 0 ? 'neg' : 'pos') + '">' + inr(vsAvg, true) + '</span>', pct(X.monthAvg ? vsAvg / X.monthAvg : 0, 1, true)) + '</div>';
+    o += '<p class="note" style="padding-top:8px;border-top:1px solid var(--line)">' + esc(X.month) + ' has used ' + pct(X.monthAvg ? X.thisMonth / X.monthAvg : 0, 0) + ' of an average month with ' + pct(1 - X.pace, 0) + ' of the month to go. Year total ' + inrC(X.ytdPlanned) + ' includes fixed costs already filled in for later months.</p></section>';
+    var yr = S.spendView === 'y', cats = X.cats.slice().sort(function (a, b) { return (yr ? b.year - a.year : b.act - a.act); });
+    var tot = sum(cats.map(function (c) { return yr ? c.year : c.act; }));
+    o += '<section class="card" style="padding-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:10px"><h2 class="ttl">Categories</h2><div class="seg" role="group" aria-label="Period" style="width:150px"><button type="button" class="' + (!yr ? 'on' : '') + '" aria-pressed="' + !yr + '" data-act="spendview" data-v="m">' + esc(X.month) + '</button><button type="button" class="' + (yr ? 'on' : '') + '" aria-pressed="' + yr + '" data-act="spendview" data-v="y">Year</button></div></div>';
+    o += '<div class="small" style="padding-bottom:4px">' + (yr ? esc(X.fy) + ', all 12 months as filled in · share of the year' : 'So far this month · usual month') + '</div>';
+    var mx = Math.max.apply(null, cats.map(function (c) { return yr ? c.year : c.act; }).concat([1]));
+    cats.forEach(function (c) {
+      var i = X.cats.indexOf(c), val = yr ? c.year : c.act;
+      o += '<button type="button" class="rowbtn" data-act="cat" data-v="' + i + '" style="flex-direction:column;align-items:stretch;gap:6px"><span style="display:flex;justify-content:space-between;width:100%"><span>' + esc(c.k) + '</span><span class="num"><b>' + inr(val) + '</b> <span class="mute">· ' + (yr ? pct(tot ? val / tot : 0, 0) : inr(c.usual)) + '</span></span></span><span class="trk"><span class="fil" style="width:' + (val / mx * 100) + '%"></span></span></button>';
+    });
+    o += '</section>';
+  }
+  var L = X.loan;
+  if (L && L.emi) {
+    var dd = daysTo(L.nextDue), bank = L.bank, ok = bank && bank.bal >= Math.max(L.emi, bank.min);
+    o += '<button type="button" class="card" data-act="page" data-v="loan" style="display:flex;flex-direction:column;gap:10px;text-align:left;cursor:pointer;width:100%"><span style="display:flex;justify-content:space-between;align-items:center;width:100%"><span class="ttl">Home loan EMI</span><span class="ms chev">chevron_right</span></span>';
+    o += '<span style="display:flex;justify-content:space-between;align-items:baseline;width:100%"><span class="big" style="font-size:22px">' + inr(L.emi) + '</span><span class="small" style="font-size:13px">Debits ' + dayShort(L.nextDue) + ' · ' + dd + (dd === 1 ? ' day' : ' days') + '</span></span>';
+    if (bank) o += '<span style="display:flex;align-items:center;gap:8px;font-size:13px;padding-top:8px;border-top:1px solid var(--line);width:100%"><span class="ms ' + (ok ? 'pos' : 'amb') + '" style="font-size:18px">' + (ok ? 'check_circle' : 'error') + '</span><span>' + esc(bank.name) + ' <b class="num">' + inr(bank.bal) + '</b> <span class="mute">' + (ok ? 'covers it.' : 'is below ' + inr(bank.min) + '.') + ' Alert fires below ' + inr(bank.min) + ' in the ' + bank.daysBefore + ' days before.</span></span></span>';
+    o += '</button>';
+  }
+  var R = X.rewards;
+  if (R) {
+    o += '<section class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px"><h2 class="ttl">Rewards and balances</h2><b class="num" style="font-size:13px">' + inr(R.total) + '</b></div>';
+    if (R.programmes.length) o += '<p class="sh" style="margin:6px 0 0">Points, in rupees</p>';
+    R.programmes.forEach(function (p, i) { o += '<button type="button" class="rowbtn" data-act="reward" data-v="' + i + '"><span class="rl"><span>' + esc(p.n) + ' points</span><span class="sub">' + grp(p.pts) + ' points available</span></span><span class="rr"><b class="num">' + inr(p.val) + '</b><span class="ms chev">chevron_right</span></span></button>'; });
+    if (R.balances.length) o += '<p class="sh" style="margin:12px 0 0">Vouchers and wallets</p>';
+    R.balances.forEach(function (b) { o += '<div class="row"><span class="rl"><span>' + esc(b.n) + '</span><span class="sub">' + esc(b.sub) + (b.exp ? (b.lapsed ? ' · lapsed ' + day(b.exp) : ' · expires ' + day(b.exp)) : '') + '</span></span><b class="num ' + (b.lapsed ? 'mute' : '') + '"' + (b.lapsed ? ' style="text-decoration:line-through"' : '') + '>' + inr(b.val) + '</b></div>'; });
+    if (R.months.length) {
+      o += '<div style="padding-top:10px;border-top:1px solid var(--line);margin-top:4px"><p class="sh" style="margin-bottom:6px">Expiring · earliest 3 months</p><div class="stats">' + R.months.map(function (m) { return '<div style="display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:6px;background:var(--amberbg);color:var(--amber);min-width:0"><span style="font-size:12px;font-weight:700">' + esc(m.m) + '</span><span class="num" style="font-size:15px;font-weight:800">' + inr(m.val) + '</span><span style="font-size:11px">' + esc((function () { var g = {}; m.items.forEach(function (x) { g[x.n] = g[x.n] || { pts: 0, has: false }; if (x.pts) { g[x.n].pts += x.pts; g[x.n].has = true; } }); return Object.keys(g).map(function (k) { return k + (g[k].has ? ' ' + grp(g[k].pts) + ' pts' : ''); }).join(', '); })()) + '</span></div>'; }).join('') + '</div>';
+      var first = R.months[0]; o += '<p class="note">' + inr(first.val) + ' lapses first, in ' + esc(first.m) + '.</p></div>';
+    }
+    o += '</section>';
+  }
+  return o + '</main>';
+}
+
+/* ---------- Home loan ---------- */
+function amort(bal, rate, emi) { var r = rate / 12, n = 0, it = 0; while (bal > 0.5 && n < 600) { var i = bal * r, p = emi - i; if (p <= 0) return null; bal -= Math.min(bal, p); it += i; n++; } return { n: n, it: it }; }
+function vLoan() {
+  var L = D.loan, o = header('Home loan', L ? L.provider + (L.firstEmi ? ' · first EMI ' + monYr(L.firstEmi) : '') : null, { back: true }) + '<main>';
+  if (!L) return o + '<p class="note">No home loan found.</p></main>';
+  var repaid = L.sanctioned ? 1 - L.outstanding / L.sanctioned : null;
+  var left = L.sanctioned ? L.outstanding / L.sanctioned : null;
+  o += '<section class="card"><h2 class="ttl">Loan details</h2><span class="small">Outstanding</span><div class="big" style="font-size:30px;margin:2px 0 2px">' + inr(L.outstanding) + '</div>' + (left != null ? '<span class="small">' + pct(left) + ' of the ' + inrC(L.sanctioned) + ' sanctioned is left</span>' : '');
+  if (left != null) o += '<span class="trk" style="height:10px;margin-top:12px" role="img" aria-label="Sanctioned amount split into repaid and outstanding"><span class="fil" style="width:' + (repaid * 100) + '%;background:var(--pos)"></span><span style="position:absolute;top:0;bottom:0;left:calc(' + (repaid * 100) + '% + 2px);right:0;border-radius:999px;background:var(--acc)"></span></span>' +
+    '<div class="legend"><span><span class="sw" style="background:var(--pos)"></span>Repaid</span><span><span class="sw" style="background:var(--acc)"></span>Left</span></div>' +
+    '<div class="stats" style="margin-top:12px">' + stat('Sanctioned', inrC(L.sanctioned), '100%') + stat('Repaid', inrC(L.sanctioned - L.outstanding), pct(repaid), 'pos') + stat('Left', inrC(L.outstanding), pct(left)) + '</div>';
+  var rc = L.lastRateChange;
+  o += '<div class="kvg" style="padding-top:12px;margin-top:12px;border-top:1px solid var(--line)">' +
+    '<div class="kv"><span>Rate</span><span class="num">' + pct(L.rate, 2) + '</span>' + (rc ? '<span style="font-size:12px;color:var(--mute);font-weight:400">from ' + pct(rc.from, 2) + ' on ' + dayShort(rc.k) + '</span>' : '') + '</div>' +
+    '<div class="kv"><span>EMI · ' + L.emiDay + 'th</span><span class="num">' + inr(L.emi) + '</span></div>' +
+    '<div class="kv"><span>EMIs left</span><span class="num">' + (L.monthsLeft != null && isFinite(L.monthsLeft) ? L.monthsLeft + (L.ends ? ' · ends ' + L.ends : '') : '—') + '</span></div>' +
+    '<div class="kv"><span>Interest left</span><span class="num">' + inr(L.interestLeft) + '</span></div>' +
+    '<div class="kv"><span>Prepaid to date</span><span class="num">' + inr(L.prepaid) + '</span></div>' +
+    '<div class="kv"><span>Interest paid to date</span><span class="num">' + inr(L.interestPaid) + '</span></div></div>';
+  var base = amort(L.outstanding, L.rate, L.emi), pp = 300000, after = L.outstanding > pp ? amort(L.outstanding - pp, L.rate, L.emi) : null;
+  if (base && after) o += '<p class="note" style="padding-top:10px;border-top:1px solid var(--line)">A <b class="num" style="color:var(--ink)">' + inr(pp) + '</b> prepayment now removes ' + (base.n - after.n) + ' EMIs and <b class="num" style="color:var(--ink)">' + inrC(base.it - after.it) + '</b> of interest.</p>';
+  o += '</section>';
+  if (L.bank) {
+    var ok = L.bank.bal >= Math.max(L.emi, L.bank.min);
+    o += '<section class="card"><h2 class="ttl" style="margin-bottom:10px">Linked bank</h2><div class="row" style="border:0;padding-top:0"><b>' + esc(L.bank.name) + '</b><span class="big" style="font-size:18px">' + inr(L.bank.bal) + '</span></div>';
+    o += '<div style="display:flex;align-items:center;gap:8px;font-size:13px;padding-top:8px;border-top:1px solid var(--line)"><span class="ms ' + (ok ? 'pos' : 'amb') + '" style="font-size:18px">' + (ok ? 'check_circle' : 'error') + '</span><span>' + (ok ? 'Covers the ' + dayShort(L.nextDue) + ' EMI with <b class="num">' + inr(L.bank.bal - L.emi) + '</b> spare.' : 'Top up before ' + dayShort(L.nextDue) + '.') + '</span></div>';
+    o += '<p class="note" style="font-size:12px">An alert shows on Home if this balance is below ' + inr(L.bank.min) + ' in the ' + L.bank.daysBefore + ' days before the EMI.</p></section>';
+  }
+  var paidN = L.events.filter(function (e) { return e.type === 'emi'; }).length, asc = S.loanSort === 'asc';
+  o += '<section class="card" style="padding-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><h2 class="ttl">Schedule</h2><span class="small">' + paidN + ' EMIs paid</span></div>';
+  o += '<div style="display:flex;gap:8px;align-items:center"><div class="seg" role="group" aria-label="Schedule view" style="flex:1"><button type="button" class="' + (S.loanView !== 'pp' ? 'on' : '') + '" aria-pressed="' + (S.loanView !== 'pp') + '" data-act="loanview" data-v="all">All</button><button type="button" class="' + (S.loanView === 'pp' ? 'on' : '') + '" aria-pressed="' + (S.loanView === 'pp') + '" data-act="loanview" data-v="pp">Prepayments</button></div>' +
+    '<button type="button" class="sel" data-act="loansort" aria-label="Sort order" style="display:inline-flex;align-items:center;gap:4px;cursor:pointer"><span class="ms" style="font-size:18px">swap_vert</span>' + (asc ? 'Earliest first' : 'Latest first') + '</button></div>';
+  o += '<div style="display:grid;grid-template-columns:70px minmax(0,1fr) 96px;gap:10px;padding:10px 8px 0" class="th"><span>Month</span><span>Principal · interest</span><span style="text-align:right">Balance</span></div>';
+  // Default: the next 3 upcoming EMIs, then every paid line from the latest down to the first. Earliest first reverses it.
+  var upcoming = L.projection.slice(0, 3).map(function (p, i) { return { k: p.k, type: 'emi', principal: p.principal, interest: p.interest, bal: p.bal, next: i === 0, proj: true }; });
+  var rows = S.loanView === 'pp' ? L.events.filter(function (e) { return e.type === 'prepay'; }) : L.events.concat(upcoming);
+  rows = rows.slice().sort(function (x, y) { return x.k < y.k ? -1 : x.k > y.k ? 1 : 0; });
+  if (!asc) rows.reverse();
+  rows.forEach(function (e) {
+    var style = 'display:grid;grid-template-columns:70px minmax(0,1fr) 96px;gap:10px;align-items:center;padding:9px 8px;border-top:1px solid var(--line);font-size:13px;';
+    if (e.type === 'prepay') o += '<div style="' + style + 'background:var(--posbg);color:var(--pos);font-weight:700;border-radius:8px;border-top-color:transparent"><span class="num">' + monYr(e.k) + '</span><span><span class="pill" style="background:var(--pos);color:var(--card)">Prepaid</span> <span class="num">' + inr(e.amt) + '</span></span><span class="num" style="text-align:right">' + inr(e.bal) + '</span></div>';
+    else if (e.type === 'rate') o += '<div style="' + style + 'color:var(--amber);font-weight:700;font-size:12px"><span class="num">' + monYr(e.k) + '</span><span>Rate ' + pct(e.from, 2) + ' → ' + pct(e.to, 2) + '</span><span></span></div>';
+    else { var pw = e.principal + e.interest ? e.principal / (e.principal + e.interest) * 100 : 0; o += '<div style="' + style + (e.next ? 'font-weight:700;' : '') + (e.proj && !e.next ? 'color:var(--mute);' : '') + '"><span class="rl"><span class="num">' + (e.next ? dayShort(e.k) : monYr(e.k)) + '</span>' + (e.proj ? '<span class="pill ' + (e.next ? 'a' : 'm') + '" style="font-size:10px;padding:1px 6px;align-self:flex-start">' + (e.next ? 'Next' : 'Due') + '</span>' : '') + '</span><span style="display:flex;flex-direction:column;gap:4px;min-width:0"><span class="num" style="font-size:12px">P ' + inr(e.principal) + ' · I ' + inr(e.interest) + '</span><span style="display:flex;height:4px;border-radius:2px;overflow:hidden;background:var(--chip)"><span style="width:' + pw + '%;background:var(--acc)"></span></span></span><span class="num" style="text-align:right">' + inr(e.bal) + '</span></div>'; }
+  });
+  o += '<p class="note" style="font-size:12px;padding:4px 8px 0">Upcoming rows use ' + pct(L.rate, 2) + ' and the ' + inr(L.emi) + ' EMI. The bar shows the principal share.</p></section>';
+  return o + '</main>';
+}
+
+/* ---------- Invest ---------- */
+function epfSplit() {
+  var E = D.epf, ee = sum(E.split.map(function (x) { return x.ee; })), er = sum(E.split.map(function (x) { return x.er; })), pen = sum(E.split.map(function (x) { return x.pen; })), tot = ee + er + pen || 1;
+  var row = function (c, n, v) { return '<div class="row" style="font-size:13px;padding:6px 0"><span><span class="sw" style="background:' + c + '"></span>' + n + '</span><span class="num"><b>' + inr(v) + '</b> <span class="mute">· ' + pct(v / tot, 0) + '</span></span></div>'; };
+  return '<div style="padding:8px 0 4px;border-top:1px solid var(--line)"><p class="sh" style="margin:2px 0 6px">EPF split</p><div style="display:flex;height:8px;gap:2px;border-radius:4px;overflow:hidden" role="img" aria-label="EPF split by share"><div style="width:' + (ee / tot * 100) + '%;background:var(--acc)"></div><div style="width:' + (er / tot * 100) + '%;background:var(--ink)"></div><div style="width:' + (pen / tot * 100) + '%;background:var(--soft)"></div></div>' +
+    row('var(--acc)', 'Employee share', ee) + row('var(--ink)', 'Employer share', er) + row('var(--soft)', 'Pension (EPS)', pen) + '</div>';
+}
+
+function vInvest() {
+  var V = D.invest, o = header('Invest') + '<main>';
+  if (!V) return o + '</main>';
+  o += '<section class="card"><h2 class="ttl" style="margin-bottom:8px">Total assets</h2><div class="big" style="font-size:30px">' + (inr(V.total)) + '</div>';
+  o += '<div class="stats" style="padding-top:10px;margin-top:10px;border-top:1px solid var(--line)">' + stat('Since last close', V.d == null ? '—' : inrC(V.d, true), null, cls(V.d)) + (V.port ? stat('Gain, market', inrC(V.port.gain, true), 'on ' + inrC(V.port.invested), cls(V.port.gain)) + stat('Return', pct(V.port.ret), 'gain ÷ invested') : '') + '</div></section>';
+  var VIEWS = [['fn', 'Purpose'], ['cls', 'Asset class'], ['liq', 'Liquidity'], ['cust', 'Custodian']], rows = V.alloc[S.alloc] || [];
+  o += '<section class="card"><h2 class="ttl" style="margin-bottom:12px">Allocation</h2><div class="seg" role="group" aria-label="Allocation view">' + VIEWS.map(function (x) { return '<button type="button" class="' + (S.alloc === x[0] ? 'on' : '') + '" aria-pressed="' + (S.alloc === x[0]) + '" data-act="alloc" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div><div style="margin-top:10px">';
+  rows.forEach(function (r) { o += '<div style="padding:6px 0"><div style="display:flex;justify-content:space-between;gap:10px;font-size:13px"><span>' + esc(r.k) + '</span><span class="num"><b>' + (inrC(r.v)) + '</b> <span class="mute">· ' + pct(r.p) + '</span></span></div><span class="trk" style="margin-top:4px"><span class="fil" style="width:' + (r.p * 100) + '%"></span></span></div>'; });
+  if (rows.length) {
+    var line;
+    if (S.alloc === 'liq') {
+      var t1 = rows.find(function (r) { return /tier 1/i.test(r.k); }), t2 = rows.find(function (r) { return /tier 2/i.test(r.k); }), t3 = rows.find(function (r) { return /tier 3/i.test(r.k); });
+      line = (t1 ? (inrC(t1.v)) + ' (' + pct(t1.p) + ') can be had today. ' : 'Nothing is available today. ') + (t2 ? 'Another ' + (inrC(t2.v)) + ' within a few working days. ' : '') + (t3 ? (inrC(t3.v)) + ' is locked.' : '');
+    } else line = esc(rows[0].k) + ' is the largest at ' + pct(rows[0].p) + ' of assets.';
+    o += '<p class="note" style="padding-top:8px;border-top:1px solid var(--line)">' + line + '</p>';
+  }
+  o += '</div></section>';
+  o += '<section class="card" style="padding-bottom:6px"><div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px"><h2 class="ttl">By type</h2><span class="small">Value · since close</span></div>';
+  V.types.forEach(function (t) {
+    var open = S.openType === t.t;
+    o += '<button type="button" class="rowbtn" aria-expanded="' + open + '" data-act="type" data-v="' + esc(t.t) + '"><span class="rl"><b>' + esc(t.t) + '</b><span class="sub">' + t.n + (t.n === 1 ? ' holding' : ' holdings') + (t.nx ? ' · ' + t.nx + ' tracked only' : '') + '</span></span><span class="rr"><span class="rl" style="align-items:flex-end"><b class="num">' + (inr(t.val)) + '</b><span class="num ' + cls(t.d) + '" style="font-size:12px;font-weight:600">' + (t.d == null || Math.abs(t.d) < 1 ? '—' : inr(t.d, true)) + '</span></span><span class="ms chev" style="font-size:20px">' + (open ? 'expand_less' : 'expand_more') + '</span></span></button>';
+    if (open) {
+      o += '<div style="display:flex;flex-direction:column;margin:0 0 8px;padding:4px 12px;border-radius:6px;background:var(--chip)">';
+      t.holdings.forEach(function (h) { o += '<button type="button" class="rowbtn" data-act="holding" data-v="' + esc(h.id) + '" style="min-height:44px;font-size:13px"><span class="rl"><span>' + esc(h.name) + (h.excl ? ' <span class="pill m" style="font-size:11px;padding:1px 6px">Not in net worth</span>' : '') + '</span><span class="sub" style="font-size:11px">' + esc([h.veh, h.cust].filter(Boolean).join(' · ')) + (h.xirr != null ? ' · XIRR ' + xirr(h.xirr) : '') + '</span></span><span class="rr"><b class="num' + (h.excl ? ' mute' : '') + '">' + (h.val == null ? '—' : (inr(h.val))) + '</b><span class="ms chev">chevron_right</span></span></button>'; });
+      if (t.t === 'EPF' && D.epf && D.epf.split.length) o += epfSplit();
+      o += '</div>';
+    }
+  });
+  return o + '</section></main>';
+}
+
+/* ---------- Holding ---------- */
+function vHolding() {
+  var h = D.holdings[S.hid], o = header('', null, { back: true }) + '<main style="padding-top:0">';
+  if (!h) return o + '<p class="note">Holding not found.</p></main>';
+  o += '<div style="display:flex;flex-direction:column;gap:6px;padding:0 4px"><h1>' + esc(h.name) + '</h1><div style="display:flex;gap:6px;flex-wrap:wrap">' + [h.cls, h.cat, h.veh].filter(Boolean).map(function (c) { return '<span class="chip">' + esc(c) + '</span>'; }).join('') + (h.excl ? '<span class="pill a">Not in net worth</span>' : '') + '</div>';
+  var inv0 = h.lots ? h.lots.invested : h.cost && h.cost.invested ? h.cost.invested : null, g0 = inv0 != null && h.val != null ? h.val - inv0 : null;
+  o += '<div style="display:flex;flex-direction:column;gap:4px;padding-top:4px"><span class="big" style="font-size:30px">' + (h.val == null ? '—' : inr(h.val)) + '</span><span class="num" style="font-size:14px;font-weight:600;color:var(--mute)">' +
+    [g0 != null ? 'Gain <span class="' + cls(g0) + '">' + inr(g0, true) + ' (' + pct(inv0 ? g0 / inv0 : 0, 1, true) + ')</span>' : '', h.xirr != null ? 'XIRR <span style="color:var(--ink)">' + xirr(h.xirr) + '</span>' : ''].filter(Boolean).join(' · ') + '</span></div></div>';
+  if (h.excl) o += '<div class="box a" style="margin:0">Tracked here only. Its value is left out of net worth, total assets and every other figure in the app.' + (h.val == null ? ' The sheet\'s value for it could not be read (row ' + h.row + ').' : '') + '</div>';
+  var step = 0, S2 = function (t, right) { step++; return '<div style="display:flex;justify-content:space-between;align-items:center"><h2 class="hd"><span class="step">' + 'ABCDEF'[step - 1] + '</span>' + t + '</h2>' + (right || '') + '</div>'; };
+  var tax = typeof h.taxation === 'number' ? 'Equity rates' : h.taxation;
+  var px = function (v) { return v == null || isNaN(v) ? null : v < 1000 ? '₹' + v.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : inr(v); };
+  var kv = [['Custodian', h.cust], ['Vehicle', h.veh], ['Liquidity', h.liq], ['Purpose', h.fn], ['Goal', h.note], ['Taxation', tax]];
+  if (h.ledger && h.ledger.kind === 'units') { kv.push(['Units', h.ledger.units.toLocaleString('en-IN', { maximumFractionDigits: 3 }) + (h.ledger.unit === 'g' ? ' g' : '')]); kv.push(['Price now', px(h.ledger.price)]); }
+  else if (h.cost) { kv.push(['Units', h.cost.units != null ? h.cost.units.toLocaleString('en-IN', { maximumFractionDigits: 3 }) : null]); kv.push(['Price now', px(h.cost.price)]); }
+  if (h.cost) kv.push(['Average cost', px(h.cost.buy)]);
+  if (h.lots) kv.push(['First buy', day(h.lots.first)]);
+  var RW = D.spend && D.spend.rewards, pgi = RW ? RW.programmes.findIndex(function (x) { return x.holdingId === h.id; }) : -1;
+  if (pgi >= 0) {
+    var Pg = RW.programmes[pgi];
+    o += '<section class="card"><h2 class="ttl">Points</h2><div class="stats">' + stat('Available', inr(Pg.val)) + stat('Points', grp(Pg.pts), '× ₹' + (Pg.rate || 0).toFixed(2)) + stat('Next expiry', Pg.nextExp ? monYr(Pg.nextExp) : '—', Pg.nextPts ? grp(Pg.nextPts) + ' pts' : '') + '</div>' +
+      '<button type="button" class="rowbtn" data-act="reward" data-v="' + pgi + '" style="margin-top:6px;border-top:1px solid var(--line);border-bottom:0"><span>Earnings, redemptions and expiry</span><span class="ms chev">chevron_right</span></button></section>';
+  }
+  o += '<section class="card" style="display:flex;flex-direction:column;gap:12px">' + S2('Details') + '<div class="kvg">' + kv.filter(function (x) { return x[1] != null && x[1] !== ''; }).map(function (x) { return '<div class="kv"><span>' + esc(x[0]) + '</span><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div></section>';
+  if (h.excl) return o + '</main>';
+  if (h.type === 'EPF' && D.epf) o += vEpf(S2, h);
+  var inv = h.lots ? h.lots.invested : h.cost ? h.cost.invested : null;
+  if (h.type !== 'EPF') {
+    o += '<section class="card" style="display:flex;flex-direction:column;gap:12px">' + S2('Performance') + '<div class="stats">' + stat('Invested', inv != null ? inrC(inv) : '—') + stat('Gain', inv != null ? inrC(h.val - inv, true) : '—', inv ? pct((h.val - inv) / inv, 1, true) : null, inv != null ? cls(h.val - inv) : '') + stat('XIRR', xirr(h.xirr), [h.beatsFd ? 'FD ' + (h.beatsFd === 'Yes' ? 'beaten' : 'not beaten') : '', h.beatsCpi ? 'CPI ' + (h.beatsCpi === 'Yes' ? 'beaten' : 'not beaten') : ''].filter(Boolean).join(' · ')) + '</div>';
+    if (h.investedByYear && h.investedByYear.length) {
+      var vals = h.investedByYear.map(function (x) { return x.v; }).concat([h.val]), labels = h.investedByYear.map(function (x) { return "'" + String(x.y).slice(2); }).concat(['Now']);
+      o += bars(vals, { labels: labels, hi: vals.length - 1, label: 'Money in by year end, and value now' }) + '<div class="legend"><span><span class="sw" style="background:var(--soft)"></span>Money in, year end</span><span><span class="sw" style="background:var(--acc)"></span>Value now</span></div>';
+    }
+    o += '</section>';
+  }
+  if (h.fdCompare) {
+    var F = h.fdCompare, gain = h.val - F.invested, fdGain = F.fdValue - F.invested, fdNet = F.fdAfterTax - F.invested, E = h.exitTax, net = E ? E.net : gain, mx = Math.max(h.val, F.fdValue, F.invested);
+    var info = E ? '<button type="button" class="ib" aria-label="Exit tax if sold today" data-act="exittax" style="width:40px;height:40px;margin:-8px -10px -8px 0"><span class="ms" style="font-size:20px">info</span></button>' : '';
+    o += '<section class="card" style="display:flex;flex-direction:column;gap:12px">' + S2('Against a fixed deposit', info) + '<p class="small" style="margin:-4px 0 0">Same dates and amounts, in an FD at ' + pct(F.rate, 2) + '</p>';
+    o += '<div style="display:grid;grid-template-columns:76px minmax(0,1fr) 96px;gap:8px;align-items:center;font-size:13px" role="img" aria-label="Value now against an FD"><span>This holding</span><div style="height:10px;border-radius:2px;background:var(--acc);width:' + (h.val / mx * 100) + '%"></div><b class="num" style="text-align:right">' + (inr(h.val)) + '</b><span>FD</span><div style="height:10px;border-radius:2px;background:var(--ink);opacity:.45;width:' + (F.fdValue / mx * 100) + '%"></div><b class="num" style="text-align:right">' + (inr(F.fdValue)) + '</b><span class="mute">Invested</span><div style="height:10px;border-radius:2px;background:var(--soft);width:' + (F.invested / mx * 100) + '%"></div><span class="num mute" style="text-align:right">' + (inr(F.invested)) + '</span></div>';
+    o += '<div><div style="display:grid;grid-template-columns:minmax(0,1fr) 96px 96px;gap:8px;padding-bottom:6px;border-bottom:1px solid var(--line)" class="th"><span></span><span style="text-align:right">This</span><span style="text-align:right">FD</span></div>' +
+      [['Gain', inr(gain), inr(fdGain), 400], ['Tax if sold today', E ? inr(E.tax) : '—', inr(fdGain - fdNet), 400], ['Gain after tax', E ? inr(net) : '—', inr(fdNet), 700]].map(function (r) { return '<div style="display:grid;grid-template-columns:minmax(0,1fr) 96px 96px;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;font-weight:' + r[3] + '"><span>' + r[0] + '</span><span class="num" style="text-align:right">' + r[1] + '</span><span class="num mute" style="text-align:right">' + r[2] + '</span></div>'; }).join('') + '</div>';
+    o += '<p class="note" style="margin:0">' + (E ? (net >= fdNet ? 'After tax, ahead of the FD by ' : 'After tax, behind the FD by ') + '<b class="num" style="color:var(--ink)">' + inr(Math.abs(net - fdNet)) + '</b>. ' + (E.tax ? 'Selling today costs ' + inr(E.tax) + ' in tax, ' + pct(E.gross > 0 ? E.tax / E.gross : 0, 1) + ' of the gain.' : 'No tax on exit.') : '') + ' FD interest is taxed each year at ' + pct(F.marginal, 2) + '.</p></section>';
+  }
+  if (h.ledger) o += vLedger(S2, h, px);
+  return o + '</main>';
+}
+function vLedger(S2, h, px) {
+  var L = h.ledger, o = '<section class="card" style="display:flex;flex-direction:column;gap:6px;padding-bottom:10px">' + S2('Ledger', '<span class="small">' + L.lines.length + (L.lines.length === 1 ? ' entry' : ' entries') + '</span>');
+  if (L.kind === 'cash') {
+    o += '<div class="stats" style="margin:4px 0 6px">' + stat('Deposited', inrC(L.deposits)) + stat('Interest credited', inrC(L.interest)) + stat('Value now', (inrC(h.val))) + '</div>';
+    (S.ledgerAll ? L.lines : L.lines.slice(0, 12)).forEach(function (l) { o += '<div class="row"><span class="rl"><span>' + esc(l.side) + '</span><span class="sub">' + day(l.k) + ' · held ' + grp(l.days) + ' days</span></span><b class="num' + (l.side === 'Interest' ? ' pos' : '') + '">' + (l.amt == null ? '—' : inr(l.amt)) + '</b></div>'; });
+    if (!S.ledgerAll && L.lines.length > 12) o += '<button type="button" class="rowbtn" data-act="ledgerall" style="justify-content:center;font-weight:700;color:var(--acc)">Show all ' + L.lines.length + ' entries</button>';
+    return o + '<p class="note" style="font-size:12px;margin-top:6px">' + esc(L.ruleNote) + '</p></section>';
+  }
+  var lines = S.ledgerAll ? L.lines : L.lines.slice(0, 12), more = L.lines.length - lines.length;
+  var unit = L.unit === 'g' ? ' g' : ' units', q = function (n) { return n.toLocaleString('en-IN', { maximumFractionDigits: 3 }); };
+  var tag = function (t) { return '<span class="pill ' + (t === 'LT' ? 'g' : t === 'ST' ? 'a' : 'm') + '" style="font-size:11px;padding:1px 6px;align-self:flex-start">' + (t === 'LT' ? 'Long term' : t === 'ST' ? 'Short term' : t) + '</span>'; };
+  var G = 'display:grid;grid-template-columns:96px minmax(0,1fr) 92px;gap:10px;align-items:start';
+  // One price applies to every lot, so it sits above the list once
+  o += '<div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 10px;border-radius:8px;background:var(--chip);font-size:13px"><span class="mute">Price now</span><b class="num">' + px(L.price) + (L.unit === 'g' ? ' a gram' : ' a unit') + '</b></div>';
+  o += '<div class="th" style="' + G + ';padding:6px 0;border-bottom:1px solid var(--line)"><span>Bought</span><span>Units × price</span><span style="text-align:right">Value · gain</span></div>';
+  lines.forEach(function (l) {
+    if (l.side !== 'Buy') {
+      o += '<div class="row" style="' + G + ';color:var(--mute);font-size:13px"><span class="rl"><span>' + day(l.k) + '</span><span class="sub">' + (l.side === 'Charge' ? 'Charge' : 'Sold') + '</span></span><span class="num" style="white-space:normal">' + q(l.qty || 0) + unit + (l.unitCost ? ' × ' + px(l.unitCost) : '') + '</span><span class="num" style="text-align:right">' + (l.cost != null ? inr(l.cost) : '') + '</span></div>';
+      return;
+    }
+    var gone = l.left <= 1e-9, part = !gone && l.left < l.qty - 1e-9, costLeft = l.cost * l.left / l.qty, gp = costLeft ? l.gain / costLeft : null;
+    o += '<div class="row" style="' + G + (gone ? ';color:var(--mute)' : '') + '"><span class="rl" style="gap:4px"><span style="font-size:14px">' + day(l.k) + '</span>' + (gone ? '<span class="sub">Fully sold</span>' : tag(l.term)) + '</span>' +
+      '<span class="rl"><span class="num" style="font-size:14px;white-space:normal">' + q(l.qty) + unit + ' × ' + px(l.unitCost) + '</span><span class="sub num">= ' + inr(l.cost) + (part ? ' · ' + q(l.left) + unit + ' left' : '') + '</span></span>' +
+      '<span class="rl" style="align-items:flex-end"><b class="num" style="font-size:14px">' + (gone ? '—' : inr(l.value)) + '</b>' + (gone || gp == null ? '' : '<span class="num ' + cls(l.gain) + '" style="font-size:12px;font-weight:600">' + inr(l.gain, true) + ' (' + (Math.abs(gp) < 0.0005 ? '0.0%' : pct(gp, 1, true)) + ')</span>') + '</span></div>';
+  });
+  if (more > 0) o += '<button type="button" class="rowbtn" data-act="ledgerall" style="justify-content:center;font-weight:700;color:var(--acc)">Show all ' + L.lines.length + ' entries</button>';
+  return o + '<p class="note" style="font-size:12px;margin-top:6px">Value = units left × price now. Gain is on the cost of the units left. ' + esc(L.ruleNote) + '</p></section>';
+}
+function vEpf(S2, h) {
+  var E = D.epf, P = E.passbook, o = '';
+  var ee = sum(E.split.map(function (x) { return x.ee; })), er = sum(E.split.map(function (x) { return x.er; })), pen = sum(E.split.map(function (x) { return x.pen; })), tot = ee + er + pen;
+  o += '<section class="card" style="display:flex;flex-direction:column;gap:12px">' + S2('Breakdown') + '<div class="stats">' + stat('Employee share', inrC(ee), pct(tot ? ee / tot : 0, 0)) + stat('Employer share', inrC(er), pct(tot ? er / tot : 0, 0)) + stat('Pension (EPS)', inrC(pen), pct(tot ? pen / tot : 0, 0)) + '</div>';
+  o += '<div style="display:flex;height:12px;gap:2px;border-radius:2px;overflow:hidden" role="img" aria-label="Balance split by share"><div style="width:' + (ee / tot * 100) + '%;background:var(--acc)"></div><div style="width:' + (er / tot * 100) + '%;background:var(--ink)"></div><div style="width:' + (pen / tot * 100) + '%;background:var(--soft)"></div></div>';
+  o += '<div><div style="display:grid;grid-template-columns:minmax(0,1fr) 78px 78px 78px;gap:6px;padding-bottom:6px;border-bottom:1px solid var(--line)" class="th"><span>Employer</span><span style="text-align:right">Employee</span><span style="text-align:right">Employer</span><span style="text-align:right">Pension</span></div>' +
+    E.split.map(function (x) { return '<div style="display:grid;grid-template-columns:minmax(0,1fr) 78px 78px 78px;gap:6px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px"><span>' + esc(x.n) + '</span><span class="num" style="text-align:right">' + inr(x.ee) + '</span><span class="num" style="text-align:right">' + inr(x.er) + '</span><span class="num" style="text-align:right">' + inr(x.pen) + '</span></div>'; }).join('') + '</div>';
+  o += '<p class="note" style="margin:0">Pension sits with EPS and is paid as a monthly pension, not with the PF withdrawal.</p></section>';
+  if (P) {
+    o += '<section class="card" style="display:flex;flex-direction:column;gap:12px">' + S2('Passbook') + '<div class="kvg">' +
+      [['Your contributions', P.ee], ['Employer contributions', P.er], ['Interest on your share', P.intEe], ['Interest on employer share', P.intEr], ['Withdrawn, your share', -P.wdEe], ['Withdrawn, employer share', -P.wdEr]].map(function (x) { return '<div class="kv"><span>' + x[0] + '</span><span class="num ' + (x[1] < 0 ? 'neg' : '') + '">' + inr(x[1]) + '</span></div>'; }).join('') + '</div>';
+    o += '<p class="small" style="margin:0">' + P.months + ' monthly credits. Pension credits, ' + inr(P.pen) + ', go to EPS. Tap a year for its entries.</p>';
+    o += '<div><div style="display:grid;grid-template-columns:62px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 16px;gap:6px;padding-bottom:6px;border-bottom:1px solid var(--line)" class="th"><span>Year</span><span style="text-align:right">Yours</span><span style="text-align:right">Employer</span><span style="text-align:right">Interest</span><span></span></div>';
+    P.fys.forEach(function (f) { o += '<button type="button" class="rowbtn" data-act="epffy" data-v="' + esc(f.fy) + '" style="display:grid;grid-template-columns:62px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 16px;gap:6px;font-size:13px;min-height:40px"><span>' + esc(f.fy.replace('FY ', '')) + '</span><span class="num" style="text-align:right">' + inr(f.ee) + '</span><span class="num" style="text-align:right">' + inr(f.er) + '</span><span class="num pos" style="text-align:right">' + inr(f.intEe + f.intEr) + '</span><span class="ms chev" style="font-size:16px">chevron_right</span></button>'; });
+    o += '</div><p class="note" style="margin:0">Interest is credited once a year, on 31 March.</p></section>';
+  }
+  return o;
+}
+
+/* ---------- Check ---------- */
+function ratioFmt(r) { return r.fmt === 'pct' ? pct(r.v) : r.fmt === 'months' ? r.v.toFixed(1) + ' months' : r.v.toFixed(2) + '×'; }
+var ST_LABEL = { g: 'Healthy', a: 'Borderline', r: 'Off target' };
+function ratioSay(r) {
+  var v = r.v;
+  return { sr: 'You keep ' + pct(v, 0) + ' of take-home after spending. Aim for 20% or more.', ef: 'Ready money covers ' + v.toFixed(1) + ' months of spending. Aim for 6.',
+    lq: 'Money you can reach today is ' + v.toFixed(2) + '× a year of spending. Aim for 0.15× or more.', ds: 'Loan EMIs take ' + pct(v, 0) + ' of take-home. Keep it at 30% or less.',
+    hc: 'Home and utilities take ' + pct(v, 0) + ' of gross income. Keep it at 28% or less.', da: 'Debt is ' + pct(v, 0) + ' of everything you own. Keep it at 30% or less.',
+    tr: 'Tax takes ' + pct(v, 0) + ' of gross income this year.' }[r.id] || r.sub;
+}
+function gauge(r) {
+  var B = r.band; if (!B) return '';
+  var span = B[1] - B[0], at = function (x) { return Math.max(0, Math.min(100, (x - B[0]) / span * 100)); };
+  var o = '<span style="position:relative;display:block;height:8px;border-radius:4px;background:var(--chip);margin:8px 0 4px;overflow:visible">';
+  if (B[4] != null) o += '<span style="position:absolute;top:0;bottom:0;left:' + at(B[4]) + '%;width:' + (at(B[5]) - at(B[4])) + '%;background:var(--amberbg)"></span>';
+  if (B[2] != null) o += '<span style="position:absolute;top:0;bottom:0;left:' + at(B[2]) + '%;width:' + (at(B[3]) - at(B[2])) + '%;background:var(--posbg);border-radius:4px"></span>';
+  var c = r.st === 'g' ? 'var(--pos)' : r.st === 'a' ? 'var(--amber)' : r.st === 'r' ? 'var(--neg)' : 'var(--ink)';
+  o += '<span style="position:absolute;top:-4px;left:calc(' + at(r.v) + '% - 8px);width:16px;height:16px;border-radius:50%;background:' + c + ';border:3px solid var(--card)"></span></span>';
+  return o;
+}
+function insGroups() {
+  var G = [], C = D.check || {};
+  (C.insurance || []).forEach(function (x, i) {
+    var g = G.find(function (y) { return y.person === x.person && y.cat === x.cat; });
+    if (!g) { g = { person: x.person, cat: x.cat, items: [], cover: 0 }; G.push(g); }
+    g.items.push(x); g.cover += x.cover;
+  });
+  return G;
+}
+function vCheck() {
+  var C = D.check || { ratios: [], insurance: [], checks: [] }, issues = C.ratios.filter(function (r) { return r.st && r.st !== 'g'; }).length;
+  var o = header('Check', issues ? issues + (issues === 1 ? ' ratio needs' : ' ratios need') + ' attention' : 'All ratios healthy') + '<main>';
+  var icon = function (st) { return st === 'g' || st === true ? '<span class="ms pos" style="font-size:20px" aria-label="On target">check_circle</span>' : st === 'a' ? '<span class="ms amb" style="font-size:20px" aria-label="Borderline">error</span>' : st === 'r' || st === false ? '<span class="ms neg" style="font-size:20px" aria-label="Needs attention">error</span>' : '<span class="ms mute" style="font-size:20px" aria-hidden="true">radio_button_unchecked</span>'; };
+  var rowb = function (act, v, st, n, sub, val) { return '<button type="button" class="rowbtn" data-act="' + act + '" data-v="' + v + '" style="display:grid;grid-template-columns:22px minmax(0,1fr) auto 18px;gap:10px">' + icon(st) + '<span class="rl"><span>' + esc(n) + '</span><span class="sub">' + esc(sub) + '</span></span><b class="num" style="text-align:right">' + val + '</b><span class="ms chev">chevron_right</span></button>'; };
+  // Ratios: a label and a gauge with the healthy band, so the state reads at a glance
+  var ok = C.ratios.filter(function (r) { return r.st === 'g'; }).length, judged = C.ratios.filter(function (r) { return r.st; }).length;
+  o += '<section class="card" style="padding-bottom:6px"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 class="ttl">Personal ratios</h2><span class="pill ' + (ok === judged ? 'g' : 'a') + '">' + ok + ' of ' + judged + ' healthy</span></div>';
+  C.ratios.forEach(function (r, i) {
+    o += '<button type="button" class="rowbtn" data-act="ratio" data-v="' + i + '" style="flex-direction:column;align-items:stretch;gap:2px"><span style="display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="font-weight:600">' + esc(r.n) + '</span><span style="display:flex;align-items:center;gap:8px"><b class="num">' + ratioFmt(r) + '</b>' + (r.st ? '<span class="pill ' + r.st + '">' + ST_LABEL[r.st] + '</span>' : '<span class="pill m">For reference</span>') + '</span></span>' + gauge(r) + '<span class="small" style="text-align:left">' + esc(ratioSay(r)) + '</span></button>';
+  });
+  o += '</section>';
+  // Insurance: one row per person and kind of cover, with the total, the yearly premium and the next renewal
+  var G = insGroups(), people = [], P = C.policies || [], todayK = D.today;
+  G.forEach(function (g) { if (people.indexOf(g.person) < 0) people.push(g.person); });
+  o += '<section class="card" style="padding-bottom:6px"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 class="ttl">Insurance and coverage</h2><span class="small">' + people.length + ' people</span></div>';
+  if (P.length) {
+    var nx = P.filter(function (p) { return p.due && p.due >= todayK; }).sort(function (a, b) { return a.due < b.due ? -1 : 1; })[0];
+    var yr = Number(todayK.slice(0, 4)), paidYr = sum(P.map(function (p) { return sum(p.lines.filter(function (l) { return l.paid && l.amt != null && Number(l.k.slice(0, 4)) === yr; }).map(function (l) { return l.amt; })); }));
+    o += '<div class="stats" style="margin-bottom:6px">' + stat('Premiums in ' + yr, inr(paidYr), P.length + ' policies') +
+      (nx ? stat('Next renewal', dayShort(nx.due), esc(nx.person + ' · ' + nx.type)) + stat('Due', inr(nx.dueAmt), nx.dueEst ? 'est., last year\'s' : 'as entered') : '') + '</div>';
+    if (nx && daysTo(nx.due) <= 30) o += '<div class="box a" style="margin:6px 0 4px">' + esc(nx.provider) + ' renews in ' + daysTo(nx.due) + (daysTo(nx.due) === 1 ? ' day' : ' days') + ', on ' + day(nx.due) + '. About ' + inr(nx.dueAmt) + ' to pay.</div>';
+  }
+  people.forEach(function (pn) {
+    o += '<p class="sh" style="margin:10px 0 0">' + esc(pn) + '</p>';
+    G.forEach(function (g, gi) {
+      if (g.person !== pn) return;
+      var kind = /term/i.test(g.cat) ? 'shield_person' : /health/i.test(g.cat) ? 'health_and_safety' : 'savings';
+      var pols = g.items.map(function (x) { return x.policy != null ? P[x.policy] : null; }).filter(Boolean).filter(function (p, k, a) { return a.indexOf(p) === k; });
+      var prem = sum(pols.map(function (p) { return p.last ? p.last.amt : 0; })), due = pols.map(function (p) { return p.due; }).filter(Boolean).sort()[0];
+      var soon = due && daysTo(due) <= 30 && daysTo(due) >= 0;
+      var sub = g.items.length + (g.items.length === 1 ? ' cover' : ' covers') + (prem ? ' · ' + inr(prem) + ' a year' : '') + (due ? ' · renews ' + dayShort(due) : '');
+      o += '<button type="button" class="rowbtn" data-act="insg" data-v="' + gi + '" style="display:grid;grid-template-columns:24px minmax(0,1fr) auto 18px;gap:10px"><span class="ms" style="color:var(--acc)">' + kind + '</span><span class="rl"><span>' + esc(g.cat) + (soon ? ' <span class="pill a" style="font-size:11px;padding:1px 6px">Due ' + dayShort(due) + '</span>' : '') + '</span><span class="sub">' + esc(sub) + '</span></span><b class="num">' + inrC(g.cover) + '</b><span class="ms chev">chevron_right</span></button>';
+    });
+  });
+  if (P.length) o += '<button type="button" class="rowbtn" data-act="page" data-v="premiums" style="border-top:1px solid var(--line);border-bottom:0;font-weight:600;color:var(--acc)"><span>Premiums paid and growth</span><span class="ms chev" style="color:var(--acc)">chevron_right</span></button>';
+  o += '</section>';
+  if (C.locker) {
+    var L = C.locker, bank = (L.meta.find(function (m) { return /^bank$/i.test(m[0]); }) || [])[1], no = (L.meta.find(function (m) { return /locker number/i.test(m[0]); }) || [])[1];
+    o += '<button type="button" class="card" data-act="page" data-v="locker" style="display:flex;flex-direction:column;gap:10px;text-align:left;cursor:pointer;width:100%"><span style="display:flex;justify-content:space-between;align-items:center;width:100%"><span class="ttl" style="padding:0;margin:0;border:0">Locker</span><span class="ms chev">chevron_right</span></span>' +
+      '<span class="stats" style="width:100%">' + stat('Inside', L.items.length + ' items') + stat('Last visit', L.visits.length ? dayShort(L.visits[0].d) : '—', L.visits.length ? L.visits[0].d.slice(0, 4) : '') + stat('Locker', esc(bank || '—'), no ? 'No. ' + esc(no) : '') + '</span></button>';
+  }
+  if (D.issues && D.issues.length) o += '<div class="box r">Some parts could not be read: ' + esc(D.issues.map(function (x) { return x.part + ' (' + x.msg + ')'; }).join('; ')) + '</div>';
+  return o + '</main>';
+}
+
+/* ---------- Line chart ---------- */
+// series: [{ name, color, values: [number or null per label] }], labels: x-axis labels. Values sit on one shared scale.
+function lineChart(labels, series, opts) {
+  opts = opts || {};
+  var W = 320, H = opts.h || 150, L = 46, R = 12, T = 14, B = 24, all = [];
+  series.forEach(function (sr) { sr.values.forEach(function (v) { if (v != null) all.push(v); }); });
+  if (!all.length) return '';
+  var lo = opts.zero ? 0 : Math.min.apply(null, all), hi = Math.max.apply(null, all);
+  if (hi === lo) { hi = hi * 1.1 || 1; lo = opts.zero ? 0 : lo * 0.9; }
+  var pad = (hi - lo) * 0.12; hi += pad; if (!opts.zero) lo = Math.max(0, lo - pad);
+  var n = labels.length, x = function (i) { return n === 1 ? (L + (W - R)) / 2 : L + i * (W - L - R) / (n - 1); }, y = function (v) { return T + (1 - (v - lo) / (hi - lo)) * (H - T - B); };
+  var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="' + esc(opts.label || 'Line chart') + '" style="display:block;overflow:visible">';
+  // Axis labels: more decimals when a narrow range would print the same label twice
+  var ticks = [lo, (lo + hi) / 2, hi], tl = ticks.map(function (v) { return inrC(v); });
+  for (var dd = 3; dd <= 5 && (tl[0] === tl[1] || tl[1] === tl[2]) && !hidden(hi); dd++) tl = ticks.map(function (v) { var a = Math.abs(v); return a >= 1e7 ? '₹' + (a / 1e7).toFixed(dd) + ' Cr' : a >= 1e5 ? '₹' + (a / 1e5).toFixed(dd - 1) + ' L' : '₹' + grp(a); });
+  ticks.forEach(function (v, k) { var yy = y(v); o += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + yy + '" y2="' + yy + '" stroke="var(--line)" stroke-width="1"/><text x="' + (L - 6) + '" y="' + (yy + 3) + '" text-anchor="end" font-size="9" fill="var(--mute)">' + esc(tl[k]) + '</text>'; });
+  labels.forEach(function (lb, i) { o += '<text x="' + x(i) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="9" fill="var(--mute)">' + esc(lb) + '</text>'; });
+  series.forEach(function (sr) {
+    var pts = sr.values.map(function (v, i) { return v == null ? null : [x(i), y(v)]; }).filter(Boolean);
+    var solid = sr.estLast && pts.length > 1 ? pts.slice(0, -1) : pts, fmt = function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); };
+    if (solid.length > 1) o += '<polyline fill="none" stroke="' + sr.color + '" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" points="' + solid.map(fmt).join(' ') + '"/>';
+    if (sr.estLast && pts.length > 1) o += '<polyline fill="none" stroke="' + sr.color + '" stroke-width="2" stroke-dasharray="4 4" points="' + fmt(pts[pts.length - 2]) + ' ' + fmt(pts[pts.length - 1]) + '"/>';
+    pts.forEach(function (p, k) { var est = sr.estLast && k === pts.length - 1; if (opts.dots === false && k !== pts.length - 1) return; o += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (k === pts.length - 1 ? 3.6 : 2.6) + '" fill="' + (est ? 'var(--card)' : sr.color) + '" stroke="' + (est ? sr.color : 'var(--card)') + '" stroke-width="' + (est ? 2 : 1.5) + '"/>'; });
+  });
+  return o + '</svg>' + (series.length > 1 ? '<div class="legend">' + series.map(function (sr) { return '<span><span class="sw" style="background:' + sr.color + '"></span>' + esc(sr.name) + '</span>'; }).join('') + '</div>' : '');
+}
+var SERIES_COLOURS = ['var(--acc)', 'var(--ink)', 'var(--blue)', 'var(--pos)', 'var(--amber)', 'var(--neg)'];
+function polName(p) { return p.person + ' · ' + p.type.replace(/^health\s*-\s*/i, 'Health, ').replace(/^term$/i, 'Term'); }
+
+/* ---------- Insurance premiums ---------- */
+function vPremiums() {
+  var P = ((D.check || {}).policies || []), o = header('Insurance premiums', null, { back: true }) + '<main>';
+  if (!P.length) return o + '<p class="note">No premiums logged yet.</p></main>';
+  var paidLines = []; P.forEach(function (p) { p.lines.forEach(function (l) { if (l.paid && l.amt != null) paidLines.push({ p: p, l: l }); }); });
+  var years = paidLines.map(function (x) { return Number(x.l.k.slice(0, 4)); }).filter(function (y, k, a) { return a.indexOf(y) === k; }).sort();
+  var byYear = years.map(function (y) { return sum(paidLines.filter(function (x) { return Number(x.l.k.slice(0, 4)) === y; }).map(function (x) { return x.l.amt; })); });
+  var nx = P.filter(function (p) { return p.due && p.due >= D.today; }).sort(function (a, b) { return a.due < b.due ? -1 : 1; })[0];
+  // This calendar year is not over: renewals still to come this year are added at last year's premium, and drawn dashed
+  var yNow = Number(D.today.slice(0, 4)), pending = P.filter(function (p) { return p.due && p.due >= D.today && Number(p.due.slice(0, 4)) === yNow; });
+  var est = sum(pending.map(function (p) { return p.dueAmt || 0; })), hasNow = years[years.length - 1] === yNow;
+  if (pending.length && !hasNow) { years.push(yNow); byYear.push(0); hasNow = true; }
+  var plot = byYear.slice(); if (hasNow) plot[plot.length - 1] += est;
+  var nowPrem = sum(P.filter(function (p) { return p.last; }).map(function (p) { return p.last.amt; }));
+  var prevPrem = sum(P.map(function (p) { var pd = p.lines.filter(function (l) { return l.paid && l.amt != null; }); return pd.length > 1 ? pd[pd.length - 2].amt : (pd[0] ? pd[0].amt : 0); }));
+  var full = years.map(function (y, i) { return { y: y, v: byYear[i] }; }).filter(function (x) { return x.y < yNow; });
+  var cagr = full.length > 1 && full[0].v > 0 ? Math.pow(full[full.length - 1].v / full[0].v, 1 / (full[full.length - 1].y - full[0].y)) - 1 : null;
+  o += '<section class="card"><h2 class="ttl">Premiums paid · by year</h2><div class="stats">' + stat('Yearly premium now', inr(nowPrem), prevPrem ? '<span class="' + (nowPrem > prevPrem ? 'neg' : 'pos') + '">' + pct((nowPrem - prevPrem) / prevPrem, 1, true) + '</span> vs the year before' : '') +
+    stat('Growth a year', cagr != null ? pct(cagr, 1, true) : '—', full.length > 1 ? full[0].y + ' to ' + full[full.length - 1].y : '') + stat('Paid in all', inrC(sum(byYear)), paidLines.length + ' payments') + '</div>';
+  o += '<div style="margin-top:14px">' + lineChart(years.map(String), [{ name: 'All policies', color: 'var(--acc)', values: plot, estLast: hasNow && est > 0 }], { label: 'Premiums paid each year', zero: true }) + '</div>';
+  o += '<p class="note">' + (hasNow && est > 0 ? yNow + ' is ' + inr(byYear[byYear.length - 1]) + ' paid so far plus ' + inr(est) + ' still to renew this year, at last year\'s premium (dashed). ' : '') + 'Yearly premium now is the latest premium of every policy; growth a year is the compound rate across full years.</p>';
+  o += '</section>';
+  if (nx) o += '<section class="card"><h2 class="ttl">Next renewal</h2><div class="stats">' + stat('Date', dayShort(nx.due), nx.due.slice(0, 4) + ' · in ' + daysTo(nx.due) + ' days') + stat('Amount', inr(nx.dueAmt), nx.dueEst ? 'estimate: last premium' : 'as entered') + stat('Policy', esc(nx.type.replace(/^health\s*-\s*/i, '')), esc(nx.person + ' · ' + nx.provider)) + '</div></section>';
+  // Each policy's premium over the years, on one chart
+  var pyears = years.map(String), series = P.map(function (p, i) { return { name: polName(p), color: SERIES_COLOURS[i % SERIES_COLOURS.length], values: years.map(function (y) { var ls = p.lines.filter(function (l) { return l.paid && l.amt != null && Number(l.k.slice(0, 4)) === y; }); return ls.length ? sum(ls.map(function (l) { return l.amt; })) : null; }) }; });
+  o += '<section class="card"><h2 class="ttl">Premium growth · by policy</h2>' + lineChart(pyears, series, { label: 'Each policy\'s premium by year', h: 170 }) + '</section>';
+  o += '<section class="card" style="padding-bottom:8px"><h2 class="ttl">Policies</h2>';
+  P.forEach(function (p, i) {
+    var open = S.openPol === p.key;
+    o += '<button type="button" class="rowbtn" aria-expanded="' + open + '" data-act="pol" data-v="' + esc(p.key) + '"><span class="rl"><span><span class="sw" style="background:' + SERIES_COLOURS[i % SERIES_COLOURS.length] + '"></span>' + esc(polName(p)) + '</span><span class="sub">' + esc(p.provider) + (p.cover ? ' · cover ' + inrC(p.cover) : '') + (p.cagr != null ? ' · ' + pct(p.cagr, 1, true) + ' a year' : '') + '</span></span><span class="rr"><span class="rl" style="align-items:flex-end"><b class="num">' + (p.last ? inr(p.last.amt) : '—') + '</b><span class="sub">' + (p.due ? 'renews ' + dayShort(p.due) : '') + '</span></span><span class="ms chev">' + (open ? 'expand_less' : 'expand_more') + '</span></span></button>';
+    if (open) o += '<div style="margin:0 0 8px;padding:2px 12px;border-radius:8px;background:var(--chip)">' + polLedger(p) + '</div>';
+  });
+  return o + '<p class="note" style="font-size:12px">Each policy is a person, type and provider. Renewal is the next upcoming premium, or the day after the latest cover ends.</p></section></main>';
+}
+function polLedger(p) {
+  var G = 'display:grid;grid-template-columns:minmax(0,1fr) 84px 70px;gap:8px';
+  return '<div class="th" style="' + G + ';padding:8px 0 6px;border-bottom:1px solid var(--line)"><span>Paid on</span><span style="text-align:right">Premium</span><span style="text-align:right">Change</span></div>' +
+    p.lines.slice().reverse().map(function (l, i, arr) {
+      var prevL = arr.slice(i + 1).find(function (x) { return x.paid && x.amt != null; }), ch = l.amt != null && prevL && prevL.amt ? (l.amt - prevL.amt) / prevL.amt : null;
+      return '<div class="row" style="' + G + ';font-size:13px"><span class="rl"><span>' + day(l.k) + (l.paid ? '' : ' <span class="pill a" style="font-size:10px;padding:1px 6px">Upcoming</span>') + '</span><span class="sub">' + (l.cover ? inrC(l.cover) + ' cover' : '') + (l.end ? ' · to ' + day(l.end) : '') + '</span></span><b class="num" style="text-align:right">' + (l.amt != null ? inr(l.amt) : '—') + '</b><span class="num ' + (ch > 0.0005 ? 'neg' : ch < -0.0005 ? 'pos' : 'mute') + '" style="text-align:right">' + (ch == null ? '' : Math.abs(ch) < 0.0005 ? '0.0%' : pct(ch, 1, true)) + '</span></div>';
+    }).join('');
+}
+
+/* ---------- Locker ---------- */
+function vLocker() {
+  var L = (D.check || {}).locker, o = header('Locker', null, { back: true }) + '<main>';
+  if (!L) return o + '<p class="note">No locker log found.</p></main>';
+  var meta = function (re) { var m = L.meta.find(function (x) { return re.test(x[0]); }); return m ? m[1] : null; }, last = L.visits[0];
+  o += '<section class="card"><h2 class="ttl">Inside now</h2><div class="stats">' + stat('Items', String(L.items.length), last ? 'after the ' + dayShort(last.d) + ' visit' : '') + stat('Visits', String(L.visits.length), L.visits.length ? 'since ' + monYr(L.visits[L.visits.length - 1].d) : '') + stat('Last visit', last ? dayShort(last.d) : '—', last ? '+' + last.added.length + ' in · ' + last.removed.length + ' out' : '') + '</div>';
+  o += '<div style="margin-top:12px;padding-top:4px;border-top:1px solid var(--line)">' + L.items.map(function (it, i) { var isNew = last && last.added.indexOf(it) >= 0; return '<div class="row" style="font-size:14px"><span>' + (i + 1) + '. ' + esc(it) + '</span>' + (isNew ? '<span class="pill g">Added ' + dayShort(last.d) + '</span>' : '') + '</div>'; }).join('') + '</div></section>';
+  if (last) {
+    o += '<section class="card"><h2 class="ttl">Last visit · ' + day(last.d) + '</h2><p class="small" style="margin:0 0 8px">By ' + esc(last.by) + '</p>';
+    if (last.added.length) o += '<p class="sh" style="margin:6px 0 2px;color:var(--pos)">Put in · ' + last.added.length + '</p>' + last.added.map(function (x) { return '<div class="row" style="font-size:14px"><span>' + esc(x) + '</span></div>'; }).join('');
+    if (last.removed.length) o += '<p class="sh" style="margin:10px 0 2px;color:var(--neg)">Taken out · ' + last.removed.length + '</p>' + last.removed.map(function (x) { return '<div class="row" style="font-size:14px"><span>' + esc(x) + '</span></div>'; }).join('');
+    if (!last.added.length && !last.removed.length) o += '<p class="note">Nothing was put in or taken out.</p>';
+    o += '</section>';
+  }
+  var K = [['Bank', meta(/^bank$/i)], ['Branch', meta(/branch/i)], ['Locker number', meta(/locker number/i)], ['Size', meta(/size/i)], ['Access', [meta(/access type/i), meta(/access limit/i)].filter(Boolean).join(' · ')], ['Annual rent', meta(/rent/i) != null ? inr(meta(/rent/i)) : null], ['Allotted', meta(/allotment/i) ? day(meta(/allotment/i)) : null], ['Held for', meta(/holding period/i)]];
+  o += '<section class="card"><h2 class="ttl">Locker details</h2><div class="kvg">' + K.filter(function (k) { return k[1] != null && k[1] !== ''; }).map(function (k) { return '<div class="kv"><span>' + k[0] + '</span><span>' + esc(k[1]) + '</span></div>'; }).join('') + '</div></section>';
+  o += '<section class="card" style="padding-bottom:8px"><h2 class="ttl">Log</h2>';
+  L.visits.forEach(function (v) {
+    o += '<div class="row" style="flex-direction:column;align-items:stretch;gap:4px"><span style="display:flex;justify-content:space-between;gap:10px"><b>' + day(v.d) + '</b><span class="small">' + v.after.length + ' inside after</span></span><span class="small">By ' + esc(v.by) + '</span>' +
+      (v.added.length ? '<span style="font-size:13px"><span class="pos" style="font-weight:700">In:</span> ' + esc(v.added.join(', ')) + '</span>' : '') + (v.removed.length ? '<span style="font-size:13px"><span class="neg" style="font-weight:700">Out:</span> ' + esc(v.removed.join(', ')) + '</span>' : '') + '</div>';
+  });
+  return o + '</section></main>';
+}
+
+/* ---------- Search ---------- */
+function lev(a, b) { var m = a.length, n = b.length, prev = [], j, i; if (!m) return n; if (!n) return m; for (j = 0; j <= n; j++) prev[j] = j; for (i = 1; i <= m; i++) { var cur = [i]; for (j = 1; j <= n; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; } return prev[n]; }
+function searchIndex() {
+  var X = [];
+  Object.keys(D.holdings || {}).forEach(function (k) { var h = D.holdings[k]; X.push(['Holdings', h.name, [h.cls, h.cust, h.note].filter(Boolean).join(' · '), inrC(h.val), { act: 'holding', v: k }]); });
+  ((D.spend || {}).cats || []).forEach(function (c, i) { X.push(['Spend', c.k, 'Category · ' + (D.spend.month || ''), inr(c.act), { act: 'cat', v: i, tab: 'spend' }]); c.items.forEach(function (it) { X.push(['Spend', it.n, c.k, inr(it.v), { act: 'cat', v: i, tab: 'spend' }]); }); });
+  ((D.income || {}).sources || []).forEach(function (s) {
+    X.push(['Income and tax', s.n, 'Income source', '', s.id === 'salary' ? { act: 'payslips', v: 0 } : { act: 'source', v: s.id }]);
+    (s.lines || []).forEach(function (l) { X.push(['Income and tax', l.what, s.n + ' · ' + day(l.k), inr(l.net), { act: 'source', v: s.id }]); });
+  });
+  (D.tax || []).forEach(function (t, i) { X.push(['Income and tax', 'Computation of income', t.fy, inrC(t.liab), { act: 'taxsheet', v: i, tab: 'income' }]); });
+  (D.payslips || []).forEach(function (y, i) { X.push(['Income and tax', 'Salary', y.fy, '', { act: 'payslips', v: i }]); });
+  var C = D.check || {};
+  insGroups().forEach(function (g, i) { X.push(['Check', g.person + ' · ' + g.cat, g.items.map(function (x) { return x.by; }).join(', '), inrC(g.cover), { act: 'insg', v: i, tab: 'check' }]); });
+  ((C.locker || {}).items || []).forEach(function (it) { X.push(['Check', it, 'In the locker', '', { act: 'page', v: 'locker' }]); });
+  (C.policies || []).forEach(function (p) { X.push(['Check', p.provider, polName(p) + ' · premium', p.last ? inr(p.last.amt) : '', { act: 'page', v: 'premiums' }]); });
+  (C.ratios || []).forEach(function (r, i) { X.push(['Check', r.n, r.sub, ratioFmt(r), { act: 'ratio', v: i, tab: 'check' }]); });
+  if (D.loan) X.push(['Pages', 'Home loan', D.loan.provider, inrC(D.loan.outstanding), { act: 'page', v: 'loan' }]);
+  ((D.spend || {}).rewards || { programmes: [] }).programmes.forEach(function (p, i) { X.push(['Spend', p.n + ' reward points', grp(p.pts) + ' pts', inr(p.val), { act: 'reward', v: i, tab: 'spend' }]); });
+  return X;
+}
+// Placeholder suggestions: real names from the data, short enough to read in the bar
+function suggestions() {
+  if (S._sugg) return S._sugg;
+  var pick = [], add = function (t) { t = String(t || '').trim(); if (t && t.length <= 26 && pick.indexOf(t) < 0) pick.push(t); };
+  var hs = Object.keys(D.holdings || {}).map(function (k) { return D.holdings[k]; }).sort(function (a, b) { return (b.val || 0) - (a.val || 0); });
+  hs.slice(0, 8).forEach(function (h) { add(h.name.replace(/ - Direct.*$/i, '').replace(/\s*\(.*\)$/, '')); });
+  ((D.spend || {}).cats || []).slice(0, 4).forEach(function (c) { add(c.k); });
+  ((D.income || {}).sources || []).forEach(function (s) { add(s.n); (s.lines || []).slice(0, 2).forEach(function (l) { add(l.what); }); });
+  insGroups().forEach(function (g) { g.items.forEach(function (x) { add(x.by); }); });
+  (((D.check || {}).locker || {}).items || []).slice(0, 3).forEach(add);
+  add('Home loan');
+  for (var i = pick.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = pick[i]; pick[i] = pick[j]; pick[j] = t; }
+  return (S._sugg = pick);
+}
+function vSearch() {
+  var o = header('Search') + '<main>', q = S.q.trim().toLowerCase();
+  if (!q) {
+    o += '<p class="small" style="margin:0 4px">Search holdings, spends, payouts, policies and locker items. Try one of these:</p><div class="recent">' + suggestions().slice(0, 8).map(function (t) { return '<button type="button" data-act="setq" data-v="' + esc(t) + '">' + esc(t) + '</button>'; }).join('') + '</div>';
+    return o + '</main>';
+  }
+  var hits = [];
+  searchIndex().forEach(function (r) {
+    var hay = (r[1] + ' ' + r[2]).toLowerCase();
+    if (hay.indexOf(q) >= 0) { hits.push({ r: r, ex: true, s: 0 }); return; }
+    var tol = q.length <= 4 ? 1 : 2, best = 99;
+    hay.split(/[^a-z0-9₹]+/).filter(Boolean).forEach(function (w) { best = Math.min(best, lev(q, w), lev(q, w.slice(0, q.length))); });
+    if (best <= tol) hits.push({ r: r, ex: false, s: best });
+  });
+  hits.sort(function (a, b) { return a.s - b.s; });
+  var ex = hits.filter(function (h) { return h.ex; }).length;
+  o += '<p class="small" style="margin:0 4px">' + (hits.length ? ex + ' exact · ' + (hits.length - ex) + ' close' : 'No matches. Try a holding, payee or policy name.') + '</p>';
+  ['Holdings', 'Spend', 'Income and tax', 'Check', 'Pages'].forEach(function (g) {
+    var gs = hits.filter(function (h) { return h.r[0] === g; }).slice(0, 12);
+    if (!gs.length) return;
+    o += '<section class="card" style="padding:16px 18px 4px"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2 class="ttl">' + g + '</h2><span class="small">' + gs.length + (gs.length === 1 ? ' result' : ' results') + '</span></div>';
+    gs.forEach(function (h) { var t = h.r[4]; o += '<button type="button" class="rowbtn" data-act="go" data-v=\'' + esc(JSON.stringify(t)) + '\'><span class="rl"><span>' + esc(h.r[1]) + '</span><span class="sub" style="display:flex;gap:6px;align-items:center"><span class="tag ' + (h.ex ? 'ex' : 'cl') + '">' + (h.ex ? 'Exact' : 'Close') + '</span>' + esc(h.r[2]) + '</span></span><b class="num">' + h.r[3] + '</b></button>'; });
+    o += '</section>';
+  });
+  return o + '</main>';
+}
+function searchBar() {
+  var sg = suggestions(), first = sg.length ? 'Try “' + sg[S.phI % sg.length] + '”' : 'Search Vault';
+  return '<div class="sbar" role="search"><div class="field"><span class="ms mute">search</span><label class="sr" for="q">Search Vault</label><input id="q" type="search" value="' + esc(S.q) + '" autocomplete="off" enterkeyhint="search" data-inp="q"><span class="ph"' + (S.q ? ' hidden' : '') + '>' + esc(first) + '</span>' +
+    (S.q ? '<button type="button" class="ib" aria-label="Clear search" data-act="clearq" style="width:38px;height:38px"><span class="ms" style="font-size:20px">close</span></button>' : '') + '</div>' +
+    '<button type="button" class="ib collapse" aria-label="Close search and go back" data-act="closesearch"><span class="ms">keyboard_arrow_down</span></button></div>';
+}
+
+/* ---------- Sheets ---------- */
+function sheetWrap(title, sub, body) { return '<div class="sheet"><button type="button" class="scrim" aria-label="Close" data-act="close"></button><section role="dialog" aria-label="' + esc(title) + '"><div class="grab"><div></div></div><div class="shead"><div class="rl"><span class="ttl">' + esc(title) + '</span>' + (sub ? '<span class="small">' + esc(sub) + '</span>' : '') + '</div><button type="button" class="ib" aria-label="Close" data-act="close"><span class="ms">close</span></button></div><div class="sbody">' + body + '</div></section></div>'; }
+function kvRows(list) { return list.map(function (k) { return '<div class="row"><span class="mute">' + esc(k[0]) + '</span><b class="num" style="text-align:right;white-space:normal">' + k[1] + '</b></div>'; }).join(''); }
+function vSheet() {
+  var s = S.sheet; if (!s) return '';
+  if (s.type === 'tax') {
+    var T = D.tax[s.i], chips = '<div class="mchips" style="padding:4px 0 6px">' + D.tax.map(function (t, i) { return '<button type="button" class="' + (i === s.i ? 'on' : '') + '" aria-pressed="' + (i === s.i) + '" data-act="taxsheetfy" data-v="' + i + '">' + esc(t.fy) + '</button>'; }).join('') + '</div>';
+    var rows = T.working.map(function (w) { return '<div class="w ' + w.k + '"><span>' + esc(w.l) + '</span><span class="num">' + (w.v == null ? '' : w.k === 'r' ? pct(w.v) : w.v < 0 ? '(' + grp(w.v) + ')' : grp(w.v)) + '</span></div>'; }).join('');
+    return sheetWrap('Computation of income', T.fy + (T.current ? ' · ' + (T.regime === 'old' ? 'old' : 'new') + ' regime · estimated · ₹' : ' · as filed · ₹'), chips + rows + '<p class="note" style="font-size:12px">' + (T.current ? 'Estimated: salary for the remaining months is projected from the latest payslip.' : 'As filed for the year.') + '</p>');
+  }
+  if (s.type === 'src') {
+    var I = D.income, x = I.sources[s.i];
+    if (x.monthly) { var tot = sum(x.m.slice(0, I.last + 1)), n = x.m.slice(0, I.last + 1).filter(function (v) { return v; }).length; return sheetWrap(x.n, D.income.fy, bars(x.m.slice(0, I.last + 1), { labels: FYM.slice(0, I.last + 1), hi: I.last, label: x.n + ' by month' }) + '<div class="stats" style="margin-top:14px">' + stat('To date', inrC(tot)) + stat('Monthly avg', inrC(n ? tot / (I.last + 1) : 0)) + stat('Months paid', n + ' of ' + (I.last + 1)) + '</div>'); }
+    return sheetWrap(x.n, D.income.fy, '<div class="big" style="font-size:28px">' + inr(x.fy) + '</div><p class="note">Recorded as one figure for the year, with no monthly split.</p>');
+  }
+  if (s.type === 'cat') {
+    var X = D.spend, c = X.cats[s.i], vals = c.trend.map(function (t) { return t.v; }), yr = S.spendView === 'y';
+    var items = c.items.slice().sort(function (a, b) { return yr ? b.year - a.year : b.v - a.v; });
+    var grid = 'display:grid;grid-template-columns:minmax(0,1fr) 90px' + (yr ? '' : ' 90px') + ';gap:8px;align-items:center';
+    return sheetWrap(c.k, yr ? inr(c.year) + ' for ' + X.fy + ' · ' + inr(c.ytd) + ' to date' : inr(c.act) + ' this month · usual ' + inr(c.usual), bars(vals, { labels: c.trend.map(function (t) { return t.m; }), hi: vals.length - 1, label: c.k + ' by month' }) +
+      '<div class="th" style="' + grid + ';margin-top:14px;padding-bottom:6px;border-bottom:1px solid var(--line)"><span>Item</span>' + (yr ? '<span style="text-align:right">Year</span>' : '<span style="text-align:right">' + esc(X.month) + '</span><span style="text-align:right">Usual</span>') + '</div>' +
+      items.map(function (it) { return '<div class="row" style="' + grid + '"><span>' + esc(it.n) + (it.fixed ? ' <span class="small">· fixed</span>' : '') + '</span>' + (yr ? '<b class="num" style="text-align:right">' + inr(it.year) + '</b>' : '<b class="num" style="text-align:right">' + inr(it.v) + '</b><span class="num mute" style="text-align:right">' + inr(it.usual) + '</span>') + '</div>'; }).join('') +
+      '<p class="note" style="font-size:12px">Usual is the average of this year\'s earlier months. Fixed means it is already filled in for later months.</p>');
+  }
+  if (s.type === 'reward') {
+    var Pg = D.spend.rewards.programmes[s.i], rate = (Pg.rate || 0).toFixed(2);
+    var body = '<div class="big" style="font-size:28px;margin:4px 0 2px">' + inr(Pg.val) + '</div><p class="small" style="margin:0 0 12px">Available · ' + grp(Pg.pts) + ' points × ₹' + rate + ' a point</p>';
+    body += '<div class="stats" style="margin-bottom:10px">' + stat('Earned', grp(Pg.earned) + ' pts') + stat('Used', grp(Pg.used != null ? Pg.used : Pg.redeemed) + ' pts') + stat('Next expiry', Pg.nextExp ? monYr(Pg.nextExp) : '—', Pg.nextExp ? grp(Pg.nextPts) + ' pts on ' + dayShort(Pg.nextExp) : '') + '</div>';
+    var G = 'display:grid;grid-template-columns:minmax(0,1fr) 56px 56px 64px;gap:8px';
+    body += '<div class="th" style="' + G + ';padding-bottom:6px;border-bottom:1px solid var(--line)"><span>Earned on</span><span style="text-align:right">Points</span><span style="text-align:right">Left</span><span style="text-align:right">₹ value</span></div>';
+    body += Pg.lines.filter(function (l) { return l.pts > 0; }).map(function (l) {
+      var used = l.status === 'Used';
+      return '<div class="row" style="' + G + (used ? ';color:var(--mute)' : '') + '"><span class="rl"><span>' + day(l.k) + '</span><span class="sub">' + (used ? 'Used' : 'Expires ' + day(l.exp)) + '</span></span><span class="num" style="text-align:right">' + grp(l.pts) + '</span><span class="num" style="text-align:right">' + (l.left != null ? grp(l.left) : '') + '</span><b class="num" style="text-align:right">' + (l.left ? '₹' + (l.left * (Pg.rate || 0)).toLocaleString('en-IN', { maximumFractionDigits: 2 }) : '—') + '</b></div>';
+    }).join('');
+    return sheetWrap(Pg.n + ' points', null, body + '<p class="note" style="font-size:12px">The balance comes from net worth: ' + grp(Pg.pts) + ' points. Working back from it, the oldest points are taken as used first, so the newest earnings make up what is left. Each earning expires on the date shown.</p>');
+  }
+  if (s.type === 'exittax') {
+    var h = D.holdings[S.hid], E = h.exitTax, tx = Math.max(0, E.tax), sh = E.gross > 0 ? tx / E.gross : 0;
+    var body = (E.gross > 0 ? '<div style="display:flex;height:12px;gap:2px;border-radius:2px;overflow:hidden;margin:6px 0 12px" role="img" aria-label="Gross gain split into net gain and tax"><div style="width:' + ((1 - sh) * 100) + '%;background:var(--acc)"></div><div style="width:' + (sh * 100) + '%;background:var(--neg)"></div></div>' : '') +
+      '<div class="stats">' + stat('Gross gain', inr(E.gross), null, cls(E.gross)) + stat('Tax', inr(tx), null, tx ? 'neg' : '') + stat('Net gain', inr(E.net)) + '</div>';
+    if (E.lines.length) body += '<div style="margin-top:10px">' + E.lines.map(function (l) { return '<div class="row"><span class="rl"><span>' + esc(l[0]) + '</span>' + (l[1] != null ? '<span class="sub num">on ' + inr(l[1]) + '</span>' : '') + '</span><span class="num">' + inr(l[2]) + '</span></div>'; }).join('') + '<div class="row" style="font-weight:700"><span>Tax</span><span class="num">' + inr(tx) + '</span></div></div>';
+    return sheetWrap('Exit tax · if sold today', h.name, body + '<p class="note" style="font-size:12px">' + esc(E.note || '') + ' Gross gain = tax + net gain.</p>');
+  }
+  if (s.type === 'epffy') {
+    var P = D.epf.passbook, ls = P.lines.filter(function (l) { return l.fy === s.v; }), f = P.fys.find(function (x) { return x.fy === s.v; });
+    return sheetWrap('EPF · ' + s.v, 'Yours ' + inr(f.ee) + ' · employer ' + inr(f.er) + ' · interest ' + inr(f.intEe + f.intEr), ls.map(function (l) { return '<div class="row"><span class="rl"><span>' + (l.kind === 'Contribution' ? (l.m || day(l.k)) : l.kind) + '</span><span class="sub">Credited ' + day(l.k) + (l.wages ? ' · wages ' + inr(l.wages) : '') + (l.pen ? ' · pension ' + inr(l.pen) : '') + '</span></span><span class="rl" style="align-items:flex-end"><span class="num ' + (l.kind === 'Withdrawal' ? 'neg' : l.kind === 'Interest' ? 'pos' : '') + '">' + inr(l.ee + l.er) + '</span><span class="sub num">' + inr(l.ee) + ' + ' + inr(l.er) + '</span></span></div>'; }).join('') + '<p class="note" style="font-size:12px">Your share + employer share.</p>');
+  }
+  if (s.type === 'ratio') { var r = D.check.ratios[s.i]; return sheetWrap(r.n, r.sub.split(' · ')[0], '<div style="display:flex;align-items:center;gap:10px;margin:4px 0 4px"><span class="big" style="font-size:28px">' + ratioFmt(r) + '</span>' + (r.st ? '<span class="pill ' + r.st + '">' + ST_LABEL[r.st] + '</span>' : '<span class="pill m">For reference</span>') + '</div>' + gauge(r) + '<p class="note" style="margin:6px 0 10px">' + esc(ratioSay(r)) + '</p>' + kvRows(r.kv.map(function (k) { return [k[0], inr(k[1])]; })) + '<p class="note" style="font-size:12px">Income and tax are for the full year, estimated. Spend is this year\'s monthly average × 12.</p>'); }
+  if (s.type === 'insg') {
+    var g = insGroups()[s.i], Pl = (D.check || {}).policies || [], byIns = {};
+    g.items.forEach(function (x) { (byIns[x.by] = byIns[x.by] || []).push(x); });
+    var body = '<div class="big" style="font-size:28px;margin:4px 0 4px">' + inr(g.cover) + '</div><p class="small" style="margin:0 0 10px">Total ' + esc(g.cat.toLowerCase()) + ' for ' + esc(g.person) + '</p>';
+    body += '<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding-bottom:6px;border-bottom:1px solid var(--line)" class="th"><span>Cover</span><span style="text-align:right">Amount</span></div>' + g.items.map(function (x) { return '<div class="row"><span class="rl"><span>' + esc(x.type || g.cat) + '</span><span class="sub">Provided by ' + esc(x.by) + '</span></span><b class="num">' + inr(x.cover) + '</b></div>'; }).join('');
+    var shown = [];
+    g.items.forEach(function (x) {
+      var p = x.policy != null ? Pl[x.policy] : null;
+      if (p) {
+        if (shown.indexOf(p) >= 0) return; shown.push(p);
+        var paid = p.lines.filter(function (l) { return l.paid && l.amt != null; });
+        body += '<p class="sh" style="margin:16px 0 4px">' + esc(p.provider) + '</p>';
+        body += '<div class="stats" style="margin:4px 0 8px">' + stat('Last premium', inr(p.last ? p.last.amt : null), p.last ? dayShort(p.last.k) + ' ' + p.last.k.slice(0, 4) : '') + stat('Renews', p.due ? dayShort(p.due) : '—', p.due ? inr(p.dueAmt) + (p.dueEst ? ' est.' : '') : '') + stat('Growth a year', p.cagr != null ? pct(p.cagr, 1, true) : '—', paid.length + ' premiums') + '</div>';
+        if (paid.length > 1) body += lineChart(paid.map(function (l) { return l.k.slice(0, 4); }), [{ name: p.provider, color: 'var(--acc)', values: paid.map(function (l) { return l.amt; }) }], { label: p.provider + ' premium by year', h: 120 });
+        body += polLedger(p);
+        return;
+      }
+      if (shown.indexOf(x.by) >= 0) return; shown.push(x.by);
+      var Pp = x.premiums || [];
+      body += '<p class="sh" style="margin:16px 0 4px">' + esc(x.by) + '</p><p class="small" style="margin:0">' + (/employer|company|group/i.test(x.by) ? 'Provided by the employer. No premium paid by you.' : /deposit/i.test(x.by) ? 'Held as a fixed deposit.' : Pp.length ? Pp.length + ' premiums logged.' : 'No premiums logged yet.') + '</p>';
+    });
+    return sheetWrap(g.cat, g.person, body + '<p class="note" style="font-size:12px">' + (Pl.length ? 'Cover and premiums are as per the latest policy. Growth a year is the compound rate from the first premium to the last.' : 'Premiums are the months this insurer\'s premium was paid, taken from your monthly expenses.') + '</p>');
+  }
+  if (s.type === 'ins') { var x2 = D.check.insurance[s.i]; return sheetWrap(x2.cat, x2.person, '<div class="big" style="font-size:28px;margin:4px 0 10px">' + inr(x2.cover) + '</div>' + kvRows([['Person', esc(x2.person)], ['Type', esc(x2.type)], ['Insurer or source', esc(x2.by)]]) + '<p class="note" style="font-size:12px">Add renewal date and premium columns to the Insurance block to see renewals here.</p>'); }
+  if (s.type === 'locker') {
+    var Lk = D.check.locker;
+    if (s.v === 'items') return sheetWrap('Contents', Lk.visits.length ? 'After the ' + day(Lk.visits[0].d) + ' visit' : '', Lk.items.map(function (it, i) { return '<div class="row"><span>' + (i + 1) + '. ' + esc(it) + '</span></div>'; }).join(''));
+    if (s.v === 'logs') return sheetWrap('Logs', Lk.visits.length + ' visits', Lk.visits.map(function (v) { return '<div class="row" style="flex-direction:column;align-items:flex-start;gap:4px"><span><b>' + day(v.d) + '</b> · ' + esc(v.by) + '</span><span class="small" style="white-space:pre-line">' + esc(v.txn) + '</span></div>'; }).join(''));
+    return sheetWrap('Locker details', '', kvRows(Lk.meta.map(function (m) { return [m[0], typeof m[1] === 'number' ? (/rent/i.test(m[0]) ? inr(m[1]) : String(m[1])) : /^\d{4}-\d{2}-\d{2}$/.test(m[1]) ? day(m[1]) : esc(m[1])]; })));
+  }
+  if (s.type === 'dcheck') { var c2 = D.check.checks[s.i]; return sheetWrap(c2.n, c2.sub, c2.cells.length ? c2.cells.map(function (x) { return '<div class="row"><span class="rl"><span class="num"><b>' + esc(x.a) + '</b> shows ' + esc(x.e) + '</span>' + (x.f ? '<span class="sub" style="word-break:break-all">' + esc(x.f) + '</span>' : '') + '</span></div>'; }).join('') + '<p class="note" style="font-size:12px">Each cell shows this error in the sheet itself, with its formula below. Fix the formula and the check clears on the next read.</p>' : '<p class="note">' + esc(c2.sub) + '</p>'); }
+  return '';
+}
+
+/* ---------- Render and events ---------- */
+function render() {
+  if (!D) return;
+  var body = S.searchOpen ? vSearch() : S.page === 'payslips' ? vPayslips() : S.page === 'loan' ? vLoan() : S.page === 'holding' ? vHolding() : S.page === 'source' ? vSource() : S.page === 'locker' ? vLocker() : S.page === 'premiums' ? vPremiums() :
+    S.tab === 'income' ? vIncome() : S.tab === 'spend' ? vSpend() : S.tab === 'invest' ? vInvest() : S.tab === 'check' ? vCheck() : vHome();
+  var app = document.getElementById('app'), m = app.querySelector('main'), top = m ? m.scrollTop : 0, key = viewKey(), same = app.dataset.view === key;
+  if (m && app.dataset.view) SCROLL[app.dataset.view] = top;
+  app.innerHTML = body + (S.searchOpen ? searchBar() : nav()) + vSheet();
+  if (S.searchOpen && S.searchAnim) { var f = app.querySelector('.sbar .field'); if (f) f.classList.add('anim'); S.searchAnim = false; }
+  app.querySelectorAll('.card .ttl').forEach(function (h) { var ic = iconFor(h.textContent); if (ic && !h.querySelector('.ms')) h.insertAdjacentHTML('afterbegin', '<span class="ms" aria-hidden="true">' + ic + '</span>'); });
+  app.querySelectorAll('.mchips').forEach(function (c) { var on = c.querySelector('.on'); if (on) c.scrollLeft = on.offsetLeft - c.offsetLeft - (c.clientWidth - on.offsetWidth) / 2; });
+  app.dataset.view = viewKey();
+  var m2 = app.querySelector('main');
+  if (m2) { if (same) m2.scrollTop = top; else if (S.restore && SCROLL[key] != null) m2.scrollTop = SCROLL[key]; }
+  S.restore = false;
+}
+var ICONS = [[/^net worth ·/i, 'account_balance_wallet'], [/net worth trend/i, 'monitoring'], [/inside now/i, 'inventory_2'], [/last visit/i, 'history'], [/locker details/i, 'lock'], [/^log$/i, 'receipt_long'], [/salary ·/i, 'work'], [/^markets/i, 'candlestick_chart'], [/movers/i, 'swap_vert'], [/^income ·/i, 'payments'], [/^by source/i, 'call_split'], [/^payslips/i, 'receipt_long'], [/^tax/i, 'account_balance'],
+  [/^spent/i, 'shopping_bag'], [/^categories/i, 'category'], [/emi/i, 'home'], [/rewards|points/i, 'redeem'], [/total assets/i, 'account_balance_wallet'], [/allocation/i, 'donut_small'], [/^by type/i, 'format_list_bulleted'],
+  [/ratios/i, 'speed'], [/insurance/i, 'verified_user'], [/^locker/i, 'lock'], [/data checks/i, 'fact_check'], [/loan details/i, 'real_estate_agent'], [/linked bank/i, 'account_balance'], [/^schedule/i, 'event_note'],
+  [/^ledger/i, 'receipt_long'], [/^premiums paid/i, 'show_chart'], [/^premium growth/i, 'trending_up'], [/^policies/i, 'verified_user'], [/^next renewal/i, 'event_upcoming'], [/salary/i, 'work'], [/^(reit|sgb|dividends|savings)/i, 'payments'], [/^fy|^[a-z]+ 20\d\d/i, 'calendar_month']];
+function iconFor(t) { var m = ICONS.find(function (x) { return x[0].test(t.trim()); }); return m ? m[1] : null; }
+// Search placeholder: cycles through real names while the field is empty
+setInterval(function () {
+  if (!S.searchOpen || S.q) return;
+  var ph = document.querySelector('.sbar .ph'), sg = D ? suggestions() : []; if (!ph || !sg.length) return;
+  ph.classList.add('out');
+  setTimeout(function () { S.phI = (S.phI + 1) % sg.length; ph.textContent = 'Try “' + sg[S.phI] + '”'; ph.classList.remove('out'); }, 300);
+}, 2600);
+function openSearch() { S.searchOpen = true; S.searchAnim = true; S.q = ''; S.sheet = null; render(); var i = document.getElementById('q'); if (i) i.focus(); }
+function viewKey() { if (S.searchOpen) return 'search'; return S.page ? S.page + ':' + (S.hid || '') : S.tab; }
+function go(tab, page, hid) {
+  S.tab = tab || S.tab; S.page = page || null; S.hid = hid || null; S.sheet = null; S.ledgerAll = false; S.searchOpen = false;
+  var hash = '#' + (S.page ? S.page + (hid ? '/' + encodeURIComponent(hid) : '') : S.tab);
+  if (location.hash !== hash) { try { history.pushState(null, '', hash); } catch (e) {} }
+  render();
+}
+// Going back returns to the same depth of the page it left
+var SCROLL = {};
+window.addEventListener('popstate', function () { fromHash(); S.restore = true; render(); });
+function fromHash() {
+  var h = decodeURIComponent((location.hash || '').slice(1)), parts = h.split('/');
+  S.sheet = null;
+  if (/^(payslips|loan|locker|premiums)$/.test(parts[0])) { S.page = parts[0]; S.tab = parts[0] === 'loan' ? 'spend' : /locker|premiums/.test(parts[0]) ? 'check' : 'income'; }
+  else if (parts[0] === 'holding' && parts[1]) { S.page = 'holding'; S.hid = parts.slice(1).join('/'); S.tab = 'invest'; }
+  else if (parts[0] === 'source' && parts[1]) { S.page = 'source'; S.hid = parts[1]; S.tab = 'income'; }
+  else { S.page = null; S.tab = /^(home|income|spend|invest|check)$/.test(parts[0]) ? parts[0] : 'home'; }
+}
+document.addEventListener('click', function (ev) {
+  var el = ev.target.closest('[data-act]'); if (!el) return;
+  var a = el.getAttribute('data-act'), v = el.getAttribute('data-v');
+  if (a === 'reload') { load(true); return; }
+  if (!D) return;
+  switch (a) {
+    case 'tab': if (v === 'search') openSearch(); else go(v); break;
+    case 'closesearch': S.searchOpen = false; S.q = ''; S.restore = true; render(); break;
+    case 'insg': S.sheet = { type: 'insg', i: Number(v) }; render(); break;
+    case 'page': go(v === 'loan' ? 'spend' : v === 'locker' || v === 'premiums' ? 'check' : 'income', v); break;
+    case 'pol': S.openPol = S.openPol === v ? null : v; render(); break;
+    case 'payslips': S.payFy = Number(v) || 0; go('income', 'payslips'); break;
+    case 'holding': go(S.tab, 'holding', v); break;
+    case 'source': go('income', 'source', v); break;
+    case 'reward': S.sheet = { type: 'reward', i: Number(v) }; render(); break;
+    case 'exittax': S.sheet = { type: 'exittax' }; render(); break;
+    case 'epffy': S.sheet = { type: 'epffy', v: v }; render(); break;
+    case 'spendview': S.spendView = v; render(); break;
+    case 'nwrange': S.nwRange = v; render(); break;
+    case 'ent': S.openEnt = S.openEnt === v ? null : v; render(); break;
+    case 'ledgerall': S.ledgerAll = true; render(); break;
+    case 'back': if (history.length > 1) history.back(); else go(S.tab); break;
+    case 'theme': theme = document.documentElement.classList.contains('dark') ? 'light' : 'dark'; LS.set('theme', theme); applyTheme(); render(); break;
+    case 'mask': mask = !mask; LS.set('mask', mask); render(); break;
+    case 'refresh': { var b = el.querySelector('.ms'); if (b) b.classList.add('spin'); el.disabled = true; load(true); break; }
+    case 'close': S.sheet = null; render(); break;
+    case 'taxsheet': S.sheet = { type: 'tax', i: v != null ? Number(v) : S.taxFy }; if (v != null) S.taxFy = Number(v); render(); break;
+    case 'taxsheetfy': S.sheet = { type: 'tax', i: Number(v) }; S.taxFy = Number(v); render(); break;
+    case 'src': S.sheet = { type: 'src', i: Number(v) }; render(); break;
+    case 'cat': S.sheet = { type: 'cat', i: Number(v) }; render(); break;
+    case 'ratio': case 'ins': case 'dcheck': S.sheet = { type: a, i: Number(v) }; render(); break;
+    case 'locker': S.sheet = { type: 'locker', v: v }; render(); break;
+    case 'paymode': S.payMode = v; render(); break;
+    case 'paymonth': S.payMonth = Number(v); render(); break;
+    case 'alloc': S.alloc = v; render(); break;
+    case 'type': S.openType = S.openType === v ? null : v; render(); break;
+    case 'loanview': S.loanView = v; render(); break;
+    case 'loansort': S.loanSort = S.loanSort === 'asc' ? 'desc' : 'asc'; render(); break;
+    case 'clearq': S.q = ''; render(); var i = document.getElementById('q'); if (i) i.focus(); break;
+    case 'setq': S.q = v; render(); break;
+    case 'go':
+      var t = JSON.parse(v);
+      if (t.act === 'holding') go('invest', 'holding', t.v);
+      else if (t.act === 'source') go('income', 'source', t.v);
+      else if (t.act === 'page') go(t.v === 'locker' || t.v === 'premiums' ? 'check' : 'spend', t.v);
+      else if (t.act === 'payslips') { S.payFy = t.v; go('income', 'payslips'); }
+      else if (t.act === 'reward') { go('spend'); S.sheet = { type: 'reward', i: t.v }; render(); }
+      else if (t.act === 'tab') go(t.v);
+      else { S.searchOpen = false; go(t.tab); S.sheet = t.act === 'taxsheet' ? { type: 'tax', i: t.v } : t.act === 'locker' ? { type: 'locker', v: t.v } : { type: t.act, i: t.v }; render(); }
+      break;
+  }
+});
+document.addEventListener('change', function (ev) {
+  var el = ev.target, c = el.getAttribute && el.getAttribute('data-chg'); if (!c) return;
+  if (c === 'taxfy') S.taxFy = Number(el.value);
+  if (c === 'payfy') { S.payFy = Number(el.value); S.payMonth = null; }
+  render();
+});
+document.addEventListener('input', function (ev) {
+  var el = ev.target; if (!el.getAttribute || el.getAttribute('data-inp') !== 'q') return;
+  S.q = el.value; var pos = el.selectionStart; render(); var i = document.getElementById('q'); if (i) { i.focus(); try { i.setSelectionRange(pos, pos); } catch (e) {} }
+});
+document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && S.sheet) { S.sheet = null; render(); } else if (ev.key === 'Escape' && S.searchOpen) { S.searchOpen = false; S.q = ''; render(); } });
+fromHash();
+load(false);
+})();
+</script>
+</body>
+</html>
