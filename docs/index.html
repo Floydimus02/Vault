@@ -183,6 +183,13 @@ div:has(> .seg) > .ttl{white-space:nowrap}
 .fil{background:var(--bar)}
 .fil.over{background:var(--acc)}
 .event{background:var(--well);border:0;border-radius:16px}
+/* Net worth change strip */
+.nwstrip{display:grid;margin:0 0 16px;border:1px solid var(--line);border-radius:10px}
+.nwstrip > div{display:flex;flex-direction:column;gap:2px;padding:10px 12px;min-width:0}
+.nwstrip > div + div{border-left:1px solid var(--line)}
+.nwstrip .l{font-size:12px;color:var(--mute)}
+.nwstrip .v{font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.nwstrip .p{font-size:12px;font-weight:600}
 .event .ms{color:var(--acc)}
 .w.t{border-bottom:2px solid var(--ink)}
 /* Bottom navigation: no fill, coral marks where you are */
@@ -302,11 +309,15 @@ function vHome() {
   });
   if (H.emiAlert) {
     var A = H.emiAlert;
-    o += '<div class="box ' + (A.critical ? 'r' : 'a') + '" style="margin:0">' + (A.critical ? 'EMI at risk' : 'EMI account below ' + inr(A.min)) + ': ' + esc(A.bank) + ' holds ' + inr(A.bal) + ' against the ' + inr(A.emi) + ' EMI due ' + day(A.due) + '. Top up ' + inr(A.min - A.bal) + '.</div>';
+    o += '<div class="box ' + (A.critical ? 'r' : 'a') + '" style="margin:0">' + (A.critical ? 'EMI at risk' : 'EMI account below ' + inrC(A.min)) + ': ' + esc(A.bank) + ' holds ' + inrC(A.bal) + ' against the ' + inrC(A.emi) + ' EMI due ' + day(A.due) + '. Top up ' + inrC(A.min - A.bal) + '.</div>';
   }
   o += '<section class="card"><h2 class="ttl">Net worth · ' + dateStr + '</h2>';
   o += '<div class="big" style="font-size:40px;line-height:1.1;margin:0 0 14px">' + M(inrC(H.nw)) + '</div>';
-  if (H.deltas.length) o += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">' + H.deltas.map(function (x) { return '<span class="dp ' + (x.d >= 0 ? 'up' : 'dn') + ' num">' + inrC(x.d, true) + ' (' + pct(x.base ? x.d / Math.abs(x.base) : 0, 2, true) + ') <i>' + esc(x.l) + '</i></span>'; }).join('') + '</div>';
+  // Change since last close, over 7 days and over 30 days: one strip of equal columns
+  if (H.deltas.length) o += '<div class="nwstrip" style="grid-template-columns:repeat(' + H.deltas.length + ',minmax(0,1fr))">' + H.deltas.map(function (x) {
+    var lab = x.l.replace(/^in /, '').replace(/^since last close$/, 'since close'), c = x.d > 0 ? 'pos' : x.d < 0 ? 'neg' : '';
+    return '<div><span class="l">' + esc(lab.charAt(0).toUpperCase() + lab.slice(1)) + '</span><span class="v num ' + c + '">' + inrC(x.d, true) + '</span><span class="p num ' + c + '">' + pct(x.base ? x.d / Math.abs(x.base) : 0, 2, true) + '</span></div>';
+  }).join('') + '</div>';
   var ap = H.nw ? H.assets / H.nw : null, lp = H.nw ? H.liab / H.nw : null;
   o += '<div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr));padding-top:12px;border-top:1px solid var(--line)">' + stat('Assets', M(inrC(H.assets)) + ' <span style="font-size:14px;font-weight:500;color:var(--mute)">' + pct(ap) + '</span>') + stat('Liabilities', M(inrC(H.liab)) + ' <span style="font-size:14px;font-weight:500;color:var(--mute)">' + pct(lp) + '</span>') + '</div></section>';
   // Net worth trend: one value a day from the midnight log, or the value at each month end
@@ -387,8 +398,8 @@ function vTax() {
     o += '<div class="row"><span>' + (T.regime === 'old' ? 'Old' : 'New') + ' regime, yours</span><b class="num">' + inr(T.liab) + '</b></div>';
     o += '<div class="row"><span>' + (T.regime === 'old' ? 'New' : 'Old') + ' regime would be</span><span class="num">' + inr(other) + ' <span class="' + (save >= 0 ? 'pos' : 'neg') + '">(' + (save >= 0 ? 'yours saves ' + inr(save) : 'it saves ' + inr(-save)) + ')</span></span></div>';
     if (save >= 0 && T.regime === 'new') o += '<p class="note" style="margin-top:8px">The old regime needs ' + inrC(save / T.marginal) + ' more deductions to match.</p>';
-    else if (save < 0) o += '<p class="note" style="margin-top:8px">Switching regime saves ' + inr(-save) + '.</p>';
-    o += '<div style="height:16px"></div><p class="sh">Advance tax · on ' + inr(T.netDue) + ' left after TDS</p>';
+    else if (save < 0) o += '<p class="note" style="margin-top:8px">Switching regime saves ' + inrC(-save) + '.</p>';
+    o += '<div style="height:16px"></div><p class="sh">Advance tax · on ' + inrC(T.netDue) + ' left after TDS</p>';
     if (!T.applies) o += '<p class="note pos" style="margin-top:6px">Below ₹10,000, so advance tax and its interest do not apply.</p>';
     else {
       o += '<div style="display:grid;grid-template-columns:62px minmax(0,1fr) minmax(0,1fr) 74px;gap:8px;padding:8px 0 6px;border-bottom:1px solid var(--line)"><span class="th">Due</span><span class="th" style="text-align:right">Required</span><span class="th" style="text-align:right">Paid</span><span></span></div>';
@@ -398,12 +409,12 @@ function vTax() {
         if (!s.past && s.gap >= 1 && !next) next = s;
         o += '<div style="display:grid;grid-template-columns:62px minmax(0,1fr) minmax(0,1fr) 74px;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px;align-items:center"><span class="num">' + dayShort(s.due) + '</span><span class="num" style="text-align:right">' + inr(s.req) + '</span><span class="num" style="text-align:right">' + inr(s.paidCum) + '</span><span style="text-align:right"><span class="pill ' + st[1] + '">' + st[0] + '</span></span></div>';
       });
-      if (next) o += '<div class="box a">Pay ' + inr(next.gap) + ' by ' + day(next.due) + ' to avoid ' + inr(next.int) + ' of interest under section 425.</div>';
-      if (T.s424) o += '<p class="note">Section 424 interest of ' + inr(T.s424) + ' applies if advance tax stays below 90% until filing on ' + day(T.filing) + '.</p>';
+      if (next) o += '<div class="box a">Pay ' + inrC(next.gap) + ' by ' + day(next.due) + ' to avoid ' + inrC(next.int) + ' of interest under section 425.</div>';
+      if (T.s424) o += '<p class="note">Section 424 interest of ' + inrC(T.s424) + ' applies if advance tax stays below 90% until filing on ' + day(T.filing) + '.</p>';
     }
   } else {
     o += '<div class="stats">' + stat('Liability, final', inrC(T.liab), pct(T.liab / T.grossInc) + ' of income') + stat('Taxes paid', inrC((T.tds || 0) + (T.sat || 0)), 'TDS ' + inrC(T.tds) + (T.sat ? ' · self ' + inrC(T.sat) : '')) +
-      stat(T.balance < 0 ? 'Refund' : 'Balance', inr(Math.abs(T.balance)), T.balance < 0 ? 'due to you' : 'to pay') + '</div><div style="height:14px"></div>';
+      stat(T.balance < 0 ? 'Refund' : 'Balance', inrC(Math.abs(T.balance)), T.balance < 0 ? 'due to you' : 'to pay') + '</div><div style="height:14px"></div>';
     o += '<div class="row"><span>Gross income</span><b class="num">' + inr(T.grossInc) + '</b></div><div class="row"><span>Taxable income</span><b class="num">' + inr(T.taxable) + '</b></div><div class="row"><span>Effective rate</span><b class="num">' + pct(T.rate) + '</b></div>';
     o += '<p class="note">Effective rate = final tax ÷ gross income.</p>';
   }
@@ -416,21 +427,21 @@ function vSource() {
   if (!x) return o + '<p class="note">Source not found.</p></main>';
   var L = x.lines || [];
   if (!L.length) {
-    o += '<section class="card"><h2 class="ttl" style="margin-bottom:10px">' + esc(I.fy) + '</h2><div class="big" style="font-size:30px">' + inr(x.fy != null ? x.fy : sum(x.m)) + '</div><p class="note">Recorded as one figure for the year, with no dated entries, so there is no ledger to list.</p></section>';
+    o += '<section class="card"><h2 class="ttl" style="margin-bottom:10px">' + esc(I.fy) + '</h2><div class="big" style="font-size:30px">' + inrC(x.fy != null ? x.fy : sum(x.m)) + '</div><p class="note">Recorded as one figure for the year, with no dated entries, so there is no ledger to list.</p></section>';
     return o + '</main>';
   }
   var fyNow = I.fy, inFy = L.filter(function (l) { return l.fy === fyNow; }), byFy = {};
   L.forEach(function (l) { (byFy[l.fy] = byFy[l.fy] || []).push(l); });
   var fys = Object.keys(byFy).sort().reverse(), last = L[0], tdsFy = sum(inFy.map(function (l) { return l.tds; }));
   o += '<section class="card"><h2 class="ttl" style="margin-bottom:12px">' + esc(x.n) + ' · ' + esc(fyNow) + '</h2><div class="stats">' +
-    stat('This year', inr(sum(inFy.map(function (l) { return l.net; }))), inFy.length + (inFy.length === 1 ? ' payout' : ' payouts') + (tdsFy ? ' · TDS ' + inr(tdsFy) : '')) +
+    stat('This year', inrC(sum(inFy.map(function (l) { return l.net; }))), inFy.length + (inFy.length === 1 ? ' payout' : ' payouts') + (tdsFy ? ' · TDS ' + inrC(tdsFy) : '')) +
     stat('All years', inrC(sum(L.map(function (l) { return l.net; }))), L.length + ' payouts since ' + monYr(L[L.length - 1].k)) +
-    stat('Latest', inr(last.net), dayShort(last.k) + ' ' + last.k.slice(0, 4)) + '</div>';
+    stat('Latest', inrC(last.net), dayShort(last.k) + ' ' + last.k.slice(0, 4)) + '</div>';
   var fyAsc = fys.slice().reverse().slice(-6), vals = fyAsc.map(function (f) { return sum(byFy[f].map(function (l) { return l.net; })); });
   o += '<div style="margin-top:14px">' + bars(vals, { labels: fyAsc.map(function (f) { return f.replace('FY ', ''); }), hi: fyAsc.indexOf(fyNow) >= 0 ? fyAsc.indexOf(fyNow) : vals.length - 1, label: x.n + ' by financial year' }) + '</div>';
   var whats = {}; L.forEach(function (l) { whats[l.what] = (whats[l.what] || 0) + l.net; });
   var top = Object.keys(whats).sort(function (a, b) { return whats[b] - whats[a]; });
-  if (top.length > 1) o += '<p class="note">' + esc(top[0]) + ' has paid the most, ' + inr(whats[top[0]]) + ' across ' + fys.length + (fys.length === 1 ? ' year' : ' years') + '.</p>';
+  if (top.length > 1) o += '<p class="note">' + esc(top[0]) + ' has paid the most, ' + inrC(whats[top[0]]) + ' across ' + fys.length + (fys.length === 1 ? ' year' : ' years') + '.</p>';
   o += '</section>';
   o += '<section class="card" style="padding-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px"><h2 class="ttl">Ledger</h2><span class="small">' + (x.id === 'sgb' ? 'By bond' : 'Net of TDS') + '</span></div>';
   if (x.id === 'sgb') {
@@ -475,7 +486,7 @@ function vPayslips() {
     o += '<div class="mchips">' + Y.months.map(function (x) { return '<button type="button" class="' + (x.i === mi ? 'on' : '') + '" aria-pressed="' + (x.i === mi) + '" data-act="paymonth" data-v="' + x.i + '">' + FYM[x.i] + '</button>'; }).join('') + '</div>';
     var yr = mi < 9 ? Y.y : Y.y + 1, vsP = prev ? ' vs ' + FYM[prev.i] : '';
     o += '<section class="card"><h2 class="ttl">' + ['April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'January', 'February', 'March'][mi] + ' ' + yr + '</h2><div class="stats">' +
-      stat('Gross pay', inr(m.gross), prev ? (m.gross === prev.gross ? 'same as ' + FYM[prev.i] : delta(m.gross, prev.gross) + vsP) : '') + stat('Tax', inr(m.tds), pct(m.tds / m.gross) + ' of gross') + stat('Net pay', inr(m.net), prev ? delta(m.net, prev.net) + vsP : pct(m.net / m.gross) + ' of gross') + '</div>' + splitBar(m.gross, m.tds, m.net) + '</section>';
+      stat('Gross pay', inrC(m.gross), prev ? (m.gross === prev.gross ? 'same as ' + FYM[prev.i] : delta(m.gross, prev.gross) + vsP) : '') + stat('Tax', inrC(m.tds), pct(m.tds / m.gross) + ' of gross') + stat('Net pay', inrC(m.net), prev ? delta(m.net, prev.net) + vsP : pct(m.net / m.gross) + ' of gross') + '</div>' + splitBar(m.gross, m.tds, m.net) + '</section>';
     o += payTable(m.earn, m.ded, m.gross, m.net);
   } else {
     var lastI = Y.months[Y.months.length - 1].i, complete = Y.months.length >= 12;
@@ -487,7 +498,7 @@ function vPayslips() {
     var span = 'Apr to ' + FYM[lastI], vs = prevY ? ' vs ' + prevY.fy.replace('FY ', '') : '';
     o += '<section class="card"><h2 class="ttl">Salary · ' + esc(Y.fy) + (complete ? '' : ' · ' + span) + '</h2><div class="stats">' +
       stat('Gross pay', inrC(g), pg ? delta(g, pg) + vs : Y.months.length + ' payslips') + stat('Tax', inrC(t), pt ? delta(t, pt) + vs : pct(t / g) + ' of gross') + stat('Net pay', inrC(n), pn ? delta(n, pn) + vs : pct(n / g) + ' of gross') + '</div>' + splitBar(g, t, n);
-    if (pg) o += '<p class="note">' + (complete ? 'Full year' : span) + ' against the same months of ' + esc(prevY.fy) + ': gross ' + inr(g - pg, true) + ', tax ' + inr(t - pt, true) + ', net ' + inr(n - pn, true) + '.</p>';
+    if (pg) o += '<p class="note">' + (complete ? 'Full year' : span) + ' against the same months of ' + esc(prevY.fy) + ': gross ' + inrC(g - pg, true) + ', tax ' + inrC(t - pt, true) + ', net ' + inrC(n - pn, true) + '.</p>';
     var vals = FYM.map(function (_, i) { var x = Y.months.find(function (m) { return m.i === i; }); return x ? x.gross : 0; });
     o += '<div style="margin-top:14px">' + bars(vals, { labels: FYM, label: 'Gross pay by month' }) + '</div></section>';
     var E = {}, Dd = {};
@@ -502,13 +513,13 @@ function vSpend() {
   var X = D.spend || {}, o = header('Spend', X.month ? X.month + ' · day ' + X.day + ' of ' + X.dim : null) + '<main>';
   if (X.month) {
     var vsAvg = X.thisMonth - X.monthAvg, w = X.monthAvg ? Math.min(100, X.thisMonth / X.monthAvg * 100) : 0, we = X.monthAvg ? Math.min(100, X.estMonth / X.monthAvg * 100) : 0;
-    o += '<section class="card"><h2 class="ttl" style="margin-bottom:10px">Spent in ' + esc(X.month) + ' so far</h2><div class="big" style="font-size:30px">' + inr(X.thisMonth) + '</div>';
+    o += '<section class="card"><h2 class="ttl" style="margin-bottom:10px">Spent in ' + esc(X.month) + ' so far</h2><div class="big" style="font-size:30px">' + inrC(X.thisMonth) + '</div>';
     o += '<span class="trk" style="height:8px;margin-top:12px" role="img" aria-label="Spend so far against the monthly average, with the month\'s estimate marked"><span class="fil ' + (vsAvg > 0 ? 'over' : '') + '" style="width:' + w + '%"></span><span class="tick" style="left:' + we + '%;height:14px"></span></span>';
     o += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-top:6px"><span>Bar: so far against the monthly average</span><span>Tick: month estimate</span></div>';
     o += '<div class="stats" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">' +
-      stat(X.month + ', est.', inr(X.estMonth), 'fixed ' + inrC(X.fixedNow) + ' + rest at pace') +
-      stat('Monthly average', inr(X.monthAvg), esc(X.fy)) +
-      stat('So far vs average', '<span class="' + (vsAvg > 0 ? 'neg' : 'pos') + '">' + inr(vsAvg, true) + '</span>', pct(X.monthAvg ? vsAvg / X.monthAvg : 0, 1, true)) + '</div>';
+      stat(X.month + ', est.', inrC(X.estMonth), 'fixed ' + inrC(X.fixedNow) + ' + rest at pace') +
+      stat('Monthly average', inrC(X.monthAvg), esc(X.fy)) +
+      stat('So far vs average', '<span class="' + (vsAvg > 0 ? 'neg' : 'pos') + '">' + inrC(vsAvg, true) + '</span>', pct(X.monthAvg ? vsAvg / X.monthAvg : 0, 1, true)) + '</div>';
     o += '<p class="note" style="padding-top:8px;border-top:1px solid var(--line)">' + esc(X.month) + ' has used ' + pct(X.monthAvg ? X.thisMonth / X.monthAvg : 0, 0) + ' of an average month with ' + pct(1 - X.pace, 0) + ' of the month to go. Year total ' + inrC(X.ytdPlanned) + ' includes fixed costs already filled in for later months.</p></section>';
     var yr = S.spendView === 'y', cats = X.cats.slice().sort(function (a, b) { return (yr ? b.year - a.year : b.act - a.act); });
     var tot = sum(cats.map(function (c) { return yr ? c.year : c.act; }));
@@ -517,7 +528,7 @@ function vSpend() {
     var mx = Math.max.apply(null, cats.map(function (c) { return yr ? c.year : c.act; }).concat([1]));
     cats.forEach(function (c) {
       var i = X.cats.indexOf(c), val = yr ? c.year : c.act;
-      o += '<button type="button" class="rowbtn" data-act="cat" data-v="' + i + '" style="flex-direction:column;align-items:stretch;gap:6px"><span style="display:flex;justify-content:space-between;width:100%"><span>' + esc(c.k) + '</span><span class="num"><b>' + inr(val) + '</b> <span class="mute">· ' + (yr ? pct(tot ? val / tot : 0, 0) : inr(c.usual)) + '</span></span></span><span class="trk"><span class="fil" style="width:' + (val / mx * 100) + '%"></span></span></button>';
+      o += '<button type="button" class="rowbtn" data-act="cat" data-v="' + i + '" style="flex-direction:column;align-items:stretch;gap:6px"><span style="display:flex;justify-content:space-between;width:100%"><span>' + esc(c.k) + '</span><span class="num"><b>' + inrC(val) + '</b> <span class="mute">· ' + (yr ? pct(tot ? val / tot : 0, 0) : inrC(c.usual)) + '</span></span></span><span class="trk"><span class="fil" style="width:' + (val / mx * 100) + '%"></span></span></button>';
     });
     o += '</section>';
   }
@@ -525,20 +536,20 @@ function vSpend() {
   if (L && L.emi) {
     var dd = daysTo(L.nextDue), bank = L.bank, ok = bank && bank.bal >= Math.max(L.emi, bank.min);
     o += '<button type="button" class="card" data-act="page" data-v="loan" style="display:flex;flex-direction:column;gap:10px;text-align:left;cursor:pointer;width:100%"><span style="display:flex;justify-content:space-between;align-items:center;width:100%"><span class="ttl">Home loan EMI</span><span class="ms chev">chevron_right</span></span>';
-    o += '<span style="display:flex;justify-content:space-between;align-items:baseline;width:100%"><span class="big" style="font-size:22px">' + inr(L.emi) + '</span><span class="small" style="font-size:13px">Debits ' + dayShort(L.nextDue) + ' · ' + dd + (dd === 1 ? ' day' : ' days') + '</span></span>';
-    if (bank) o += '<span style="display:flex;align-items:center;gap:8px;font-size:13px;padding-top:8px;border-top:1px solid var(--line);width:100%"><span class="ms ' + (ok ? 'pos' : 'amb') + '" style="font-size:18px">' + (ok ? 'check_circle' : 'error') + '</span><span>' + esc(bank.name) + ' <b class="num">' + inr(bank.bal) + '</b> <span class="mute">' + (ok ? 'covers it.' : 'is below ' + inr(bank.min) + '.') + ' Alert fires below ' + inr(bank.min) + ' in the ' + bank.daysBefore + ' days before.</span></span></span>';
+    o += '<span style="display:flex;justify-content:space-between;align-items:baseline;width:100%"><span class="big" style="font-size:22px">' + inrC(L.emi) + '</span><span class="small" style="font-size:13px">Debits ' + dayShort(L.nextDue) + ' · ' + dd + (dd === 1 ? ' day' : ' days') + '</span></span>';
+    if (bank) o += '<span style="display:flex;align-items:center;gap:8px;font-size:13px;padding-top:8px;border-top:1px solid var(--line);width:100%"><span class="ms ' + (ok ? 'pos' : 'amb') + '" style="font-size:18px">' + (ok ? 'check_circle' : 'error') + '</span><span>' + esc(bank.name) + ' <b class="num">' + inrC(bank.bal) + '</b> <span class="mute">' + (ok ? 'covers it.' : 'is below ' + inrC(bank.min) + '.') + ' Alert fires below ' + inrC(bank.min) + ' in the ' + bank.daysBefore + ' days before.</span></span></span>';
     o += '</button>';
   }
   var R = X.rewards;
   if (R) {
-    o += '<section class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px"><h2 class="ttl">Rewards and balances</h2><b class="num" style="font-size:13px">' + inr(R.total) + '</b></div>';
+    o += '<section class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px"><h2 class="ttl">Rewards and balances</h2><b class="num" style="font-size:13px">' + inrC(R.total) + '</b></div>';
     if (R.programmes.length) o += '<p class="sh" style="margin:6px 0 0">Points, in rupees</p>';
-    R.programmes.forEach(function (p, i) { o += '<button type="button" class="rowbtn" data-act="reward" data-v="' + i + '"><span class="rl"><span>' + esc(p.n) + ' points</span><span class="sub">' + grp(p.pts) + ' points available</span></span><span class="rr"><b class="num">' + inr(p.val) + '</b><span class="ms chev">chevron_right</span></span></button>'; });
+    R.programmes.forEach(function (p, i) { o += '<button type="button" class="rowbtn" data-act="reward" data-v="' + i + '"><span class="rl"><span>' + esc(p.n) + ' points</span><span class="sub">' + grp(p.pts) + ' points available</span></span><span class="rr"><b class="num">' + inrC(p.val) + '</b><span class="ms chev">chevron_right</span></span></button>'; });
     if (R.balances.length) o += '<p class="sh" style="margin:12px 0 0">Vouchers and wallets</p>';
-    R.balances.forEach(function (b) { o += '<div class="row"><span class="rl"><span>' + esc(b.n) + '</span><span class="sub">' + esc(b.sub) + (b.exp ? (b.lapsed ? ' · lapsed ' + day(b.exp) : ' · expires ' + day(b.exp)) : '') + '</span></span><b class="num ' + (b.lapsed ? 'mute' : '') + '"' + (b.lapsed ? ' style="text-decoration:line-through"' : '') + '>' + inr(b.val) + '</b></div>'; });
+    R.balances.forEach(function (b) { o += '<div class="row"><span class="rl"><span>' + esc(b.n) + '</span><span class="sub">' + esc(b.sub) + (b.exp ? (b.lapsed ? ' · lapsed ' + day(b.exp) : ' · expires ' + day(b.exp)) : '') + '</span></span><b class="num ' + (b.lapsed ? 'mute' : '') + '"' + (b.lapsed ? ' style="text-decoration:line-through"' : '') + '>' + inrC(b.val) + '</b></div>'; });
     if (R.months.length) {
-      o += '<div style="padding-top:10px;border-top:1px solid var(--line);margin-top:4px"><p class="sh" style="margin-bottom:6px">Expiring · earliest 3 months</p><div class="stats">' + R.months.map(function (m) { return '<div style="display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:6px;background:var(--amberbg);color:var(--amber);min-width:0"><span style="font-size:12px;font-weight:700">' + esc(m.m) + '</span><span class="num" style="font-size:15px;font-weight:800">' + inr(m.val) + '</span><span style="font-size:11px">' + esc((function () { var g = {}; m.items.forEach(function (x) { g[x.n] = g[x.n] || { pts: 0, has: false }; if (x.pts) { g[x.n].pts += x.pts; g[x.n].has = true; } }); return Object.keys(g).map(function (k) { return k + (g[k].has ? ' ' + grp(g[k].pts) + ' pts' : ''); }).join(', '); })()) + '</span></div>'; }).join('') + '</div>';
-      var first = R.months[0]; o += '<p class="note">' + inr(first.val) + ' lapses first, in ' + esc(first.m) + '.</p></div>';
+      o += '<div style="padding-top:10px;border-top:1px solid var(--line);margin-top:4px"><p class="sh" style="margin-bottom:6px">Expiring · earliest 3 months</p><div class="stats">' + R.months.map(function (m) { return '<div style="display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:6px;background:var(--amberbg);color:var(--amber);min-width:0"><span style="font-size:12px;font-weight:700">' + esc(m.m) + '</span><span class="num" style="font-size:15px;font-weight:800">' + inrC(m.val) + '</span><span style="font-size:11px">' + esc((function () { var g = {}; m.items.forEach(function (x) { g[x.n] = g[x.n] || { pts: 0, has: false }; if (x.pts) { g[x.n].pts += x.pts; g[x.n].has = true; } }); return Object.keys(g).map(function (k) { return k + (g[k].has ? ' ' + grp(g[k].pts) + ' pts' : ''); }).join(', '); })()) + '</span></div>'; }).join('') + '</div>';
+      var first = R.months[0]; o += '<p class="note">' + inrC(first.val) + ' lapses first, in ' + esc(first.m) + '.</p></div>';
     }
     o += '</section>';
   }
@@ -552,26 +563,26 @@ function vLoan() {
   if (!L) return o + '<p class="note">No home loan found.</p></main>';
   var repaid = L.sanctioned ? 1 - L.outstanding / L.sanctioned : null;
   var left = L.sanctioned ? L.outstanding / L.sanctioned : null;
-  o += '<section class="card"><h2 class="ttl">Loan details</h2><span class="small">Outstanding</span><div class="big" style="font-size:30px;margin:2px 0 2px">' + inr(L.outstanding) + '</div>' + (left != null ? '<span class="small">' + pct(left) + ' of the ' + inrC(L.sanctioned) + ' sanctioned is left</span>' : '');
+  o += '<section class="card"><h2 class="ttl">Loan details</h2><span class="small">Outstanding</span><div class="big" style="font-size:30px;margin:2px 0 2px">' + inrC(L.outstanding) + '</div>' + (left != null ? '<span class="small">' + pct(left) + ' of the ' + inrC(L.sanctioned) + ' sanctioned is left</span>' : '');
   if (left != null) o += '<span class="trk" style="height:10px;margin-top:12px" role="img" aria-label="Sanctioned amount split into repaid and outstanding"><span class="fil" style="width:' + (repaid * 100) + '%;background:var(--pos)"></span><span style="position:absolute;top:0;bottom:0;left:calc(' + (repaid * 100) + '% + 2px);right:0;border-radius:999px;background:var(--acc)"></span></span>' +
     '<div class="legend"><span><span class="sw" style="background:var(--pos)"></span>Repaid</span><span><span class="sw" style="background:var(--acc)"></span>Left</span></div>' +
     '<div class="stats" style="margin-top:12px">' + stat('Sanctioned', inrC(L.sanctioned), '100%') + stat('Repaid', inrC(L.sanctioned - L.outstanding), pct(repaid), 'pos') + stat('Left', inrC(L.outstanding), pct(left)) + '</div>';
   var rc = L.lastRateChange;
   o += '<div class="kvg" style="padding-top:12px;margin-top:12px;border-top:1px solid var(--line)">' +
     '<div class="kv"><span>Rate</span><span class="num">' + pct(L.rate, 2) + '</span>' + (rc ? '<span style="font-size:12px;color:var(--mute);font-weight:400">from ' + pct(rc.from, 2) + ' on ' + dayShort(rc.k) + '</span>' : '') + '</div>' +
-    '<div class="kv"><span>EMI · ' + L.emiDay + 'th</span><span class="num">' + inr(L.emi) + '</span></div>' +
+    '<div class="kv"><span>EMI · ' + L.emiDay + 'th</span><span class="num">' + inrC(L.emi) + '</span></div>' +
     '<div class="kv"><span>EMIs left</span><span class="num">' + (L.monthsLeft != null && isFinite(L.monthsLeft) ? L.monthsLeft + (L.ends ? ' · ends ' + L.ends : '') : '—') + '</span></div>' +
-    '<div class="kv"><span>Interest left</span><span class="num">' + inr(L.interestLeft) + '</span></div>' +
-    '<div class="kv"><span>Prepaid to date</span><span class="num">' + inr(L.prepaid) + '</span></div>' +
-    '<div class="kv"><span>Interest paid to date</span><span class="num">' + inr(L.interestPaid) + '</span></div></div>';
+    '<div class="kv"><span>Interest left</span><span class="num">' + inrC(L.interestLeft) + '</span></div>' +
+    '<div class="kv"><span>Prepaid to date</span><span class="num">' + inrC(L.prepaid) + '</span></div>' +
+    '<div class="kv"><span>Interest paid to date</span><span class="num">' + inrC(L.interestPaid) + '</span></div></div>';
   var base = amort(L.outstanding, L.rate, L.emi), pp = 300000, after = L.outstanding > pp ? amort(L.outstanding - pp, L.rate, L.emi) : null;
-  if (base && after) o += '<p class="note" style="padding-top:10px;border-top:1px solid var(--line)">A <b class="num" style="color:var(--ink)">' + inr(pp) + '</b> prepayment now removes ' + (base.n - after.n) + ' EMIs and <b class="num" style="color:var(--ink)">' + inrC(base.it - after.it) + '</b> of interest.</p>';
+  if (base && after) o += '<p class="note" style="padding-top:10px;border-top:1px solid var(--line)">A <b class="num" style="color:var(--ink)">' + inrC(pp) + '</b> prepayment now removes ' + (base.n - after.n) + ' EMIs and <b class="num" style="color:var(--ink)">' + inrC(base.it - after.it) + '</b> of interest.</p>';
   o += '</section>';
   if (L.bank) {
     var ok = L.bank.bal >= Math.max(L.emi, L.bank.min);
-    o += '<section class="card"><h2 class="ttl" style="margin-bottom:10px">Linked bank</h2><div class="row" style="border:0;padding-top:0"><b>' + esc(L.bank.name) + '</b><span class="big" style="font-size:18px">' + inr(L.bank.bal) + '</span></div>';
-    o += '<div style="display:flex;align-items:center;gap:8px;font-size:13px;padding-top:8px;border-top:1px solid var(--line)"><span class="ms ' + (ok ? 'pos' : 'amb') + '" style="font-size:18px">' + (ok ? 'check_circle' : 'error') + '</span><span>' + (ok ? 'Covers the ' + dayShort(L.nextDue) + ' EMI with <b class="num">' + inr(L.bank.bal - L.emi) + '</b> spare.' : 'Top up before ' + dayShort(L.nextDue) + '.') + '</span></div>';
-    o += '<p class="note" style="font-size:12px">An alert shows on Home if this balance is below ' + inr(L.bank.min) + ' in the ' + L.bank.daysBefore + ' days before the EMI.</p></section>';
+    o += '<section class="card"><h2 class="ttl" style="margin-bottom:10px">Linked bank</h2><div class="row" style="border:0;padding-top:0"><b>' + esc(L.bank.name) + '</b><span class="big" style="font-size:18px">' + inrC(L.bank.bal) + '</span></div>';
+    o += '<div style="display:flex;align-items:center;gap:8px;font-size:13px;padding-top:8px;border-top:1px solid var(--line)"><span class="ms ' + (ok ? 'pos' : 'amb') + '" style="font-size:18px">' + (ok ? 'check_circle' : 'error') + '</span><span>' + (ok ? 'Covers the ' + dayShort(L.nextDue) + ' EMI with <b class="num">' + inrC(L.bank.bal - L.emi) + '</b> spare.' : 'Top up before ' + dayShort(L.nextDue) + '.') + '</span></div>';
+    o += '<p class="note" style="font-size:12px">An alert shows on Home if this balance is below ' + inrC(L.bank.min) + ' in the ' + L.bank.daysBefore + ' days before the EMI.</p></section>';
   }
   var paidN = L.events.filter(function (e) { return e.type === 'emi'; }).length, asc = S.loanSort === 'asc';
   o += '<section class="card" style="padding-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><h2 class="ttl">Schedule</h2><span class="small">' + paidN + ' EMIs paid</span></div>';
@@ -589,14 +600,14 @@ function vLoan() {
     else if (e.type === 'rate') o += '<div style="' + style + 'color:var(--amber);font-weight:700;font-size:12px"><span class="num">' + monYr(e.k) + '</span><span>Rate ' + pct(e.from, 2) + ' → ' + pct(e.to, 2) + '</span><span></span></div>';
     else { var pw = e.principal + e.interest ? e.principal / (e.principal + e.interest) * 100 : 0; o += '<div style="' + style + (e.next ? 'font-weight:700;' : '') + (e.proj && !e.next ? 'color:var(--mute);' : '') + '"><span class="rl"><span class="num">' + (e.next ? dayShort(e.k) : monYr(e.k)) + '</span>' + (e.proj ? '<span class="pill ' + (e.next ? 'a' : 'm') + '" style="font-size:10px;padding:1px 6px;align-self:flex-start">' + (e.next ? 'Next' : 'Due') + '</span>' : '') + '</span><span style="display:flex;flex-direction:column;gap:4px;min-width:0"><span class="num" style="font-size:12px">P ' + inr(e.principal) + ' · I ' + inr(e.interest) + '</span><span style="display:flex;height:4px;border-radius:2px;overflow:hidden;background:var(--chip)"><span style="width:' + pw + '%;background:var(--acc)"></span></span></span><span class="num" style="text-align:right">' + inr(e.bal) + '</span></div>'; }
   });
-  o += '<p class="note" style="font-size:12px;padding:4px 8px 0">Upcoming rows use ' + pct(L.rate, 2) + ' and the ' + inr(L.emi) + ' EMI. The bar shows the principal share.</p></section>';
+  o += '<p class="note" style="font-size:12px;padding:4px 8px 0">Upcoming rows use ' + pct(L.rate, 2) + ' and the ' + inrC(L.emi) + ' EMI. The bar shows the principal share.</p></section>';
   return o + '</main>';
 }
 
 /* ---------- Invest ---------- */
 function epfSplit() {
   var E = D.epf, ee = sum(E.split.map(function (x) { return x.ee; })), er = sum(E.split.map(function (x) { return x.er; })), pen = sum(E.split.map(function (x) { return x.pen; })), tot = ee + er + pen || 1;
-  var row = function (c, n, v) { return '<div class="row" style="font-size:13px;padding:6px 0"><span><span class="sw" style="background:' + c + '"></span>' + n + '</span><span class="num"><b>' + inr(v) + '</b> <span class="mute">· ' + pct(v / tot, 0) + '</span></span></div>'; };
+  var row = function (c, n, v) { return '<div class="row" style="font-size:13px;padding:6px 0"><span><span class="sw" style="background:' + c + '"></span>' + n + '</span><span class="num"><b>' + inrC(v) + '</b> <span class="mute">· ' + pct(v / tot, 0) + '</span></span></div>'; };
   return '<div style="padding:8px 0 4px;border-top:1px solid var(--line)"><p class="sh" style="margin:2px 0 6px">EPF split</p><div style="display:flex;height:8px;gap:2px;border-radius:4px;overflow:hidden" role="img" aria-label="EPF split by share"><div style="width:' + (ee / tot * 100) + '%;background:var(--acc)"></div><div style="width:' + (er / tot * 100) + '%;background:var(--ink)"></div><div style="width:' + (pen / tot * 100) + '%;background:var(--soft)"></div></div>' +
     row('var(--acc)', 'Employee share', ee) + row('var(--ink)', 'Employer share', er) + row('var(--soft)', 'Pension (EPS)', pen) + '</div>';
 }
@@ -604,7 +615,7 @@ function epfSplit() {
 function vInvest() {
   var V = D.invest, o = header('Invest') + '<main>';
   if (!V) return o + '</main>';
-  o += '<section class="card"><h2 class="ttl" style="margin-bottom:8px">Total assets</h2><div class="big" style="font-size:30px">' + (inr(V.total)) + '</div>';
+  o += '<section class="card"><h2 class="ttl" style="margin-bottom:8px">Total assets</h2><div class="big" style="font-size:30px">' + (inrC(V.total)) + '</div>';
   o += '<div class="stats" style="padding-top:10px;margin-top:10px;border-top:1px solid var(--line)">' + stat('Since last close', V.d == null ? '—' : inrC(V.d, true), null, cls(V.d)) + (V.port ? stat('Gain, market', inrC(V.port.gain, true), 'on ' + inrC(V.port.invested), cls(V.port.gain)) + stat('Return', pct(V.port.ret), 'gain ÷ invested') : '') + '</div></section>';
   var VIEWS = [['fn', 'Purpose'], ['cls', 'Asset class'], ['liq', 'Liquidity'], ['cust', 'Custodian']], rows = V.alloc[S.alloc] || [];
   o += '<section class="card"><h2 class="ttl" style="margin-bottom:12px">Allocation</h2><div class="seg" role="group" aria-label="Allocation view">' + VIEWS.map(function (x) { return '<button type="button" class="' + (S.alloc === x[0] ? 'on' : '') + '" aria-pressed="' + (S.alloc === x[0]) + '" data-act="alloc" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div><div style="margin-top:10px">';
@@ -621,10 +632,10 @@ function vInvest() {
   o += '<section class="card" style="padding-bottom:6px"><div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px"><h2 class="ttl">By type</h2><span class="small">Value · since close</span></div>';
   V.types.forEach(function (t) {
     var open = S.openType === t.t;
-    o += '<button type="button" class="rowbtn" aria-expanded="' + open + '" data-act="type" data-v="' + esc(t.t) + '"><span class="rl"><b>' + esc(t.t) + '</b><span class="sub">' + t.n + (t.n === 1 ? ' holding' : ' holdings') + (t.nx ? ' · ' + t.nx + ' tracked only' : '') + '</span></span><span class="rr"><span class="rl" style="align-items:flex-end"><b class="num">' + (inr(t.val)) + '</b><span class="num ' + cls(t.d) + '" style="font-size:12px;font-weight:600">' + (t.d == null || Math.abs(t.d) < 1 ? '—' : inr(t.d, true)) + '</span></span><span class="ms chev" style="font-size:20px">' + (open ? 'expand_less' : 'expand_more') + '</span></span></button>';
+    o += '<button type="button" class="rowbtn" aria-expanded="' + open + '" data-act="type" data-v="' + esc(t.t) + '"><span class="rl"><b>' + esc(t.t) + '</b><span class="sub">' + t.n + (t.n === 1 ? ' holding' : ' holdings') + (t.nx ? ' · ' + t.nx + ' tracked only' : '') + '</span></span><span class="rr"><span class="rl" style="align-items:flex-end"><b class="num">' + (inrC(t.val)) + '</b><span class="num ' + cls(t.d) + '" style="font-size:12px;font-weight:600">' + (t.d == null || Math.abs(t.d) < 1 ? '—' : inrC(t.d, true)) + '</span></span><span class="ms chev" style="font-size:20px">' + (open ? 'expand_less' : 'expand_more') + '</span></span></button>';
     if (open) {
       o += '<div style="display:flex;flex-direction:column;margin:0 0 8px;padding:4px 12px;border-radius:6px;background:var(--chip)">';
-      t.holdings.forEach(function (h) { o += '<button type="button" class="rowbtn" data-act="holding" data-v="' + esc(h.id) + '" style="min-height:44px;font-size:13px"><span class="rl"><span>' + esc(h.name) + (h.excl ? ' <span class="pill m" style="font-size:11px;padding:1px 6px">Not in net worth</span>' : '') + '</span><span class="sub" style="font-size:11px">' + esc([h.veh, h.cust].filter(Boolean).join(' · ')) + (h.xirr != null ? ' · XIRR ' + xirr(h.xirr) : '') + '</span></span><span class="rr"><b class="num' + (h.excl ? ' mute' : '') + '">' + (h.val == null ? '—' : (inr(h.val))) + '</b><span class="ms chev">chevron_right</span></span></button>'; });
+      t.holdings.forEach(function (h) { o += '<button type="button" class="rowbtn" data-act="holding" data-v="' + esc(h.id) + '" style="min-height:44px;font-size:13px"><span class="rl"><span>' + esc(h.name) + (h.excl ? ' <span class="pill m" style="font-size:11px;padding:1px 6px">Not in net worth</span>' : '') + '</span><span class="sub" style="font-size:11px">' + esc([h.veh, h.cust].filter(Boolean).join(' · ')) + (h.xirr != null ? ' · XIRR ' + xirr(h.xirr) : '') + '</span></span><span class="rr"><b class="num' + (h.excl ? ' mute' : '') + '">' + (h.val == null ? '—' : (inrC(h.val))) + '</b><span class="ms chev">chevron_right</span></span></button>'; });
       if (t.t === 'EPF' && D.epf && D.epf.split.length) o += epfSplit();
       o += '</div>';
     }
@@ -638,8 +649,8 @@ function vHolding() {
   if (!h) return o + '<p class="note">Holding not found.</p></main>';
   o += '<div style="display:flex;flex-direction:column;gap:6px;padding:0 4px"><h1>' + esc(h.name) + '</h1><div style="display:flex;gap:6px;flex-wrap:wrap">' + [h.cls, h.cat, h.veh].filter(Boolean).map(function (c) { return '<span class="chip">' + esc(c) + '</span>'; }).join('') + (h.excl ? '<span class="pill a">Not in net worth</span>' : '') + '</div>';
   var inv0 = h.lots ? h.lots.invested : h.cost && h.cost.invested ? h.cost.invested : null, g0 = inv0 != null && h.val != null ? h.val - inv0 : null;
-  o += '<div style="display:flex;flex-direction:column;gap:4px;padding-top:4px"><span class="big" style="font-size:30px">' + (h.val == null ? '—' : inr(h.val)) + '</span><span class="num" style="font-size:14px;font-weight:600;color:var(--mute)">' +
-    [g0 != null ? 'Gain <span class="' + cls(g0) + '">' + inr(g0, true) + ' (' + pct(inv0 ? g0 / inv0 : 0, 1, true) + ')</span>' : '', h.xirr != null ? 'XIRR <span style="color:var(--ink)">' + xirr(h.xirr) + '</span>' : ''].filter(Boolean).join(' · ') + '</span></div></div>';
+  o += '<div style="display:flex;flex-direction:column;gap:4px;padding-top:4px"><span class="big" style="font-size:30px">' + (h.val == null ? '—' : inrC(h.val)) + '</span><span class="num" style="font-size:14px;font-weight:600;color:var(--mute)">' +
+    [g0 != null ? 'Gain <span class="' + cls(g0) + '">' + inrC(g0, true) + ' (' + pct(inv0 ? g0 / inv0 : 0, 1, true) + ')</span>' : '', h.xirr != null ? 'XIRR <span style="color:var(--ink)">' + xirr(h.xirr) + '</span>' : ''].filter(Boolean).join(' · ') + '</span></div></div>';
   if (h.excl) o += '<div class="box a" style="margin:0">Tracked here only. Its value is left out of net worth, total assets and every other figure in the app.' + (h.val == null ? ' The sheet\'s value for it could not be read (row ' + h.row + ').' : '') + '</div>';
   var step = 0, S2 = function (t, right) { step++; return '<div style="display:flex;justify-content:space-between;align-items:center"><h2 class="hd"><span class="step">' + 'ABCDEF'[step - 1] + '</span>' + t + '</h2>' + (right || '') + '</div>'; };
   var tax = typeof h.taxation === 'number' ? 'Equity rates' : h.taxation;
@@ -652,7 +663,7 @@ function vHolding() {
   var RW = D.spend && D.spend.rewards, pgi = RW ? RW.programmes.findIndex(function (x) { return x.holdingId === h.id; }) : -1;
   if (pgi >= 0) {
     var Pg = RW.programmes[pgi];
-    o += '<section class="card"><h2 class="ttl">Points</h2><div class="stats">' + stat('Available', inr(Pg.val)) + stat('Points', grp(Pg.pts), '× ₹' + (Pg.rate || 0).toFixed(2)) + stat('Next expiry', Pg.nextExp ? monYr(Pg.nextExp) : '—', Pg.nextPts ? grp(Pg.nextPts) + ' pts' : '') + '</div>' +
+    o += '<section class="card"><h2 class="ttl">Points</h2><div class="stats">' + stat('Available', inrC(Pg.val)) + stat('Points', grp(Pg.pts), '× ₹' + (Pg.rate || 0).toFixed(2)) + stat('Next expiry', Pg.nextExp ? monYr(Pg.nextExp) : '—', Pg.nextPts ? grp(Pg.nextPts) + ' pts' : '') + '</div>' +
       '<button type="button" class="rowbtn" data-act="reward" data-v="' + pgi + '" style="margin-top:6px;border-top:1px solid var(--line);border-bottom:0"><span>Earnings, redemptions and expiry</span><span class="ms chev">chevron_right</span></button></section>';
   }
   o += '<section class="card" style="display:flex;flex-direction:column;gap:12px">' + S2('Details') + '<div class="kvg">' + kv.filter(function (x) { return x[1] != null && x[1] !== ''; }).map(function (x) { return '<div class="kv"><span>' + esc(x[0]) + '</span><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div></section>';
@@ -674,7 +685,7 @@ function vHolding() {
     o += '<div style="display:grid;grid-template-columns:76px minmax(0,1fr) 96px;gap:8px;align-items:center;font-size:13px" role="img" aria-label="Value now against an FD"><span>This holding</span><div style="height:10px;border-radius:2px;background:var(--acc);width:' + (h.val / mx * 100) + '%"></div><b class="num" style="text-align:right">' + (inr(h.val)) + '</b><span>FD</span><div style="height:10px;border-radius:2px;background:var(--ink);opacity:.45;width:' + (F.fdValue / mx * 100) + '%"></div><b class="num" style="text-align:right">' + (inr(F.fdValue)) + '</b><span class="mute">Invested</span><div style="height:10px;border-radius:2px;background:var(--soft);width:' + (F.invested / mx * 100) + '%"></div><span class="num mute" style="text-align:right">' + (inr(F.invested)) + '</span></div>';
     o += '<div><div style="display:grid;grid-template-columns:minmax(0,1fr) 96px 96px;gap:8px;padding-bottom:6px;border-bottom:1px solid var(--line)" class="th"><span></span><span style="text-align:right">This</span><span style="text-align:right">FD</span></div>' +
       [['Gain', inr(gain), inr(fdGain), 400], ['Tax if sold today', E ? inr(E.tax) : '—', inr(fdGain - fdNet), 400], ['Gain after tax', E ? inr(net) : '—', inr(fdNet), 700]].map(function (r) { return '<div style="display:grid;grid-template-columns:minmax(0,1fr) 96px 96px;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;font-weight:' + r[3] + '"><span>' + r[0] + '</span><span class="num" style="text-align:right">' + r[1] + '</span><span class="num mute" style="text-align:right">' + r[2] + '</span></div>'; }).join('') + '</div>';
-    o += '<p class="note" style="margin:0">' + (E ? (net >= fdNet ? 'After tax, ahead of the FD by ' : 'After tax, behind the FD by ') + '<b class="num" style="color:var(--ink)">' + inr(Math.abs(net - fdNet)) + '</b>. ' + (E.tax ? 'Selling today costs ' + inr(E.tax) + ' in tax, ' + pct(E.gross > 0 ? E.tax / E.gross : 0, 1) + ' of the gain.' : 'No tax on exit.') : '') + ' FD interest is taxed each year at ' + pct(F.marginal, 2) + '.</p></section>';
+    o += '<p class="note" style="margin:0">' + (E ? (net >= fdNet ? 'After tax, ahead of the FD by ' : 'After tax, behind the FD by ') + '<b class="num" style="color:var(--ink)">' + inrC(Math.abs(net - fdNet)) + '</b>. ' + (E.tax ? 'Selling today costs ' + inrC(E.tax) + ' in tax, ' + pct(E.gross > 0 ? E.tax / E.gross : 0, 1) + ' of the gain.' : 'No tax on exit.') : '') + ' FD interest is taxed each year at ' + pct(F.marginal, 2) + '.</p></section>';
   }
   if (h.ledger) o += vLedger(S2, h, px);
   return o + '</main>';
@@ -718,7 +729,7 @@ function vEpf(S2, h) {
   if (P) {
     o += '<section class="card" style="display:flex;flex-direction:column;gap:12px">' + S2('Passbook') + '<div class="kvg">' +
       [['Your contributions', P.ee], ['Employer contributions', P.er], ['Interest on your share', P.intEe], ['Interest on employer share', P.intEr], ['Withdrawn, your share', -P.wdEe], ['Withdrawn, employer share', -P.wdEr]].map(function (x) { return '<div class="kv"><span>' + x[0] + '</span><span class="num ' + (x[1] < 0 ? 'neg' : '') + '">' + inr(x[1]) + '</span></div>'; }).join('') + '</div>';
-    o += '<p class="small" style="margin:0">' + P.months + ' monthly credits. Pension credits, ' + inr(P.pen) + ', go to EPS. Tap a year for its entries.</p>';
+    o += '<p class="small" style="margin:0">' + P.months + ' monthly credits. Pension credits, ' + inrC(P.pen) + ', go to EPS. Tap a year for its entries.</p>';
     o += '<div><div style="display:grid;grid-template-columns:62px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 16px;gap:6px;padding-bottom:6px;border-bottom:1px solid var(--line)" class="th"><span>Year</span><span style="text-align:right">Yours</span><span style="text-align:right">Employer</span><span style="text-align:right">Interest</span><span></span></div>';
     P.fys.forEach(function (f) { o += '<button type="button" class="rowbtn" data-act="epffy" data-v="' + esc(f.fy) + '" style="display:grid;grid-template-columns:62px minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 16px;gap:6px;font-size:13px;min-height:40px"><span>' + esc(f.fy.replace('FY ', '')) + '</span><span class="num" style="text-align:right">' + inr(f.ee) + '</span><span class="num" style="text-align:right">' + inr(f.er) + '</span><span class="num pos" style="text-align:right">' + inr(f.intEe + f.intEr) + '</span><span class="ms chev" style="font-size:16px">chevron_right</span></button>'; });
     o += '</div><p class="note" style="margin:0">Interest is credited once a year, on 31 March.</p></section>';
@@ -774,9 +785,9 @@ function vCheck() {
   if (P.length) {
     var nx = P.filter(function (p) { return p.due && p.due >= todayK; }).sort(function (a, b) { return a.due < b.due ? -1 : 1; })[0];
     var yr = Number(todayK.slice(0, 4)), paidYr = sum(P.map(function (p) { return sum(p.lines.filter(function (l) { return l.paid && l.amt != null && Number(l.k.slice(0, 4)) === yr; }).map(function (l) { return l.amt; })); }));
-    o += '<div class="stats" style="margin-bottom:6px">' + stat('Premiums in ' + yr, inr(paidYr), P.length + ' policies') +
-      (nx ? stat('Next renewal', dayShort(nx.due), esc(nx.person + ' · ' + nx.type)) + stat('Due', inr(nx.dueAmt), nx.dueEst ? 'est., last year\'s' : 'as entered') : '') + '</div>';
-    if (nx && daysTo(nx.due) <= 30) o += '<div class="box a" style="margin:6px 0 4px">' + esc(nx.provider) + ' renews in ' + daysTo(nx.due) + (daysTo(nx.due) === 1 ? ' day' : ' days') + ', on ' + day(nx.due) + '. About ' + inr(nx.dueAmt) + ' to pay.</div>';
+    o += '<div class="stats" style="margin-bottom:6px">' + stat('Premiums in ' + yr, inrC(paidYr), P.length + ' policies') +
+      (nx ? stat('Next renewal', dayShort(nx.due), esc(nx.person + ' · ' + nx.type)) + stat('Due', inrC(nx.dueAmt), nx.dueEst ? 'est., last year\'s' : 'as entered') : '') + '</div>';
+    if (nx && daysTo(nx.due) <= 30) o += '<div class="box a" style="margin:6px 0 4px">' + esc(nx.provider) + ' renews in ' + daysTo(nx.due) + (daysTo(nx.due) === 1 ? ' day' : ' days') + ', on ' + day(nx.due) + '. About ' + inrC(nx.dueAmt) + ' to pay.</div>';
   }
   people.forEach(function (pn) {
     o += '<p class="sh" style="margin:10px 0 0">' + esc(pn) + '</p>';
@@ -786,7 +797,7 @@ function vCheck() {
       var pols = g.items.map(function (x) { return x.policy != null ? P[x.policy] : null; }).filter(Boolean).filter(function (p, k, a) { return a.indexOf(p) === k; });
       var prem = sum(pols.map(function (p) { return p.last ? p.last.amt : 0; })), due = pols.map(function (p) { return p.due; }).filter(Boolean).sort()[0];
       var soon = due && daysTo(due) <= 30 && daysTo(due) >= 0;
-      var sub = g.items.length + (g.items.length === 1 ? ' cover' : ' covers') + (prem ? ' · ' + inr(prem) + ' a year' : '') + (due ? ' · renews ' + dayShort(due) : '');
+      var sub = g.items.length + (g.items.length === 1 ? ' cover' : ' covers') + (prem ? ' · ' + inrC(prem) + ' a year' : '') + (due ? ' · renews ' + dayShort(due) : '');
       o += '<button type="button" class="rowbtn" data-act="insg" data-v="' + gi + '" style="display:grid;grid-template-columns:24px minmax(0,1fr) auto 18px;gap:10px"><span class="ms" style="color:var(--acc)">' + kind + '</span><span class="rl"><span>' + esc(g.cat) + (soon ? ' <span class="pill a" style="font-size:11px;padding:1px 6px">Due ' + dayShort(due) + '</span>' : '') + '</span><span class="sub">' + esc(sub) + '</span></span><b class="num">' + inrC(g.cover) + '</b><span class="ms chev">chevron_right</span></button>';
     });
   });
@@ -847,19 +858,19 @@ function vPremiums() {
   var prevPrem = sum(P.map(function (p) { var pd = p.lines.filter(function (l) { return l.paid && l.amt != null; }); return pd.length > 1 ? pd[pd.length - 2].amt : (pd[0] ? pd[0].amt : 0); }));
   var full = years.map(function (y, i) { return { y: y, v: byYear[i] }; }).filter(function (x) { return x.y < yNow; });
   var cagr = full.length > 1 && full[0].v > 0 ? Math.pow(full[full.length - 1].v / full[0].v, 1 / (full[full.length - 1].y - full[0].y)) - 1 : null;
-  o += '<section class="card"><h2 class="ttl">Premiums paid · by year</h2><div class="stats">' + stat('Yearly premium now', inr(nowPrem), prevPrem ? '<span class="' + (nowPrem > prevPrem ? 'neg' : 'pos') + '">' + pct((nowPrem - prevPrem) / prevPrem, 1, true) + '</span> vs the year before' : '') +
+  o += '<section class="card"><h2 class="ttl">Premiums paid · by year</h2><div class="stats">' + stat('Yearly premium now', inrC(nowPrem), prevPrem ? '<span class="' + (nowPrem > prevPrem ? 'neg' : 'pos') + '">' + pct((nowPrem - prevPrem) / prevPrem, 1, true) + '</span> vs the year before' : '') +
     stat('Growth a year', cagr != null ? pct(cagr, 1, true) : '—', full.length > 1 ? full[0].y + ' to ' + full[full.length - 1].y : '') + stat('Paid in all', inrC(sum(byYear)), paidLines.length + ' payments') + '</div>';
   o += '<div style="margin-top:14px">' + lineChart(years.map(String), [{ name: 'All policies', color: 'var(--acc)', values: plot, estLast: hasNow && est > 0 }], { label: 'Premiums paid each year', zero: true }) + '</div>';
-  o += '<p class="note">' + (hasNow && est > 0 ? yNow + ' is ' + inr(byYear[byYear.length - 1]) + ' paid so far plus ' + inr(est) + ' still to renew this year, at last year\'s premium (dashed). ' : '') + 'Yearly premium now is the latest premium of every policy; growth a year is the compound rate across full years.</p>';
+  o += '<p class="note">' + (hasNow && est > 0 ? yNow + ' is ' + inrC(byYear[byYear.length - 1]) + ' paid so far plus ' + inrC(est) + ' still to renew this year, at last year\'s premium (dashed). ' : '') + 'Yearly premium now is the latest premium of every policy; growth a year is the compound rate across full years.</p>';
   o += '</section>';
-  if (nx) o += '<section class="card"><h2 class="ttl">Next renewal</h2><div class="stats">' + stat('Date', dayShort(nx.due), nx.due.slice(0, 4) + ' · in ' + daysTo(nx.due) + ' days') + stat('Amount', inr(nx.dueAmt), nx.dueEst ? 'estimate: last premium' : 'as entered') + stat('Policy', esc(nx.type.replace(/^health\s*-\s*/i, '')), esc(nx.person + ' · ' + nx.provider)) + '</div></section>';
+  if (nx) o += '<section class="card"><h2 class="ttl">Next renewal</h2><div class="stats">' + stat('Date', dayShort(nx.due), nx.due.slice(0, 4) + ' · in ' + daysTo(nx.due) + ' days') + stat('Amount', inrC(nx.dueAmt), nx.dueEst ? 'estimate: last premium' : 'as entered') + stat('Policy', esc(nx.type.replace(/^health\s*-\s*/i, '')), esc(nx.person + ' · ' + nx.provider)) + '</div></section>';
   // Each policy's premium over the years, on one chart
   var pyears = years.map(String), series = P.map(function (p, i) { return { name: polName(p), color: SERIES_COLOURS[i % SERIES_COLOURS.length], values: years.map(function (y) { var ls = p.lines.filter(function (l) { return l.paid && l.amt != null && Number(l.k.slice(0, 4)) === y; }); return ls.length ? sum(ls.map(function (l) { return l.amt; })) : null; }) }; });
   o += '<section class="card"><h2 class="ttl">Premium growth · by policy</h2>' + lineChart(pyears, series, { label: 'Each policy\'s premium by year', h: 170 }) + '</section>';
   o += '<section class="card" style="padding-bottom:8px"><h2 class="ttl">Policies</h2>';
   P.forEach(function (p, i) {
     var open = S.openPol === p.key;
-    o += '<button type="button" class="rowbtn" aria-expanded="' + open + '" data-act="pol" data-v="' + esc(p.key) + '"><span class="rl"><span><span class="sw" style="background:' + SERIES_COLOURS[i % SERIES_COLOURS.length] + '"></span>' + esc(polName(p)) + '</span><span class="sub">' + esc(p.provider) + (p.cover ? ' · cover ' + inrC(p.cover) : '') + (p.cagr != null ? ' · ' + pct(p.cagr, 1, true) + ' a year' : '') + '</span></span><span class="rr"><span class="rl" style="align-items:flex-end"><b class="num">' + (p.last ? inr(p.last.amt) : '—') + '</b><span class="sub">' + (p.due ? 'renews ' + dayShort(p.due) : '') + '</span></span><span class="ms chev">' + (open ? 'expand_less' : 'expand_more') + '</span></span></button>';
+    o += '<button type="button" class="rowbtn" aria-expanded="' + open + '" data-act="pol" data-v="' + esc(p.key) + '"><span class="rl"><span><span class="sw" style="background:' + SERIES_COLOURS[i % SERIES_COLOURS.length] + '"></span>' + esc(polName(p)) + '</span><span class="sub">' + esc(p.provider) + (p.cover ? ' · cover ' + inrC(p.cover) : '') + (p.cagr != null ? ' · ' + pct(p.cagr, 1, true) + ' a year' : '') + '</span></span><span class="rr"><span class="rl" style="align-items:flex-end"><b class="num">' + (p.last ? inrC(p.last.amt) : '—') + '</b><span class="sub">' + (p.due ? 'renews ' + dayShort(p.due) : '') + '</span></span><span class="ms chev">' + (open ? 'expand_less' : 'expand_more') + '</span></span></button>';
     if (open) o += '<div style="margin:0 0 8px;padding:2px 12px;border-radius:8px;background:var(--chip)">' + polLedger(p) + '</div>';
   });
   return o + '<p class="note" style="font-size:12px">Each policy is a person, type and provider. Renewal is the next upcoming premium, or the day after the latest cover ends.</p></section></main>';
@@ -869,7 +880,7 @@ function polLedger(p) {
   return '<div class="th" style="' + G + ';padding:8px 0 6px;border-bottom:1px solid var(--line)"><span>Paid on</span><span style="text-align:right">Premium</span><span style="text-align:right">Change</span></div>' +
     p.lines.slice().reverse().map(function (l, i, arr) {
       var prevL = arr.slice(i + 1).find(function (x) { return x.paid && x.amt != null; }), ch = l.amt != null && prevL && prevL.amt ? (l.amt - prevL.amt) / prevL.amt : null;
-      return '<div class="row" style="' + G + ';font-size:13px"><span class="rl"><span>' + day(l.k) + (l.paid ? '' : ' <span class="pill a" style="font-size:10px;padding:1px 6px">Upcoming</span>') + '</span><span class="sub">' + (l.cover ? inrC(l.cover) + ' cover' : '') + (l.end ? ' · to ' + day(l.end) : '') + '</span></span><b class="num" style="text-align:right">' + (l.amt != null ? inr(l.amt) : '—') + '</b><span class="num ' + (ch > 0.0005 ? 'neg' : ch < -0.0005 ? 'pos' : 'mute') + '" style="text-align:right">' + (ch == null ? '' : Math.abs(ch) < 0.0005 ? '0.0%' : pct(ch, 1, true)) + '</span></div>';
+      return '<div class="row" style="' + G + ';font-size:13px"><span class="rl"><span>' + day(l.k) + (l.paid ? '' : ' <span class="pill a" style="font-size:10px;padding:1px 6px">Upcoming</span>') + '</span><span class="sub">' + (l.cover ? inr(l.cover) + ' cover' : '') + (l.end ? ' · to ' + day(l.end) : '') + '</span></span><b class="num" style="text-align:right">' + (l.amt != null ? inr(l.amt) : '—') + '</b><span class="num ' + (ch > 0.0005 ? 'neg' : ch < -0.0005 ? 'pos' : 'mute') + '" style="text-align:right">' + (ch == null ? '' : Math.abs(ch) < 0.0005 ? '0.0%' : pct(ch, 1, true)) + '</span></div>';
     }).join('');
 }
 
@@ -902,20 +913,20 @@ function lev(a, b) { var m = a.length, n = b.length, prev = [], j, i; if (!m) re
 function searchIndex() {
   var X = [];
   Object.keys(D.holdings || {}).forEach(function (k) { var h = D.holdings[k]; X.push(['Holdings', h.name, [h.cls, h.cust, h.note].filter(Boolean).join(' · '), inrC(h.val), { act: 'holding', v: k }]); });
-  ((D.spend || {}).cats || []).forEach(function (c, i) { X.push(['Spend', c.k, 'Category · ' + (D.spend.month || ''), inr(c.act), { act: 'cat', v: i, tab: 'spend' }]); c.items.forEach(function (it) { X.push(['Spend', it.n, c.k, inr(it.v), { act: 'cat', v: i, tab: 'spend' }]); }); });
+  ((D.spend || {}).cats || []).forEach(function (c, i) { X.push(['Spend', c.k, 'Category · ' + (D.spend.month || ''), inrC(c.act), { act: 'cat', v: i, tab: 'spend' }]); c.items.forEach(function (it) { X.push(['Spend', it.n, c.k, inrC(it.v), { act: 'cat', v: i, tab: 'spend' }]); }); });
   ((D.income || {}).sources || []).forEach(function (s) {
     X.push(['Income and tax', s.n, 'Income source', '', s.id === 'salary' ? { act: 'payslips', v: 0 } : { act: 'source', v: s.id }]);
-    (s.lines || []).forEach(function (l) { X.push(['Income and tax', l.what, s.n + ' · ' + day(l.k), inr(l.net), { act: 'source', v: s.id }]); });
+    (s.lines || []).forEach(function (l) { X.push(['Income and tax', l.what, s.n + ' · ' + day(l.k), inrC(l.net), { act: 'source', v: s.id }]); });
   });
   (D.tax || []).forEach(function (t, i) { X.push(['Income and tax', 'Computation of income', t.fy, inrC(t.liab), { act: 'taxsheet', v: i, tab: 'income' }]); });
   (D.payslips || []).forEach(function (y, i) { X.push(['Income and tax', 'Salary', y.fy, '', { act: 'payslips', v: i }]); });
   var C = D.check || {};
   insGroups().forEach(function (g, i) { X.push(['Check', g.person + ' · ' + g.cat, g.items.map(function (x) { return x.by; }).join(', '), inrC(g.cover), { act: 'insg', v: i, tab: 'check' }]); });
   ((C.locker || {}).items || []).forEach(function (it) { X.push(['Check', it, 'In the locker', '', { act: 'page', v: 'locker' }]); });
-  (C.policies || []).forEach(function (p) { X.push(['Check', p.provider, polName(p) + ' · premium', p.last ? inr(p.last.amt) : '', { act: 'page', v: 'premiums' }]); });
+  (C.policies || []).forEach(function (p) { X.push(['Check', p.provider, polName(p) + ' · premium', p.last ? inrC(p.last.amt) : '', { act: 'page', v: 'premiums' }]); });
   (C.ratios || []).forEach(function (r, i) { X.push(['Check', r.n, r.sub, ratioFmt(r), { act: 'ratio', v: i, tab: 'check' }]); });
   if (D.loan) X.push(['Pages', 'Home loan', D.loan.provider, inrC(D.loan.outstanding), { act: 'page', v: 'loan' }]);
-  ((D.spend || {}).rewards || { programmes: [] }).programmes.forEach(function (p, i) { X.push(['Spend', p.n + ' reward points', grp(p.pts) + ' pts', inr(p.val), { act: 'reward', v: i, tab: 'spend' }]); });
+  ((D.spend || {}).rewards || { programmes: [] }).programmes.forEach(function (p, i) { X.push(['Spend', p.n + ' reward points', grp(p.pts) + ' pts', inrC(p.val), { act: 'reward', v: i, tab: 'spend' }]); });
   return X;
 }
 // Placeholder suggestions: real names from the data, short enough to read in the bar
@@ -978,20 +989,20 @@ function vSheet() {
   if (s.type === 'src') {
     var I = D.income, x = I.sources[s.i];
     if (x.monthly) { var tot = sum(x.m.slice(0, I.last + 1)), n = x.m.slice(0, I.last + 1).filter(function (v) { return v; }).length; return sheetWrap(x.n, D.income.fy, bars(x.m.slice(0, I.last + 1), { labels: FYM.slice(0, I.last + 1), hi: I.last, label: x.n + ' by month' }) + '<div class="stats" style="margin-top:14px">' + stat('To date', inrC(tot)) + stat('Monthly avg', inrC(n ? tot / (I.last + 1) : 0)) + stat('Months paid', n + ' of ' + (I.last + 1)) + '</div>'); }
-    return sheetWrap(x.n, D.income.fy, '<div class="big" style="font-size:28px">' + inr(x.fy) + '</div><p class="note">Recorded as one figure for the year, with no monthly split.</p>');
+    return sheetWrap(x.n, D.income.fy, '<div class="big" style="font-size:28px">' + inrC(x.fy) + '</div><p class="note">Recorded as one figure for the year, with no monthly split.</p>');
   }
   if (s.type === 'cat') {
     var X = D.spend, c = X.cats[s.i], vals = c.trend.map(function (t) { return t.v; }), yr = S.spendView === 'y';
     var items = c.items.slice().sort(function (a, b) { return yr ? b.year - a.year : b.v - a.v; });
     var grid = 'display:grid;grid-template-columns:minmax(0,1fr) 90px' + (yr ? '' : ' 90px') + ';gap:8px;align-items:center';
-    return sheetWrap(c.k, yr ? inr(c.year) + ' for ' + X.fy + ' · ' + inr(c.ytd) + ' to date' : inr(c.act) + ' this month · usual ' + inr(c.usual), bars(vals, { labels: c.trend.map(function (t) { return t.m; }), hi: vals.length - 1, label: c.k + ' by month' }) +
+    return sheetWrap(c.k, yr ? inrC(c.year) + ' for ' + X.fy + ' · ' + inrC(c.ytd) + ' to date' : inrC(c.act) + ' this month · usual ' + inrC(c.usual), bars(vals, { labels: c.trend.map(function (t) { return t.m; }), hi: vals.length - 1, label: c.k + ' by month' }) +
       '<div class="th" style="' + grid + ';margin-top:14px;padding-bottom:6px;border-bottom:1px solid var(--line)"><span>Item</span>' + (yr ? '<span style="text-align:right">Year</span>' : '<span style="text-align:right">' + esc(X.month) + '</span><span style="text-align:right">Usual</span>') + '</div>' +
       items.map(function (it) { return '<div class="row" style="' + grid + '"><span>' + esc(it.n) + (it.fixed ? ' <span class="small">· fixed</span>' : '') + '</span>' + (yr ? '<b class="num" style="text-align:right">' + inr(it.year) + '</b>' : '<b class="num" style="text-align:right">' + inr(it.v) + '</b><span class="num mute" style="text-align:right">' + inr(it.usual) + '</span>') + '</div>'; }).join('') +
       '<p class="note" style="font-size:12px">Usual is the average of this year\'s earlier months. Fixed means it is already filled in for later months.</p>');
   }
   if (s.type === 'reward') {
     var Pg = D.spend.rewards.programmes[s.i], rate = (Pg.rate || 0).toFixed(2);
-    var body = '<div class="big" style="font-size:28px;margin:4px 0 2px">' + inr(Pg.val) + '</div><p class="small" style="margin:0 0 12px">Available · ' + grp(Pg.pts) + ' points × ₹' + rate + ' a point</p>';
+    var body = '<div class="big" style="font-size:28px;margin:4px 0 2px">' + inrC(Pg.val) + '</div><p class="small" style="margin:0 0 12px">Available · ' + grp(Pg.pts) + ' points × ₹' + rate + ' a point</p>';
     body += '<div class="stats" style="margin-bottom:10px">' + stat('Earned', grp(Pg.earned) + ' pts') + stat('Used', grp(Pg.used != null ? Pg.used : Pg.redeemed) + ' pts') + stat('Next expiry', Pg.nextExp ? monYr(Pg.nextExp) : '—', Pg.nextExp ? grp(Pg.nextPts) + ' pts on ' + dayShort(Pg.nextExp) : '') + '</div>';
     var G = 'display:grid;grid-template-columns:minmax(0,1fr) 56px 56px 64px;gap:8px';
     body += '<div class="th" style="' + G + ';padding-bottom:6px;border-bottom:1px solid var(--line)"><span>Earned on</span><span style="text-align:right">Points</span><span style="text-align:right">Left</span><span style="text-align:right">₹ value</span></div>';
@@ -1004,19 +1015,19 @@ function vSheet() {
   if (s.type === 'exittax') {
     var h = D.holdings[S.hid], E = h.exitTax, tx = Math.max(0, E.tax), sh = E.gross > 0 ? tx / E.gross : 0;
     var body = (E.gross > 0 ? '<div style="display:flex;height:12px;gap:2px;border-radius:2px;overflow:hidden;margin:6px 0 12px" role="img" aria-label="Gross gain split into net gain and tax"><div style="width:' + ((1 - sh) * 100) + '%;background:var(--acc)"></div><div style="width:' + (sh * 100) + '%;background:var(--neg)"></div></div>' : '') +
-      '<div class="stats">' + stat('Gross gain', inr(E.gross), null, cls(E.gross)) + stat('Tax', inr(tx), null, tx ? 'neg' : '') + stat('Net gain', inr(E.net)) + '</div>';
+      '<div class="stats">' + stat('Gross gain', inrC(E.gross), null, cls(E.gross)) + stat('Tax', inrC(tx), null, tx ? 'neg' : '') + stat('Net gain', inrC(E.net)) + '</div>';
     if (E.lines.length) body += '<div style="margin-top:10px">' + E.lines.map(function (l) { return '<div class="row"><span class="rl"><span>' + esc(l[0]) + '</span>' + (l[1] != null ? '<span class="sub num">on ' + inr(l[1]) + '</span>' : '') + '</span><span class="num">' + inr(l[2]) + '</span></div>'; }).join('') + '<div class="row" style="font-weight:700"><span>Tax</span><span class="num">' + inr(tx) + '</span></div></div>';
     return sheetWrap('Exit tax · if sold today', h.name, body + '<p class="note" style="font-size:12px">' + esc(E.note || '') + ' Gross gain = tax + net gain.</p>');
   }
   if (s.type === 'epffy') {
     var P = D.epf.passbook, ls = P.lines.filter(function (l) { return l.fy === s.v; }), f = P.fys.find(function (x) { return x.fy === s.v; });
-    return sheetWrap('EPF · ' + s.v, 'Yours ' + inr(f.ee) + ' · employer ' + inr(f.er) + ' · interest ' + inr(f.intEe + f.intEr), ls.map(function (l) { return '<div class="row"><span class="rl"><span>' + (l.kind === 'Contribution' ? (l.m || day(l.k)) : l.kind) + '</span><span class="sub">Credited ' + day(l.k) + (l.wages ? ' · wages ' + inr(l.wages) : '') + (l.pen ? ' · pension ' + inr(l.pen) : '') + '</span></span><span class="rl" style="align-items:flex-end"><span class="num ' + (l.kind === 'Withdrawal' ? 'neg' : l.kind === 'Interest' ? 'pos' : '') + '">' + inr(l.ee + l.er) + '</span><span class="sub num">' + inr(l.ee) + ' + ' + inr(l.er) + '</span></span></div>'; }).join('') + '<p class="note" style="font-size:12px">Your share + employer share.</p>');
+    return sheetWrap('EPF · ' + s.v, 'Yours ' + inrC(f.ee) + ' · employer ' + inrC(f.er) + ' · interest ' + inrC(f.intEe + f.intEr), ls.map(function (l) { return '<div class="row"><span class="rl"><span>' + (l.kind === 'Contribution' ? (l.m || day(l.k)) : l.kind) + '</span><span class="sub">Credited ' + day(l.k) + (l.wages ? ' · wages ' + inr(l.wages) : '') + (l.pen ? ' · pension ' + inr(l.pen) : '') + '</span></span><span class="rl" style="align-items:flex-end"><span class="num ' + (l.kind === 'Withdrawal' ? 'neg' : l.kind === 'Interest' ? 'pos' : '') + '">' + inr(l.ee + l.er) + '</span><span class="sub num">' + inr(l.ee) + ' + ' + inr(l.er) + '</span></span></div>'; }).join('') + '<p class="note" style="font-size:12px">Your share + employer share.</p>');
   }
   if (s.type === 'ratio') { var r = D.check.ratios[s.i]; return sheetWrap(r.n, r.sub.split(' · ')[0], '<div style="display:flex;align-items:center;gap:10px;margin:4px 0 4px"><span class="big" style="font-size:28px">' + ratioFmt(r) + '</span>' + (r.st ? '<span class="pill ' + r.st + '">' + ST_LABEL[r.st] + '</span>' : '<span class="pill m">For reference</span>') + '</div>' + gauge(r) + '<p class="note" style="margin:6px 0 10px">' + esc(ratioSay(r)) + '</p>' + kvRows(r.kv.map(function (k) { return [k[0], inr(k[1])]; })) + '<p class="note" style="font-size:12px">Income and tax are for the full year, estimated. Spend is this year\'s monthly average × 12.</p>'); }
   if (s.type === 'insg') {
     var g = insGroups()[s.i], Pl = (D.check || {}).policies || [], byIns = {};
     g.items.forEach(function (x) { (byIns[x.by] = byIns[x.by] || []).push(x); });
-    var body = '<div class="big" style="font-size:28px;margin:4px 0 4px">' + inr(g.cover) + '</div><p class="small" style="margin:0 0 10px">Total ' + esc(g.cat.toLowerCase()) + ' for ' + esc(g.person) + '</p>';
+    var body = '<div class="big" style="font-size:28px;margin:4px 0 4px">' + inrC(g.cover) + '</div><p class="small" style="margin:0 0 10px">Total ' + esc(g.cat.toLowerCase()) + ' for ' + esc(g.person) + '</p>';
     body += '<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;padding-bottom:6px;border-bottom:1px solid var(--line)" class="th"><span>Cover</span><span style="text-align:right">Amount</span></div>' + g.items.map(function (x) { return '<div class="row"><span class="rl"><span>' + esc(x.type || g.cat) + '</span><span class="sub">Provided by ' + esc(x.by) + '</span></span><b class="num">' + inr(x.cover) + '</b></div>'; }).join('');
     var shown = [];
     g.items.forEach(function (x) {
@@ -1025,7 +1036,7 @@ function vSheet() {
         if (shown.indexOf(p) >= 0) return; shown.push(p);
         var paid = p.lines.filter(function (l) { return l.paid && l.amt != null; });
         body += '<p class="sh" style="margin:16px 0 4px">' + esc(p.provider) + '</p>';
-        body += '<div class="stats" style="margin:4px 0 8px">' + stat('Last premium', inr(p.last ? p.last.amt : null), p.last ? dayShort(p.last.k) + ' ' + p.last.k.slice(0, 4) : '') + stat('Renews', p.due ? dayShort(p.due) : '—', p.due ? inr(p.dueAmt) + (p.dueEst ? ' est.' : '') : '') + stat('Growth a year', p.cagr != null ? pct(p.cagr, 1, true) : '—', paid.length + ' premiums') + '</div>';
+        body += '<div class="stats" style="margin:4px 0 8px">' + stat('Last premium', inrC(p.last ? p.last.amt : null), p.last ? dayShort(p.last.k) + ' ' + p.last.k.slice(0, 4) : '') + stat('Renews', p.due ? dayShort(p.due) : '—', p.due ? inrC(p.dueAmt) + (p.dueEst ? ' est.' : '') : '') + stat('Growth a year', p.cagr != null ? pct(p.cagr, 1, true) : '—', paid.length + ' premiums') + '</div>';
         if (paid.length > 1) body += lineChart(paid.map(function (l) { return l.k.slice(0, 4); }), [{ name: p.provider, color: 'var(--acc)', values: paid.map(function (l) { return l.amt; }) }], { label: p.provider + ' premium by year', h: 120 });
         body += polLedger(p);
         return;
@@ -1036,7 +1047,7 @@ function vSheet() {
     });
     return sheetWrap(g.cat, g.person, body + '<p class="note" style="font-size:12px">' + (Pl.length ? 'Cover and premiums are as per the latest policy. Growth a year is the compound rate from the first premium to the last.' : 'Premiums are the months this insurer\'s premium was paid, taken from your monthly expenses.') + '</p>');
   }
-  if (s.type === 'ins') { var x2 = D.check.insurance[s.i]; return sheetWrap(x2.cat, x2.person, '<div class="big" style="font-size:28px;margin:4px 0 10px">' + inr(x2.cover) + '</div>' + kvRows([['Person', esc(x2.person)], ['Type', esc(x2.type)], ['Insurer or source', esc(x2.by)]]) + '<p class="note" style="font-size:12px">Add renewal date and premium columns to the Insurance block to see renewals here.</p>'); }
+  if (s.type === 'ins') { var x2 = D.check.insurance[s.i]; return sheetWrap(x2.cat, x2.person, '<div class="big" style="font-size:28px;margin:4px 0 10px">' + inrC(x2.cover) + '</div>' + kvRows([['Person', esc(x2.person)], ['Type', esc(x2.type)], ['Insurer or source', esc(x2.by)]]) + '<p class="note" style="font-size:12px">Add renewal date and premium columns to the Insurance block to see renewals here.</p>'); }
   if (s.type === 'locker') {
     var Lk = D.check.locker;
     if (s.v === 'items') return sheetWrap('Contents', Lk.visits.length ? 'After the ' + day(Lk.visits[0].d) + ' visit' : '', Lk.items.map(function (it, i) { return '<div class="row"><span>' + (i + 1) + '. ' + esc(it) + '</span></div>'; }).join(''));
