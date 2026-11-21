@@ -1,6 +1,6 @@
 # Adapt the script to your sheet
 
-The script reads your workbook by tab names, column headers and row labels. If your sheet is laid out differently, sections of the email go missing or the script stops. This prompt has an AI assistant (Claude, ChatGPT, Gemini or similar) rewrite only the parts of the script that read the sheet, so every calculation and the email itself stay as they are.
+The script reads your workbook by tab names, column headers and row labels. If your sheet is laid out differently, sections of the email and the web app go missing or the script stops. This prompt has an AI assistant (Claude, ChatGPT, Gemini or similar) rewrite only the parts of the script that read the sheet, so every calculation, the email and the app stay as they are. `Index.html` never reads the sheet, so it needs no change.
 
 ## Steps
 
@@ -11,14 +11,14 @@ The script reads your workbook by tab names, column headers and row labels. If y
    - `CODE`: the full contents of `Code.gs`.
    - `LAYOUT`: the output from step 1.
    - `CHANGES`: what you changed or want, in plain words. For example: "My expenses run January to December", "I have no payslip register", "Holdings are on a tab called Assets with the value in column E".
-3. **Replace `Code.gs`** in Apps Script with the code the assistant returns. Run `sendSnapshot` and check the email. If a section is missing, the reason is under Executions; paste it back into the same chat.
+3. **Replace `Code.gs`** in Apps Script with the code the assistant returns. Run `sendSnapshot` and check the email, then open the web app's Test deployment URL (Deploy → Test deployments) and check it. If a section is missing, the reason is under Executions; paste it back into the same chat. Publish with Deploy → Manage deployments → ✏️ → New version.
 
 ## The prompt
 
 Copy everything inside the box.
 
 ````text
-You are updating a Google Apps Script (V8) that reads a personal finance workbook in Google Sheets and emails an HTML snapshot. My workbook's layout differs from the one the script expects. Change only the code that reads the workbook, so that the rest of the script receives exactly the same data as before.
+You are updating a Google Apps Script (V8) that reads a personal finance workbook in Google Sheets, emails an HTML snapshot and serves a web app (getAppData returns JSON to Index.html). My workbook's layout differs from the one the script expects. Change only the code that reads the workbook, so that the rest of the script receives exactly the same data as before.
 
 ## How the script is built
 
@@ -26,7 +26,7 @@ It has four layers. Only layer 1 may change.
 
 1. Readers: functions that read tabs and return plain objects. findSheet_, findFySheet_, monthHeader_, readWorth_, readMarkets_, readSpend_, readIncomeTax_ (only its reading part, see below), readPayouts_, readLocker_, plus CONFIG.TABS (patterns that match tab names).
 2. Calculations: the tax engine inside readIncomeTax_ (the calc function and everything after "Paid, balance, advance tax and interest"), slabTax_, loanTerms_, return grading, ratios, the snapshot log (logSheet_, readLog_, toLogEntry_, appendLog_, closest_).
-3. Rendering: renderEmail_ and every helper after "Components" (card_, section_, miniBars_, table_ and so on).
+3. Rendering: renderEmail_ and every helper after "Components" (card_, section_, miniBars_, table_ and so on). For the web app: buildAppData_ and every app*_ function except the readers listed below, and the whole of Index.html.
 4. Orchestration: sendSnapshot, sendSnapshot_, describeWorkbook.
 
 Rules for the readers:
@@ -89,6 +89,17 @@ readLocker_(ss) returns { url, last, items }:
 - last: { d: Date, by: text, after: text } for the latest visit, or null
 - items: array of item names from that visit
 
+The web app adds these readers. They are layer 1 too; keep each one's return shape exactly as the code builds it today:
+- appHoldings_: links each holding to its Portfolio row (from the Amount: T formula) and its lots on the XIRR tab (from the XIRR formula and the Today row's =SUM range).
+- appPayoutLedger_: every SGB coupon, REIT distribution (with its parts and TDS) and stock dividend on the payouts tab.
+- appPayslips_ and appPastCoi_: the payslip register on every CoI tab, and earlier years' computation from its "Income heads" block.
+- appLoan_: loan details and the bank statement on the loan tab (EMIs, prepayments, rate changes).
+- appRewards_: the rewards ledger (provider, date, points, multiplier, expiry), reconciled to the points row on the net worth tab.
+- appEpf_: the EPF split on the Portfolio tab and the passbook on the EPF tab.
+- appEvents_: events within APP.EVENT_DAYS_AHEAD days.
+- The insurance block, locker log and premiums inside appCheck_ and appPremiums_.
+- appInsPolicies_: the insurance premiums log. One or more tables, side by side, headed Person, Insurance type, Provider, Premium amount, Premium Date, Coverage amount, Start date, End date, Status. Each person, type and provider is one policy with a row a year; a row dated in the future is the next renewal.
+
 ## My workbook
 
 LAYOUT (output of describeWorkbook; numbers, dates and emails are masked):
@@ -114,7 +125,7 @@ DESCRIBE YOUR CHANGES HERE
 
 1. The complete updated Code.gs in one code block, ready to paste.
 2. A list of each change: function, what it now reads, and why.
-3. Any assumptions, and which sections of the email will be missing because my workbook has no data for them.
+3. Any assumptions, and which sections of the email and the web app will be missing because my workbook has no data for them.
 
 ## The current script
 
