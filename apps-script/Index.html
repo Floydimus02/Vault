@@ -134,8 +134,8 @@ button.card.rowbtn{border-bottom:0}
 </style>
 <style>
 /* Theme: warm marketplace look. White canvas, one coral accent used sparingly, soft radii, modest weights, hairlines over fills, one shadow tier. */
-:root{--bg:#FFFFFF;--card:#FFFFFF;--well:#F7F7F7;--ink:#222222;--mute:#6A6A6A;--line:#EBEBEB;--soft:#DDDDDD;--acc:#FF385C;--acc2:#E00B41;--pos:#008A05;--posbg:#EBF7EC;--neg:#C13515;--negbg:#FDEDEA;--amber:#B4690E;--amberbg:#FFF5E6;--blue:#222222;--bluebg:#F2F2F2;--scrim:rgba(0,0,0,.5);--lift:0 0 0 1px rgba(0,0,0,.02),0 2px 6px rgba(0,0,0,.04),0 4px 8px rgba(0,0,0,.1);--shadow:var(--lift);--selbg:rgba(255,56,92,.10);--selbd:rgba(255,56,92,.32);--selfg:#D70F45;--bar:rgba(255,56,92,.30)}
-html.dark{--bg:#121212;--card:#1A1A1A;--well:#242424;--ink:#F7F7F7;--mute:#A3A3A3;--line:#2A2A2A;--soft:#3A3A3A;--acc:#FF385C;--acc2:#FF5A76;--pos:#4CC38A;--posbg:#12301F;--neg:#FF6B5E;--negbg:#3A1714;--amber:#F2B04B;--amberbg:#352612;--blue:#F7F7F7;--bluebg:#2A2A2A;--scrim:rgba(0,0,0,.6);--lift:0 0 0 1px rgba(255,255,255,.04),0 4px 12px rgba(0,0,0,.5);--selbg:rgba(255,56,92,.16);--selbd:rgba(255,56,92,.40);--selfg:#FF8FA3;--bar:rgba(255,120,145,.38);color-scheme:dark}
+:root{--bg:#FFFFFF;--card:#FFFFFF;--well:#F7F7F7;--ink:#222222;--mute:#6A6A6A;--line:#EBEBEB;--soft:#DDDDDD;--acc:#4F46E5;--acc2:#4338CA;--pos:#008A05;--posbg:#EBF7EC;--neg:#C13515;--negbg:#FDEDEA;--amber:#B4690E;--amberbg:#FFF5E6;--blue:#222222;--bluebg:#F2F2F2;--scrim:rgba(0,0,0,.5);--lift:0 0 0 1px rgba(0,0,0,.02),0 2px 6px rgba(0,0,0,.04),0 4px 8px rgba(0,0,0,.1);--shadow:var(--lift);--selbg:rgba(79,70,229,.10);--selbd:rgba(79,70,229,.32);--selfg:#4338CA;--bar:rgba(79,70,229,.30)}
+html.dark{--bg:#121212;--card:#1A1A1A;--well:#242424;--ink:#F7F7F7;--mute:#A3A3A3;--line:#2A2A2A;--soft:#3A3A3A;--acc:#818CF8;--acc2:#A5B4FC;--pos:#4CC38A;--posbg:#12301F;--neg:#FF6B5E;--negbg:#3A1714;--amber:#F2B04B;--amberbg:#352612;--blue:#F7F7F7;--bluebg:#2A2A2A;--scrim:rgba(0,0,0,.6);--lift:0 0 0 1px rgba(255,255,255,.04),0 4px 12px rgba(0,0,0,.5);--selbg:rgba(129,140,248,.16);--selbd:rgba(129,140,248,.45);--selfg:#A5B4FC;--bar:rgba(129,140,248,.40);color-scheme:dark}
 html,body{font-family:Inter,-apple-system,system-ui,Roboto,'Helvetica Neue',sans-serif}
 /* Top bar */
 header.top{padding:14px 12px 12px 20px;border-bottom:1px solid var(--line)}
@@ -181,15 +181,21 @@ div:has(> .seg) > .ttl{white-space:nowrap}
 /* Bars: ink fills; coral only on what needs a look */
 .trk{background:var(--line);height:6px}
 .fil{background:var(--bar)}
-.fil.over{background:var(--acc)}
+.fil.over{background:var(--neg);opacity:.75}
 .event{background:var(--well);border:0;border-radius:16px}
 /* Net worth change strip */
-.nwstrip{display:grid;margin:0 0 16px;border:1px solid var(--line);border-radius:10px}
-.nwstrip > div{display:flex;flex-direction:column;gap:2px;padding:10px 12px;min-width:0}
-.nwstrip > div + div{border-left:1px solid var(--line)}
-.nwstrip .l{font-size:12px;color:var(--mute)}
-.nwstrip .v{font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis}
-.nwstrip .p{font-size:12px;font-weight:600}
+.nwd{margin:-6px 0 16px}
+.nwd .dp{font-size:13px}
+/* Logo: an animated blob in the accent colour */
+.logo{width:40px;height:40px;background:none;border-radius:0;box-shadow:none;line-height:0}
+.logo svg{width:100%;height:100%;display:block;overflow:visible}
+.center .logo{width:88px;height:88px}
+.lmsg{min-height:20px;transition:opacity .25s ease}
+.lmsg.out{opacity:0}
+/* Chart series: distinct from gains green and losses red */
+:root{--s2:#7B8BA3;--s3:#E2A03F;--s4:#2E9E95;--s5:#C2649A;--s6:#3FA7D6}
+html.dark{--s2:#9AA8BD;--s3:#F0B65E;--s4:#4FC2B8;--s5:#E08BBD;--s6:#6CC4EA}
+.grp{display:flex;justify-content:space-between;align-items:center}
 .event .ms{color:var(--acc)}
 .w.t{border-bottom:2px solid var(--ink)}
 /* Bottom navigation: no fill, coral marks where you are */
@@ -213,7 +219,8 @@ nav.tabs button.on .ms{font-variation-settings:'wght' 500}
 </style>
 </head>
 <body>
-<div class="app" id="app"><div class="center"><div class="logo">V</div>Reading your sheet…</div></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><filter id="goo" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="26" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 28 -12" result="g"/><feComposite in="SourceGraphic" in2="g" operator="atop"/></filter></defs></svg>
+<div class="app" id="app"><div class="center"><div class="logo"><svg class="blob" viewBox="-60 -60 1144 1033" aria-hidden="true" focusable="false"><g filter="url(#goo)" style="fill:var(--acc)"><path d="M70 370C70 280 140 255 240 245C330 235 400 200 480 135C560 70 650 0 760 0C880 0 980 100 980 225C980 330 920 410 830 437C700 487 605 560 605 700C605 830 560 913 465 913C350 913 300 820 290 690C280 580 220 545 150 503C100 470 70 440 70 370Z"><animate attributeName="d" dur="4.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.33;0.66;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M70 370C70 280 140 255 240 245C330 235 400 200 480 135C560 70 650 0 760 0C880 0 980 100 980 225C980 330 920 410 830 437C700 487 605 560 605 700C605 830 560 913 465 913C350 913 300 820 290 690C280 580 220 545 150 503C100 470 70 440 70 370Z;M62 370C82 280 158 244 259 223C351 209 427 176 513 118C593 64 677 7 787 21C907 26 1014 121 1003 246C981 351 904 435 809 462C671 501 571 560 583 700C610 830 582 907 487 894C372 887 303 795 266 665C246 555 187 525 120 491C74 465 48 440 62 370Z;M98 346C99 256 167 240 267 247C356 252 421 226 491 165C558 98 635 18 745 0C865 -19 984 71 1005 196C1010 301 944 386 851 425C713 497 603 584 580 724C576 854 540 941 445 943C330 933 271 833 266 701C275 589 221 544 160 490C116 450 90 416 98 346Z;M70 370C70 280 140 255 240 245C330 235 400 200 480 135C560 70 650 0 760 0C880 0 980 100 980 225C980 330 920 410 830 437C700 487 605 560 605 700C605 830 560 913 465 913C350 913 300 820 290 690C280 580 220 545 150 503C100 470 70 440 70 370Z"/></path><circle cx="863" cy="698" r="131"><animate attributeName="cx" dur="4.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.33;0.66;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="863;760;835;863"/><animate attributeName="cy" dur="4.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.33;0.66;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="698;640;730;698"/><animate attributeName="r" dur="4.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.33;0.66;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="131;118;140;131"/></circle></g></svg></div><div class="lmsg" aria-live="polite">Reading your sheet</div></div></div>
 <script>
 (function () {
 'use strict';
@@ -256,10 +263,25 @@ function M(v) { return v; }
 function sum(a) { return a.reduce(function (s, x) { return s + (Number(x) || 0); }, 0); }
 function daysTo(k) { var t = new Date(D.today + 'T00:00:00'), d = new Date(k + 'T00:00:00'); return Math.round((d - t) / 864e5); }
 
+/* ---------- Logo ---------- */
+var BLOB = '<svg class="blob" viewBox="-60 -60 1144 1033" aria-hidden="true" focusable="false"><g filter="url(#goo)" style="fill:var(--acc)"><path d="M70 370C70 280 140 255 240 245C330 235 400 200 480 135C560 70 650 0 760 0C880 0 980 100 980 225C980 330 920 410 830 437C700 487 605 560 605 700C605 830 560 913 465 913C350 913 300 820 290 690C280 580 220 545 150 503C100 470 70 440 70 370Z"><animate attributeName="d" dur="4.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.33;0.66;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="M70 370C70 280 140 255 240 245C330 235 400 200 480 135C560 70 650 0 760 0C880 0 980 100 980 225C980 330 920 410 830 437C700 487 605 560 605 700C605 830 560 913 465 913C350 913 300 820 290 690C280 580 220 545 150 503C100 470 70 440 70 370Z;M62 370C82 280 158 244 259 223C351 209 427 176 513 118C593 64 677 7 787 21C907 26 1014 121 1003 246C981 351 904 435 809 462C671 501 571 560 583 700C610 830 582 907 487 894C372 887 303 795 266 665C246 555 187 525 120 491C74 465 48 440 62 370Z;M98 346C99 256 167 240 267 247C356 252 421 226 491 165C558 98 635 18 745 0C865 -19 984 71 1005 196C1010 301 944 386 851 425C713 497 603 584 580 724C576 854 540 941 445 943C330 933 271 833 266 701C275 589 221 544 160 490C116 450 90 416 98 346Z;M70 370C70 280 140 255 240 245C330 235 400 200 480 135C560 70 650 0 760 0C880 0 980 100 980 225C980 330 920 410 830 437C700 487 605 560 605 700C605 830 560 913 465 913C350 913 300 820 290 690C280 580 220 545 150 503C100 470 70 440 70 370Z"/></path><circle cx="863" cy="698" r="131"><animate attributeName="cx" dur="4.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.33;0.66;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="863;760;835;863"/><animate attributeName="cy" dur="4.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.33;0.66;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="698;640;730;698"/><animate attributeName="r" dur="4.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.33;0.66;1" keySplines="0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1" values="131;118;140;131"/></circle></g></svg>';
+// Keep the blob's motion continuous across re-renders
+function syncBlobs() {
+  var t = (performance.now() / 1000) % 4.8;
+  document.querySelectorAll('svg.blob').forEach(function (b) { try { b.setCurrentTime(t); } catch (e) {} });
+}
+// Loading: a few lines that cycle until the sheet is read
+var LMSG = ['Reading your sheet', 'Totting up every account', 'Fetching today\'s prices', 'Working out your tax', 'Looking for leaks', 'Lining up your net worth'], li = 0;
+var lt = setInterval(function () {
+  var e = document.querySelector('.lmsg'); if (!e || D) { clearInterval(lt); return; }
+  e.classList.add('out'); setTimeout(function () { li = (li + 1) % LMSG.length; e.textContent = LMSG[li]; e.classList.remove('out'); }, 250);
+}, 1800);
+syncBlobs();
+
 /* ---------- Data ---------- */
 function load(refresh) {
   var ok = function (json) { var first = !D; D = JSON.parse(json); S._sugg = null; if (first) { S.taxFy = 0; S.payFy = 0; S.payMonth = null; } render(); };
-  var fail = function (e) { document.getElementById('app').innerHTML = '<div class="center"><div class="logo">V</div>Couldn\'t read the sheet.<br>' + esc(e && e.message || e) + '<button class="recent" data-act="reload" style="border:1px solid var(--line);border-radius:3px;padding:8px 14px;background:var(--card);cursor:pointer;font-weight:700">Try again</button></div>'; };
+  var fail = function (e) { document.getElementById('app').innerHTML = '<div class="center"><div class="logo">' + BLOB + '</div>Couldn\'t read the sheet.<br>' + esc(e && e.message || e) + '<button class="recent" data-act="reload" style="border:1px solid var(--line);border-radius:3px;padding:8px 14px;background:var(--card);cursor:pointer;font-weight:700">Try again</button></div>'; };
   if (window.google && google.script && google.script.run) google.script.run.withSuccessHandler(ok).withFailureHandler(fail).getAppData(!!refresh);
   else fetch('data.json').then(function (r) { return r.text(); }).then(ok).catch(fail);
 }
@@ -269,7 +291,7 @@ function themeBtn() { var dark = document.documentElement.classList.contains('da
 function header(title, sub, opts) {
   opts = opts || {};
   if (opts.back) return '<header class="top back"><div class="hl"><button type="button" class="ib" aria-label="Back" data-act="back"><span class="ms">arrow_back</span></button><div class="rl"><h1>' + esc(title) + '</h1>' + (sub ? '<span class="hsub">' + esc(sub) + '</span>' : '') + '</div></div>' + themeBtn() + '</header>';
-  return '<header class="top"><div class="hl">' + (opts.logo ? '<div class="logo" aria-hidden="true">V</div>' : '') + '<div class="rl"><h1>' + esc(title) + '</h1>' + (sub ? '<span class="hsub">' + esc(sub) + '</span>' : '') + '</div></div>' + themeBtn() + '</header>';
+  return '<header class="top"><div class="hl">' + (opts.logo !== false ? '<div class="logo" aria-hidden="true">' + BLOB + '</div>' : '') + '<div class="rl"><h1>' + esc(title) + '</h1>' + (sub ? '<span class="hsub">' + esc(sub) + '</span>' : '') + '</div></div>' + themeBtn() + '</header>';
 }
 function nav() {
   var T = [['home', 'home', 'Home'], ['income', 'payments', 'Income'], ['spend', 'shopping_bag', 'Spend'], ['invest', 'trending_up', 'Invest'], ['check', 'fact_check', 'Check'], ['search', 'search', 'Search']];
@@ -313,11 +335,9 @@ function vHome() {
   }
   o += '<section class="card"><h2 class="ttl">Net worth · ' + dateStr + '</h2>';
   o += '<div class="big" style="font-size:40px;line-height:1.1;margin:0 0 14px">' + M(inrC(H.nw)) + '</div>';
-  // Change since last close, over 7 days and over 30 days: one strip of equal columns
-  if (H.deltas.length) o += '<div class="nwstrip" style="grid-template-columns:repeat(' + H.deltas.length + ',minmax(0,1fr))">' + H.deltas.map(function (x) {
-    var lab = x.l.replace(/^in /, '').replace(/^since last close$/, 'since close'), c = x.d > 0 ? 'pos' : x.d < 0 ? 'neg' : '';
-    return '<div><span class="l">' + esc(lab.charAt(0).toUpperCase() + lab.slice(1)) + '</span><span class="v num ' + c + '">' + inrC(x.d, true) + '</span><span class="p num ' + c + '">' + pct(x.base ? x.d / Math.abs(x.base) : 0, 2, true) + '</span></div>';
-  }).join('') + '</div>';
+  // Change since yesterday's midnight log; the trend card below covers 7 days, 30 days and 12 months
+  var d1 = H.deltas.find(function (x) { return /since/i.test(x.l); });
+  if (d1) o += '<div class="nwd"><span class="dp num ' + (d1.d >= 0 ? 'up' : 'dn') + '">' + (d1.d > 0 ? '▲ ' : d1.d < 0 ? '▼ ' : '') + inrC(Math.abs(d1.d)) + ' (' + pct(d1.base ? Math.abs(d1.d / d1.base) : 0, 2) + ') <i>since yesterday</i></span></div>';
   var ap = H.nw ? H.assets / H.nw : null, lp = H.nw ? H.liab / H.nw : null;
   o += '<div class="stats" style="grid-template-columns:repeat(2,minmax(0,1fr));padding-top:12px;border-top:1px solid var(--line)">' + stat('Assets', M(inrC(H.assets)) + ' <span style="font-size:14px;font-weight:500;color:var(--mute)">' + pct(ap) + '</span>') + stat('Liabilities', M(inrC(H.liab)) + ' <span style="font-size:14px;font-weight:500;color:var(--mute)">' + pct(lp) + '</span>') + '</div></section>';
   // Net worth trend: one value a day from the midnight log, or the value at each month end
@@ -439,11 +459,19 @@ function vSource() {
     stat('Latest', inrC(last.net), dayShort(last.k) + ' ' + last.k.slice(0, 4)) + '</div>';
   var fyAsc = fys.slice().reverse().slice(-6), vals = fyAsc.map(function (f) { return sum(byFy[f].map(function (l) { return l.net; })); });
   o += '<div style="margin-top:14px">' + bars(vals, { labels: fyAsc.map(function (f) { return f.replace('FY ', ''); }), hi: fyAsc.indexOf(fyNow) >= 0 ? fyAsc.indexOf(fyNow) : vals.length - 1, label: x.n + ' by financial year' }) + '</div>';
+  if (x.id === 'reit') {
+    // A distribution is interest, dividend and other income, plus SPV debt repayment, which returns capital
+    var PK = [['Interest', /interest/i, 'var(--acc)'], ['Dividend', /dividend/i, 'var(--s4)'], ['Other income', /other/i, 'var(--s3)'], ['Capital returned', /spv|repay/i, 'var(--s2)']], tot = {};
+    inFy.forEach(function (l) { (l.parts || []).forEach(function (p) { var k = PK.find(function (q) { return q[1].test(p.n); }) || PK[2]; tot[k[0]] = (tot[k[0]] || 0) + p.gross; }); });
+    var all = sum(PK.map(function (k) { return tot[k[0]] || 0; }));
+    if (all) o += '<p class="sh" style="margin:16px 0 6px">This year by part · before TDS</p><div style="display:flex;height:10px;gap:2px;border-radius:3px;overflow:hidden" role="img" aria-label="This year\'s distributions by part">' + PK.filter(function (k) { return tot[k[0]]; }).map(function (k) { return '<div style="width:' + (tot[k[0]] / all * 100) + '%;background:' + k[2] + '"></div>'; }).join('') + '</div>' +
+      PK.filter(function (k) { return tot[k[0]]; }).map(function (k) { return '<div class="row" style="font-size:13px;padding:6px 0"><span><span class="sw" style="background:' + k[2] + '"></span>' + k[0] + '</span><span class="num"><b>' + inr(tot[k[0]]) + '</b> <span class="mute">· ' + pct(tot[k[0]] / all) + '</span></span></div>'; }).join('');
+  }
   var whats = {}; L.forEach(function (l) { whats[l.what] = (whats[l.what] || 0) + l.net; });
   var top = Object.keys(whats).sort(function (a, b) { return whats[b] - whats[a]; });
   if (top.length > 1) o += '<p class="note">' + esc(top[0]) + ' has paid the most, ' + inrC(whats[top[0]]) + ' across ' + fys.length + (fys.length === 1 ? ' year' : ' years') + '.</p>';
   o += '</section>';
-  o += '<section class="card" style="padding-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px"><h2 class="ttl">Ledger</h2><span class="small">' + (x.id === 'sgb' ? 'By bond' : 'Net of TDS') + '</span></div>';
+  o += '<section class="card" style="padding-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px"><h2 class="ttl">Ledger</h2><span class="small">' + (x.id === 'sgb' ? 'By bond' : x.id === 'reit' ? 'By REIT · net of TDS' : 'Net of TDS') + '</span></div>';
   if (x.id === 'sgb') {
     // One row per bond, each opening its own list of coupons
     top.forEach(function (w) {
@@ -452,6 +480,18 @@ function vSource() {
       if (open) o += '<div style="margin:0 0 8px;padding:2px 12px;border-radius:8px;background:var(--chip)">' + ls.map(function (l) { return '<div class="row" style="font-size:13px"><span class="rl"><span>' + day(l.k) + '</span><span class="sub">' + esc(l.fy) + '</span></span><span class="num">' + inr(l.net) + '</span></div>'; }).join('') + '</div>';
     });
     return o + '<p class="note" style="font-size:12px">Coupons are paid twice a year at a fixed rate on the issue price.</p></section></main>';
+  }
+  if (x.id === 'reit') {
+    // One row per REIT; each distribution shows its quarter, date, parts and TDS
+    top.forEach(function (w) {
+      var ls = L.filter(function (l) { return l.what === w; }), open = S.openEnt === w;
+      o += '<button type="button" class="rowbtn" aria-expanded="' + open + '" data-act="ent" data-v="' + esc(w) + '"><span class="rl"><b>' + esc(w) + '</b><span class="sub">' + ls.length + (ls.length === 1 ? ' distribution' : ' distributions') + ' · last ' + day(ls[0].k) + '</span></span><span class="rr"><b class="num">' + inr(whats[w]) + '</b><span class="ms chev">' + (open ? 'expand_less' : 'expand_more') + '</span></span></button>';
+      if (open) o += '<div style="margin:0 0 8px;padding:2px 12px;border-radius:8px;background:var(--chip)">' + ls.map(function (l) {
+        return '<div style="padding:10px 0;border-bottom:1px solid var(--line)"><div style="display:flex;justify-content:space-between;gap:8px;font-size:14px;font-weight:600"><span>' + esc(l.q || l.fy) + '</span><span class="num">' + inr(l.net) + '</span></div><div class="small" style="margin:2px 0 6px">Paid ' + day(l.k) + (l.tds ? ' · TDS ' + inr(l.tds) : '') + '</div>' +
+          (l.parts || []).map(function (p) { return '<div style="display:grid;grid-template-columns:minmax(0,1fr) auto 76px;gap:8px;font-size:13px;padding:2px 0"><span class="mute">' + esc(p.n) + '</span><span class="num" style="text-align:right">' + inr(p.gross) + '</span><span class="num mute" style="text-align:right">' + (p.tds ? 'TDS ' + inr(p.tds) : '') + '</span></div>'; }).join('') + '</div>';
+      }).join('') + '</div>';
+    });
+    return o + '<p class="note" style="font-size:12px">SPV debt repayment returns your capital and is not income. Interest and other income are taxable; dividends are taxable only where TDS applies.</p></section></main>';
   }
   fys.forEach(function (f) {
     o += '<p class="sh" style="margin:12px 0 2px;display:flex;justify-content:space-between"><span>' + esc(f) + '</span><span class="num">' + inr(sum(byFy[f].map(function (l) { return l.net; }))) + '</span></p>';
@@ -471,8 +511,8 @@ function payTable(earn, ded, gross, net, label) {
 }
 function splitBar(gross, tds, net) {
   var other = gross - tds - net;
-  return '<div style="display:flex;height:12px;gap:2px;border-radius:4px;overflow:hidden;margin-top:14px" role="img" aria-label="Gross split into TDS, other deductions and net pay"><div style="width:' + (tds / gross * 100) + '%;background:var(--ink)"></div><div style="width:' + (other / gross * 100) + '%;background:var(--soft)"></div><div style="width:' + (net / gross * 100) + '%;background:var(--acc)"></div></div>' +
-    '<div class="legend"><span><span class="sw" style="background:var(--ink)"></span>Tax (TDS)</span><span><span class="sw" style="background:var(--soft)"></span>PF and other</span><span><span class="sw" style="background:var(--acc)"></span>Net pay</span></div>';
+  return '<div style="display:flex;height:12px;gap:2px;border-radius:4px;overflow:hidden;margin-top:14px" role="img" aria-label="Gross split into TDS, other deductions and net pay"><div style="width:' + (tds / gross * 100) + '%;background:var(--s2)"></div><div style="width:' + (other / gross * 100) + '%;background:var(--soft)"></div><div style="width:' + (net / gross * 100) + '%;background:var(--acc)"></div></div>' +
+    '<div class="legend"><span><span class="sw" style="background:var(--s2)"></span>Tax (TDS)</span><span><span class="sw" style="background:var(--soft)"></span>PF and other</span><span><span class="sw" style="background:var(--acc)"></span>Net pay</span></div>';
 }
 function vPayslips() {
   var P = D.payslips || [], o = header('Salary', null, { back: true }) + '<main>';
@@ -495,7 +535,7 @@ function vPayslips() {
     // Like for like: the previous year up to the same month
     var prevY = P[S.payFy + 1], pm = prevY ? prevY.months.filter(function (x) { return x.i <= lastI; }) : [];
     var pg = pm.length ? tot(pm, 'gross') : null, pt = pm.length ? tot(pm, 'tds') : null, pn = pm.length ? tot(pm, 'net') : null;
-    var span = 'Apr to ' + FYM[lastI], vs = prevY ? ' vs ' + prevY.fy.replace('FY ', '') : '';
+    var span = 'Apr to ' + FYM[lastI], vs = prevY ? ' vs ' + (complete ? '' : span + ' ') + prevY.fy.replace('FY ', '') : '';
     o += '<section class="card"><h2 class="ttl">Salary · ' + esc(Y.fy) + (complete ? '' : ' · ' + span) + '</h2><div class="stats">' +
       stat('Gross pay', inrC(g), pg ? delta(g, pg) + vs : Y.months.length + ' payslips') + stat('Tax', inrC(t), pt ? delta(t, pt) + vs : pct(t / g) + ' of gross') + stat('Net pay', inrC(n), pn ? delta(n, pn) + vs : pct(n / g) + ' of gross') + '</div>' + splitBar(g, t, n);
     if (pg) o += '<p class="note">' + (complete ? 'Full year' : span) + ' against the same months of ' + esc(prevY.fy) + ': gross ' + inrC(g - pg, true) + ', tax ' + inrC(t - pt, true) + ', net ' + inrC(n - pn, true) + '.</p>';
@@ -838,7 +878,7 @@ function lineChart(labels, series, opts) {
   });
   return o + '</svg>' + (series.length > 1 ? '<div class="legend">' + series.map(function (sr) { return '<span><span class="sw" style="background:' + sr.color + '"></span>' + esc(sr.name) + '</span>'; }).join('') + '</div>' : '');
 }
-var SERIES_COLOURS = ['var(--acc)', 'var(--ink)', 'var(--blue)', 'var(--pos)', 'var(--amber)', 'var(--neg)'];
+var SERIES_COLOURS = ['var(--acc)', 'var(--s4)', 'var(--s3)', 'var(--s5)', 'var(--s6)', 'var(--s2)'];
 function polName(p) { return p.person + ' · ' + p.type.replace(/^health\s*-\s*/i, 'Health, ').replace(/^term$/i, 'Term'); }
 
 /* ---------- Insurance premiums ---------- */
@@ -860,20 +900,30 @@ function vPremiums() {
   var cagr = full.length > 1 && full[0].v > 0 ? Math.pow(full[full.length - 1].v / full[0].v, 1 / (full[full.length - 1].y - full[0].y)) - 1 : null;
   o += '<section class="card"><h2 class="ttl">Premiums paid · by year</h2><div class="stats">' + stat('Yearly premium now', inrC(nowPrem), prevPrem ? '<span class="' + (nowPrem > prevPrem ? 'neg' : 'pos') + '">' + pct((nowPrem - prevPrem) / prevPrem, 1, true) + '</span> vs the year before' : '') +
     stat('Growth a year', cagr != null ? pct(cagr, 1, true) : '—', full.length > 1 ? full[0].y + ' to ' + full[full.length - 1].y : '') + stat('Paid in all', inrC(sum(byYear)), paidLines.length + ' payments') + '</div>';
-  o += '<div style="margin-top:14px">' + lineChart(years.map(String), [{ name: 'All policies', color: 'var(--acc)', values: plot, estLast: hasNow && est > 0 }], { label: 'Premiums paid each year', zero: true }) + '</div>';
+  // One chart: all policies, by person or by policy. This year adds renewals still to come at last year's premium (dashed).
+  var view = S.premView || 'all', estOf = function (ps) { return sum(pending.filter(function (p) { return ps.indexOf(p) >= 0; }).map(function (p) { return p.dueAmt || 0; })); };
+  var line = function (ps, name, color) {
+    var vals = years.map(function (y) { var v = sum(paidLines.filter(function (x) { return ps.indexOf(x.p) >= 0 && Number(x.l.k.slice(0, 4)) === y; }).map(function (x) { return x.l.amt; })); return v || null; }), e = estOf(ps);
+    if (hasNow && e) vals[vals.length - 1] = (vals[vals.length - 1] || 0) + e;
+    return { name: name, color: color, values: vals, estLast: hasNow && e > 0 };
+  };
+  var people = P.map(function (p) { return p.person; }).filter(function (x, k, a) { return a.indexOf(x) === k; });
+  var series = view === 'person' ? people.map(function (pn, i) { return line(P.filter(function (p) { return p.person === pn; }), pn, SERIES_COLOURS[i % SERIES_COLOURS.length]); })
+    : view === 'policy' ? P.map(function (p, i) { return line([p], polName(p), SERIES_COLOURS[i % SERIES_COLOURS.length]); })
+    : [{ name: 'All policies', color: 'var(--acc)', values: plot, estLast: hasNow && est > 0 }];
+  o += '<div class="seg" role="group" aria-label="Chart view" style="margin-top:16px">' + [['all', 'Overall'], ['person', 'By person'], ['policy', 'By policy']].map(function (x) { return '<button type="button" class="' + (view === x[0] ? 'on' : '') + '" aria-pressed="' + (view === x[0]) + '" data-act="premview" data-v="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>';
+  o += '<div style="margin-top:12px">' + lineChart(years.map(String), series, { label: 'Premiums paid each year', zero: true, h: view === 'all' ? 150 : 170 }) + '</div>';
   o += '<p class="note">' + (hasNow && est > 0 ? yNow + ' is ' + inrC(byYear[byYear.length - 1]) + ' paid so far plus ' + inrC(est) + ' still to renew this year, at last year\'s premium (dashed). ' : '') + 'Yearly premium now is the latest premium of every policy; growth a year is the compound rate across full years.</p>';
   o += '</section>';
   if (nx) o += '<section class="card"><h2 class="ttl">Next renewal</h2><div class="stats">' + stat('Date', dayShort(nx.due), nx.due.slice(0, 4) + ' · in ' + daysTo(nx.due) + ' days') + stat('Amount', inrC(nx.dueAmt), nx.dueEst ? 'estimate: last premium' : 'as entered') + stat('Policy', esc(nx.type.replace(/^health\s*-\s*/i, '')), esc(nx.person + ' · ' + nx.provider)) + '</div></section>';
-  // Each policy's premium over the years, on one chart
-  var pyears = years.map(String), series = P.map(function (p, i) { return { name: polName(p), color: SERIES_COLOURS[i % SERIES_COLOURS.length], values: years.map(function (y) { var ls = p.lines.filter(function (l) { return l.paid && l.amt != null && Number(l.k.slice(0, 4)) === y; }); return ls.length ? sum(ls.map(function (l) { return l.amt; })) : null; }) }; });
-  o += '<section class="card"><h2 class="ttl">Premium growth · by policy</h2>' + lineChart(pyears, series, { label: 'Each policy\'s premium by year', h: 170 }) + '</section>';
+  // Policies: each opens its cover and premium ledger
+  var G = insGroups();
   o += '<section class="card" style="padding-bottom:8px"><h2 class="ttl">Policies</h2>';
   P.forEach(function (p, i) {
-    var open = S.openPol === p.key;
-    o += '<button type="button" class="rowbtn" aria-expanded="' + open + '" data-act="pol" data-v="' + esc(p.key) + '"><span class="rl"><span><span class="sw" style="background:' + SERIES_COLOURS[i % SERIES_COLOURS.length] + '"></span>' + esc(polName(p)) + '</span><span class="sub">' + esc(p.provider) + (p.cover ? ' · cover ' + inrC(p.cover) : '') + (p.cagr != null ? ' · ' + pct(p.cagr, 1, true) + ' a year' : '') + '</span></span><span class="rr"><span class="rl" style="align-items:flex-end"><b class="num">' + (p.last ? inrC(p.last.amt) : '—') + '</b><span class="sub">' + (p.due ? 'renews ' + dayShort(p.due) : '') + '</span></span><span class="ms chev">' + (open ? 'expand_less' : 'expand_more') + '</span></span></button>';
-    if (open) o += '<div style="margin:0 0 8px;padding:2px 12px;border-radius:8px;background:var(--chip)">' + polLedger(p) + '</div>';
+    var gi = G.findIndex(function (g) { return g.items.some(function (x) { return x.policy === i; }); });
+    o += '<button type="button" class="rowbtn"' + (gi >= 0 ? ' data-act="insg" data-v="' + gi + '"' : ' disabled') + '><span class="rl"><span><span class="sw" style="background:' + SERIES_COLOURS[i % SERIES_COLOURS.length] + '"></span>' + esc(polName(p)) + '</span><span class="sub">' + esc(p.provider) + (p.cagr != null ? ' · ' + pct(p.cagr, 1, true) + ' a year' : '') + '</span></span><span class="rr"><span class="rl" style="align-items:flex-end"><b class="num">' + (p.last ? inrC(p.last.amt) : '—') + '</b><span class="sub">' + (p.due ? 'renews ' + dayShort(p.due) : '') + '</span></span><span class="ms chev">chevron_right</span></span></button>';
   });
-  return o + '<p class="note" style="font-size:12px">Each policy is a person, type and provider. Renewal is the next upcoming premium, or the day after the latest cover ends.</p></section></main>';
+  return o + '<p class="note" style="font-size:12px">Each policy is a person, type and provider. Tap one for its cover and premium ledger.</p></section></main>';
 }
 function polLedger(p) {
   var G = 'display:grid;grid-template-columns:minmax(0,1fr) 84px 70px;gap:8px';
@@ -885,26 +935,33 @@ function polLedger(p) {
 }
 
 /* ---------- Locker ---------- */
+var LOCK_GROUPS = [['Gold', /gold/i], ['Silver', /silver/i], ['Cash and forex', /cash|forex|currency|\$|usd|gbp|eur|aed/i], ['Documents', /paper|deed|will|passport|certificate|agreement|policy|document|nomination|bond|share/i], ['Photos and keepsakes', /photo|frame|idol|keepsake|letter|note/i], ['Other', /./]];
+function lockGroups(items) { var G = LOCK_GROUPS.map(function (g) { return { n: g[0], items: [] }; }); items.forEach(function (it) { var k = LOCK_GROUPS.findIndex(function (g) { return g[1].test(it); }); G[k].items.push(it); }); return G.filter(function (g) { return g.items.length; }); }
+function inout(a, r) { return '<span class="' + (a ? 'pos' : 'mute') + '">+' + a + '</span> <span class="' + (r ? 'neg' : 'mute') + '">−' + r + '</span>'; }
 function vLocker() {
   var L = (D.check || {}).locker, o = header('Locker', null, { back: true }) + '<main>';
   if (!L) return o + '<p class="note">No locker log found.</p></main>';
   var meta = function (re) { var m = L.meta.find(function (x) { return re.test(x[0]); }); return m ? m[1] : null; }, last = L.visits[0];
-  o += '<section class="card"><h2 class="ttl">Inside now</h2><div class="stats">' + stat('Items', String(L.items.length), last ? 'after the ' + dayShort(last.d) + ' visit' : '') + stat('Visits', String(L.visits.length), L.visits.length ? 'since ' + monYr(L.visits[L.visits.length - 1].d) : '') + stat('Last visit', last ? dayShort(last.d) : '—', last ? '+' + last.added.length + ' in · ' + last.removed.length + ' out' : '') + '</div>';
-  o += '<div style="margin-top:12px;padding-top:4px;border-top:1px solid var(--line)">' + L.items.map(function (it, i) { var isNew = last && last.added.indexOf(it) >= 0; return '<div class="row" style="font-size:14px"><span>' + (i + 1) + '. ' + esc(it) + '</span>' + (isNew ? '<span class="pill g">Added ' + dayShort(last.d) + '</span>' : '') + '</div>'; }).join('') + '</div></section>';
-  if (last) {
-    o += '<section class="card"><h2 class="ttl">Last visit · ' + day(last.d) + '</h2><p class="small" style="margin:0 0 8px">By ' + esc(last.by) + '</p>';
-    if (last.added.length) o += '<p class="sh" style="margin:6px 0 2px;color:var(--pos)">Put in · ' + last.added.length + '</p>' + last.added.map(function (x) { return '<div class="row" style="font-size:14px"><span>' + esc(x) + '</span></div>'; }).join('');
-    if (last.removed.length) o += '<p class="sh" style="margin:10px 0 2px;color:var(--neg)">Taken out · ' + last.removed.length + '</p>' + last.removed.map(function (x) { return '<div class="row" style="font-size:14px"><span>' + esc(x) + '</span></div>'; }).join('');
-    if (!last.added.length && !last.removed.length) o += '<p class="note">Nothing was put in or taken out.</p>';
-    o += '</section>';
-  }
+  // 1. The locker itself
   var K = [['Bank', meta(/^bank$/i)], ['Branch', meta(/branch/i)], ['Locker number', meta(/locker number/i)], ['Size', meta(/size/i)], ['Access', [meta(/access type/i), meta(/access limit/i)].filter(Boolean).join(' · ')], ['Annual rent', meta(/rent/i) != null ? inr(meta(/rent/i)) : null], ['Allotted', meta(/allotment/i) ? day(meta(/allotment/i)) : null], ['Held for', meta(/holding period/i)]];
   o += '<section class="card"><h2 class="ttl">Locker details</h2><div class="kvg">' + K.filter(function (k) { return k[1] != null && k[1] !== ''; }).map(function (k) { return '<div class="kv"><span>' + k[0] + '</span><span>' + esc(k[1]) + '</span></div>'; }).join('') + '</div></section>';
-  o += '<section class="card" style="padding-bottom:8px"><h2 class="ttl">Log</h2>';
-  L.visits.forEach(function (v) {
-    o += '<div class="row" style="flex-direction:column;align-items:stretch;gap:4px"><span style="display:flex;justify-content:space-between;gap:10px"><b>' + day(v.d) + '</b><span class="small">' + v.after.length + ' inside after</span></span><span class="small">By ' + esc(v.by) + '</span>' +
-      (v.added.length ? '<span style="font-size:13px"><span class="pos" style="font-weight:700">In:</span> ' + esc(v.added.join(', ')) + '</span>' : '') + (v.removed.length ? '<span style="font-size:13px"><span class="neg" style="font-weight:700">Out:</span> ' + esc(v.removed.join(', ')) + '</span>' : '') + '</div>';
+  // 2. What it holds now, in groups that open, so a long list stays short
+  var G = lockGroups(L.items);
+  o += '<section class="card" style="padding-bottom:8px"><h2 class="ttl">Inside now</h2><div class="stats">' + stat('Items', String(L.items.length), G.length + (G.length === 1 ? ' group' : ' groups')) +
+    stat('Last visit', last ? dayShort(last.d) : '—', last ? last.d.slice(0, 4) + ' · ' + esc(last.by) : '') + stat('At that visit', last ? inout(last.added.length, last.removed.length) : '—', 'put in · taken out') + '</div><div style="height:10px"></div>';
+  G.forEach(function (g) {
+    var open = S.lockGrp === g.n, fresh = last ? g.items.filter(function (it) { return last.added.indexOf(it) >= 0; }).length : 0;
+    o += '<button type="button" class="rowbtn" aria-expanded="' + open + '" data-act="lgrp" data-v="' + esc(g.n) + '"><span class="rl"><b>' + esc(g.n) + '</b>' + (fresh ? '<span class="sub">' + fresh + ' added on ' + dayShort(last.d) + '</span>' : '') + '</span><span class="rr"><b class="num">' + g.items.length + '</b><span class="ms chev">' + (open ? 'expand_less' : 'expand_more') + '</span></span></button>';
+    if (open) o += '<div style="margin:0 0 8px;padding:2px 12px;border-radius:8px;background:var(--chip)">' + g.items.map(function (it) { var isNew = last && last.added.indexOf(it) >= 0; return '<div class="row" style="font-size:13px"><span>' + esc(it) + '</span>' + (isNew ? '<span class="pill g">Added ' + dayShort(last.d) + '</span>' : '') + '</div>'; }).join('') + '</div>';
   });
+  o += '</section>';
+  // 3. Visits: totals, then the latest few; each opens with what went in and out
+  var ins = sum(L.visits.map(function (v) { return v.added.length; })), outs = sum(L.visits.map(function (v) { return v.removed.length; })), show = S.logAll ? L.visits : L.visits.slice(0, 5);
+  o += '<section class="card" style="padding-bottom:8px"><h2 class="ttl">Visits</h2><div class="stats">' + stat('Visits', String(L.visits.length), L.visits.length ? 'since ' + monYr(L.visits[L.visits.length - 1].d) : '') + stat('Put in', String(ins), 'items, all visits') + stat('Taken out', String(outs), 'items, all visits') + '</div><div style="height:10px"></div>';
+  show.forEach(function (v, i) {
+    o += '<button type="button" class="rowbtn" data-act="lvisit" data-v="' + i + '"><span class="rl"><span>' + day(v.d) + '</span><span class="sub">By ' + esc(v.by) + ' · ' + v.after.length + ' inside after</span></span><span class="rr"><span class="num" style="font-weight:600">' + inout(v.added.length, v.removed.length) + '</span><span class="ms chev">chevron_right</span></span></button>';
+  });
+  if (L.visits.length > show.length) o += '<button type="button" class="rowbtn" data-act="logall" style="border-bottom:0;font-weight:600;color:var(--acc);justify-content:center">Show all ' + L.visits.length + ' visits</button>';
   return o + '</section></main>';
 }
 
@@ -1037,7 +1094,6 @@ function vSheet() {
         var paid = p.lines.filter(function (l) { return l.paid && l.amt != null; });
         body += '<p class="sh" style="margin:16px 0 4px">' + esc(p.provider) + '</p>';
         body += '<div class="stats" style="margin:4px 0 8px">' + stat('Last premium', inrC(p.last ? p.last.amt : null), p.last ? dayShort(p.last.k) + ' ' + p.last.k.slice(0, 4) : '') + stat('Renews', p.due ? dayShort(p.due) : '—', p.due ? inrC(p.dueAmt) + (p.dueEst ? ' est.' : '') : '') + stat('Growth a year', p.cagr != null ? pct(p.cagr, 1, true) : '—', paid.length + ' premiums') + '</div>';
-        if (paid.length > 1) body += lineChart(paid.map(function (l) { return l.k.slice(0, 4); }), [{ name: p.provider, color: 'var(--acc)', values: paid.map(function (l) { return l.amt; }) }], { label: p.provider + ' premium by year', h: 120 });
         body += polLedger(p);
         return;
       }
@@ -1048,6 +1104,10 @@ function vSheet() {
     return sheetWrap(g.cat, g.person, body + '<p class="note" style="font-size:12px">' + (Pl.length ? 'Cover and premiums are as per the latest policy. Growth a year is the compound rate from the first premium to the last.' : 'Premiums are the months this insurer\'s premium was paid, taken from your monthly expenses.') + '</p>');
   }
   if (s.type === 'ins') { var x2 = D.check.insurance[s.i]; return sheetWrap(x2.cat, x2.person, '<div class="big" style="font-size:28px;margin:4px 0 10px">' + inrC(x2.cover) + '</div>' + kvRows([['Person', esc(x2.person)], ['Type', esc(x2.type)], ['Insurer or source', esc(x2.by)]]) + '<p class="note" style="font-size:12px">Add renewal date and premium columns to the Insurance block to see renewals here.</p>'); }
+  if (s.type === 'lvisit') {
+    var Lv = D.check.locker.visits[s.i], list = function (t, xs, c) { return xs.length ? '<p class="sh" style="margin:14px 0 2px;color:var(--' + c + ')">' + t + ' · ' + xs.length + '</p>' + xs.map(function (x) { return '<div class="row" style="font-size:14px"><span>' + esc(x) + '</span></div>'; }).join('') : ''; };
+    return sheetWrap('Visit · ' + day(Lv.d), 'By ' + Lv.by, '<div class="stats">' + stat('Put in', String(Lv.added.length)) + stat('Taken out', String(Lv.removed.length)) + stat('Inside after', String(Lv.after.length)) + '</div>' + list('Put in', Lv.added, 'pos') + list('Taken out', Lv.removed, 'neg') + (!Lv.added.length && !Lv.removed.length ? '<p class="note">Nothing was put in or taken out.</p>' : ''));
+  }
   if (s.type === 'locker') {
     var Lk = D.check.locker;
     if (s.v === 'items') return sheetWrap('Contents', Lk.visits.length ? 'After the ' + day(Lk.visits[0].d) + ' visit' : '', Lk.items.map(function (it, i) { return '<div class="row"><span>' + (i + 1) + '. ' + esc(it) + '</span></div>'; }).join(''));
@@ -1070,12 +1130,13 @@ function render() {
   app.querySelectorAll('.card .ttl').forEach(function (h) { var ic = iconFor(h.textContent); if (ic && !h.querySelector('.ms')) h.insertAdjacentHTML('afterbegin', '<span class="ms" aria-hidden="true">' + ic + '</span>'); });
   app.querySelectorAll('.mchips').forEach(function (c) { var on = c.querySelector('.on'); if (on) c.scrollLeft = on.offsetLeft - c.offsetLeft - (c.clientWidth - on.offsetWidth) / 2; });
   app.dataset.view = viewKey();
+  syncBlobs();
   var m2 = app.querySelector('main');
   if (m2) { if (same) m2.scrollTop = top; else if (S.restore && SCROLL[key] != null) m2.scrollTop = SCROLL[key]; }
   S.restore = false;
 }
-var ICONS = [[/^net worth ·/i, 'account_balance_wallet'], [/net worth trend/i, 'monitoring'], [/inside now/i, 'inventory_2'], [/last visit/i, 'history'], [/locker details/i, 'lock'], [/^log$/i, 'receipt_long'], [/salary ·/i, 'work'], [/^markets/i, 'candlestick_chart'], [/movers/i, 'swap_vert'], [/^income ·/i, 'payments'], [/^by source/i, 'call_split'], [/^payslips/i, 'receipt_long'], [/^tax/i, 'account_balance'],
-  [/^spent/i, 'shopping_bag'], [/^categories/i, 'category'], [/emi/i, 'home'], [/rewards|points/i, 'redeem'], [/total assets/i, 'account_balance_wallet'], [/allocation/i, 'donut_small'], [/^by type/i, 'format_list_bulleted'],
+var ICONS = [[/^net worth ·/i, 'account_balance_wallet'], [/net worth trend/i, 'monitoring'], [/inside now/i, 'inventory_2'], [/last visit/i, 'history'], [/locker details/i, 'lock'], [/^log$/i, 'receipt_long'], [/^visits$/i, 'history'], [/salary ·/i, 'work'], [/^markets/i, 'candlestick_chart'], [/movers/i, 'swap_vert'], [/^income ·/i, 'payments'], [/^by source/i, 'call_split'], [/^payslips/i, 'receipt_long'], [/^tax/i, 'account_balance'],
+  [/^spent/i, 'shopping_bag'], [/^categories/i, 'category'], [/\bemi\b/i, 'home'], [/rewards|points/i, 'redeem'], [/total assets/i, 'account_balance_wallet'], [/allocation/i, 'donut_small'], [/^by type/i, 'format_list_bulleted'],
   [/ratios/i, 'speed'], [/insurance/i, 'verified_user'], [/^locker/i, 'lock'], [/data checks/i, 'fact_check'], [/loan details/i, 'real_estate_agent'], [/linked bank/i, 'account_balance'], [/^schedule/i, 'event_note'],
   [/^ledger/i, 'receipt_long'], [/^premiums paid/i, 'show_chart'], [/^premium growth/i, 'trending_up'], [/^policies/i, 'verified_user'], [/^next renewal/i, 'event_upcoming'], [/salary/i, 'work'], [/^(reit|sgb|dividends|savings)/i, 'payments'], [/^fy|^[a-z]+ 20\d\d/i, 'calendar_month']];
 function iconFor(t) { var m = ICONS.find(function (x) { return x[0].test(t.trim()); }); return m ? m[1] : null; }
@@ -1116,6 +1177,10 @@ document.addEventListener('click', function (ev) {
     case 'insg': S.sheet = { type: 'insg', i: Number(v) }; render(); break;
     case 'page': go(v === 'loan' ? 'spend' : v === 'locker' || v === 'premiums' ? 'check' : 'income', v); break;
     case 'pol': S.openPol = S.openPol === v ? null : v; render(); break;
+    case 'premview': S.premView = v; render(); break;
+    case 'lgrp': S.lockGrp = S.lockGrp === v ? null : v; render(); break;
+    case 'lvisit': S.sheet = { type: 'lvisit', i: Number(v) }; render(); break;
+    case 'logall': S.logAll = true; render(); break;
     case 'payslips': S.payFy = Number(v) || 0; go('income', 'payslips'); break;
     case 'holding': go(S.tab, 'holding', v); break;
     case 'source': go('income', 'source', v); break;
