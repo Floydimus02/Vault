@@ -1072,9 +1072,9 @@ function ioRun(fn, arg, ok) {
   google.script.run.withSuccessHandler(function (r) { ok(JSON.parse(r)); }).withFailureHandler(function (e) { S.io = { err: (e && e.message) || String(e) }; render(); })[fn](arg);
 }
 function vIo() {
-  var io = S.io || {}, o = '<p class="sh" style="margin:4px 0 6px">Export</p><p class="note" style="margin:0 0 12px">Makes a new Google Sheet in your Drive: tidy tables of everything Vault works out, plus a copy of every tab, ready to import or to start from.</p>' +
+  var io = S.io || {}, o = '<p class="sh" style="margin:4px 0 6px">Export</p><p class="note" style="margin:0 0 12px">Makes a new Google Sheet in your Drive with all of your data as clean tables: one tab per subject, one row per record, with IDs to join them. A starting point to analyse, extend or build your own models on.</p>' +
     '<button type="button" class="btn" data-act="ioexp"' + (io.busy ? ' disabled' : '') + '><span class="ms">upload_file</span>Export to Google Drive</button>' +
-    '<p class="sh" style="margin:22px 0 6px">Import</p><p class="note" style="margin:0 0 12px">Brings in tabs from a Google Sheet or an Excel file. Tabs with the same name are replaced, new ones are added, others stay as they are. A full copy of this sheet is saved to Drive first.</p>' +
+    '<p class="sh" style="margin:22px 0 6px">Import</p><p class="note" style="margin:0 0 12px">Brings in a workbook laid out like the Vault template, from a Google Sheet or an Excel file. Tabs with the same name are replaced, new ones are added, others stay as they are. A full copy of this sheet is saved to Drive first.</p>' +
     '<label class="sh" for="iourl" style="display:block;margin:0 0 6px">Google Sheet link</label><input id="iourl" class="tin" type="url" inputmode="url" placeholder="https://docs.google.com/spreadsheets/d/…" autocomplete="off">' +
     '<button type="button" class="btn sec" style="margin-top:8px" data-act="ioimpurl"' + (io.busy ? ' disabled' : '') + '><span class="ms">link</span>Import from Google Sheet</button>' +
     '<label class="sh" for="iofile" style="display:block;margin:16px 0 6px">Excel file (.xlsx)</label><input id="iofile" class="tin" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" style="padding-top:10px">' +
@@ -1247,7 +1247,7 @@ document.addEventListener('click', function (ev) {
     case 'mask': mask = !mask; LS.set('mask', mask); render(); break;
     case 'menu': S.menu = !S.menu; render(); break;
     case 'io': S.menu = false; S.io = null; S.sheet = { type: 'io' }; render(); break;
-    case 'ioexp': ioRun('exportVault', null, function (r) { S.io = { done: 'Exported ' + r.tables + ' tables and ' + r.tabs + ' tabs. <a href="' + esc(r.url) + '" target="_blank" rel="noopener">Open “' + esc(r.name) + '”</a>' }; render(); }); break;
+    case 'ioexp': ioRun('exportVault', null, function (r) { S.io = { done: 'Exported ' + r.tables + ' tables, ' + r.rows + ' rows. <a href="' + esc(r.url) + '" target="_blank" rel="noopener">Open “' + esc(r.name) + '”</a>' }; render(); }); break;
     case 'ioimpurl': { var u = (document.getElementById('iourl') || {}).value || ''; if (!u.trim()) { S.io = { err: 'Paste the link to a Google Sheet first.' }; render(); break; } ioRun('importVault', { url: u.trim() }, ioDone); break; }
     case 'ioimpfile': {
       var fl = (document.getElementById('iofile') || {}).files; if (!fl || !fl[0]) { S.io = { err: 'Choose an Excel file first.' }; render(); break; }

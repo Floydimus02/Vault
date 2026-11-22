@@ -76,7 +76,8 @@ Version 1 was a daily email. Version 2 is an app that lives on any device, opens
 - **Private in public.** One switch hides large amounts, so you can open it anywhere.
 - **Live on refresh.** Every open reads the sheet afresh. Prices follow `GOOGLEFINANCE`, or any better source you plug in.
 - **Your sheet, your rules.** Any structure you like. Leave anything out of net worth. A missing value is skipped, never shown blank.
-- **Never locked in.** Export everything to a Google Sheet in your Drive, or bring a workbook in from Google Sheets or Excel.
+- **Your data, ready to build on.** Export everything to a new Google Sheet as clean tables: holdings and every transaction, income, payslips, tax, expenses, payouts, EPF, the loan, rewards, insurance and the locker. One row per record, IDs to join them.
+- **Bring your own.** Import a workbook laid out like the template, from Google Sheets or Excel; a backup is saved first.
 - **Nothing to maintain.** A sheet, a script and a page. Free, on Google.
 
 ## Then form
@@ -188,7 +189,7 @@ Click the clock icon (**Triggers**) and add two triggers:
 | When it happens | Locker visit | **Locker log** |
 | At each review | Values at review and the review date | **Net worth**: `Amount: T - X`, `Last updated` |
 | Every April | New financial year | Copy **Expenses** and **CoI**, renamed for the new year |
-| Before a big change | A backup | **☰ → Import and export → Export to Google Drive** |
+| Any time | All your data as clean tables, to analyse or build on | **☰ → Import and export → Export to Google Drive** |
 
 ## Make it yours
 
