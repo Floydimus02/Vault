@@ -80,6 +80,8 @@ main{flex:1;overflow-y:auto;padding:14px 14px 28px;display:flex;flex-direction:c
 .sw{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:-1px;margin-right:4px}
 .box{margin-top:12px;padding:12px 14px;border-radius:12px;font-size:14px;font-weight:600;line-height:1.4}
 .box.a{background:var(--amberbg);color:var(--amber)}.box.r{background:var(--negbg);color:var(--neg)}
+.box.g{background:var(--posbg);color:var(--pos)}.box.b{background:var(--selbg);color:var(--selfg)}
+.box a{color:inherit;text-decoration:underline}
 .seg{display:flex;gap:4px;padding:4px;border-radius:12px;background:var(--chip)}
 .seg button{flex:1;min-height:40px;padding:0 6px;border:0;border-radius:9px;background:transparent;color:var(--mute);font-size:14px;font-weight:600;cursor:pointer;line-height:1.15;white-space:nowrap}
 .seg button.on{background:var(--ink);color:var(--bg);font-weight:700}
@@ -94,8 +96,6 @@ main{flex:1;overflow-y:auto;padding:14px 14px 28px;display:flex;flex-direction:c
 .w.i{padding-left:12px}
 .w.s,.w.t{font-weight:700}
 .w.t{border-bottom:2px solid var(--ink)}
-.event{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:14px;background:var(--bg);border:1px solid var(--line)}
-.event .ms{color:var(--acc)}
 nav.tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;padding:8px 8px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--bg);flex:none}
 nav.tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0;border:0;border-radius:12px;background:transparent;font-size:11px;font-weight:500;color:var(--mute);cursor:pointer}
 nav.tabs button.on{background:var(--ink);color:var(--bg);font-weight:700}
@@ -182,7 +182,27 @@ div:has(> .seg) > .ttl{white-space:nowrap}
 .trk{background:var(--line);height:6px}
 .fil{background:var(--bar)}
 .fil.over{background:var(--neg);opacity:.75}
-.event{background:var(--well);border:0;border-radius:16px}
+/* Top bar menu */
+.menuwrap{position:relative}
+.menu{position:absolute;right:0;top:48px;z-index:40;width:264px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--lift);padding:8px}
+.menu .mh{margin:4px 10px 8px;font-size:12px;font-weight:600;color:var(--mute)}
+.menu .mn{margin:0 10px 6px;font-size:12px;color:var(--mute)}
+.sws{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 10px 8px}
+.sws button{height:30px;border-radius:8px;border:0;cursor:pointer;padding:0}
+.sws button.on{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--ink)}
+.mi{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:8px 10px;border:0;border-top:1px solid var(--line);background:transparent;font-size:14px;font-weight:500;color:var(--ink);cursor:pointer;text-align:left}
+.mi:hover{background:var(--well)}
+.mi .ms{color:var(--mute);font-size:20px}
+.tog{margin-left:auto;flex:none;width:38px;height:22px;border-radius:999px;background:var(--soft);position:relative;transition:background .15s}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#FFFFFF;transition:left .15s}
+.tog.on{background:var(--acc)}
+.tog.on::after{left:19px}
+button.card{border:1px solid var(--line)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;border:0;border-radius:10px;background:var(--acc);color:#FFFFFF;font-size:15px;font-weight:600;cursor:pointer}
+.btn.sec{background:var(--well);color:var(--ink);border:1px solid var(--line)}
+.btn[disabled]{opacity:.5;cursor:default}
+.tin{display:block;width:100%;min-height:46px;box-sizing:border-box;border:1px solid var(--soft);border-radius:10px;padding:0 12px;background:var(--bg);color:var(--ink);font:inherit;font-size:15px}
+.tin:focus{outline:2px solid var(--acc);outline-offset:1px}
 /* Net worth change strip */
 .nwd{margin:-6px 0 16px}
 .nwd .dp{font-size:13px}
@@ -196,7 +216,6 @@ div:has(> .seg) > .ttl{white-space:nowrap}
 :root{--s2:#7B8BA3;--s3:#E2A03F;--s4:#2E9E95;--s5:#C2649A;--s6:#3FA7D6}
 html.dark{--s2:#9AA8BD;--s3:#F0B65E;--s4:#4FC2B8;--s5:#E08BBD;--s6:#6CC4EA}
 .grp{display:flex;justify-content:space-between;align-items:center}
-.event .ms{color:var(--acc)}
 .w.t{border-bottom:2px solid var(--ink)}
 /* Bottom navigation: no fill, coral marks where you are */
 nav.tabs{border-top:1px solid var(--line);padding-top:6px}
@@ -228,10 +247,11 @@ nav.tabs button.on .ms{font-variation-settings:'wght' 500}
 var D = null, S = { tab: 'home', page: null, hid: null, sheet: null, taxFy: 0, payFy: 0, payMode: 'm', payMonth: null, alloc: 'fn', openType: null, loanView: 'now', spendView: 'm', nwRange: 'w', q: '', searchOpen: false, phI: 0 };
 var LS = { get: function (k, d) { try { var v = localStorage.getItem('vault_' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
   set: function (k, v) { try { localStorage.setItem('vault_' + k, JSON.stringify(v)); } catch (e) {} } };
-var mask = LS.get('mask', false), theme = LS.get('theme', null);
+var mask = LS.get('mask', false), theme = LS.get('theme', null), accent = Number(LS.get('accent', 0)) || 0;
 function applyTheme() {
   var dark = theme ? theme === 'dark' : !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
   document.documentElement.classList.toggle('dark', dark);
+  applyAccent();
   return dark;
 }
 applyTheme();
@@ -287,7 +307,27 @@ function load(refresh) {
 }
 
 /* ---------- Pieces ---------- */
-function themeBtn() { var dark = document.documentElement.classList.contains('dark'); return '<div style="display:flex"><button type="button" class="ib" aria-label="' + (mask ? 'Show large amounts' : 'Hide large amounts') + '" aria-pressed="' + mask + '" data-act="mask"><span class="ms">' + (mask ? 'visibility_off' : 'visibility') + '</span></button><button type="button" class="ib" aria-label="Read the sheet again" data-act="refresh"><span class="ms">refresh</span></button><button type="button" class="ib" aria-label="Switch theme" data-act="theme"><span class="ms">' + (dark ? 'light_mode' : 'dark_mode') + '</span></button></div>'; }
+// Accent colours: [name, light, light deep, dark, dark deep]
+var ACCENTS = [['Electric indigo', '#4F46E5', '#4338CA', '#818CF8', '#A5B4FC'], ['Ultramarine', '#3D5AFE', '#2F45D9', '#7C93FF', '#A3B3FF'], ['Royal blue', '#2563EB', '#1D4ED8', '#60A5FA', '#93C5FD'], ['Violet', '#7C3AED', '#6D28D9', '#A78BFA', '#C4B5FD'],
+  ['Cyan', '#0891B2', '#0E7490', '#22D3EE', '#67E8F9'], ['Magenta', '#D6249F', '#B01E85', '#F472D0', '#F9A8E4'], ['Tangerine', '#EA580C', '#C2410C', '#FB923C', '#FDBA74'], ['Coral', '#FF385C', '#D70F45', '#FF5A76', '#FF8FA3']];
+applyAccent();
+function rgb(h) { return [1, 3, 5].map(function (i) { return parseInt(h.slice(i, i + 2), 16); }).join(','); }
+function applyAccent() {
+  if (!ACCENTS) return;
+  var a = ACCENTS[accent] || ACCENTS[0], dark = document.documentElement.classList.contains('dark'), c = dark ? a[3] : a[1], deep = dark ? a[4] : a[2], st = document.documentElement.style;
+  st.setProperty('--acc', c); st.setProperty('--acc2', deep); st.setProperty('--selfg', deep);
+  st.setProperty('--selbg', 'rgba(' + rgb(c) + ',' + (dark ? .16 : .10) + ')'); st.setProperty('--selbd', 'rgba(' + rgb(c) + ',' + (dark ? .45 : .32) + ')'); st.setProperty('--bar', 'rgba(' + rgb(c) + ',' + (dark ? .40 : .30) + ')');
+}
+// One menu in the top bar: accent colour, light or dark, refresh, and hiding large amounts
+function themeBtn() {
+  var dark = document.documentElement.classList.contains('dark'), o = '<div class="menuwrap"><button type="button" class="ib" aria-label="Menu" aria-haspopup="true" aria-expanded="' + !!S.menu + '" data-act="menu"><span class="ms">' + (S.menu ? 'close' : 'menu') + '</span></button>';
+  if (S.menu) o += '<div class="menu" role="menu"><p class="mh">Theme colour</p><div class="sws">' + ACCENTS.map(function (x, i) { return '<button type="button" role="menuitemradio" aria-checked="' + (i === accent) + '" aria-label="' + x[0] + '" title="' + x[0] + '" class="' + (i === accent ? 'on' : '') + '" style="background:' + (dark ? x[3] : x[1]) + '" data-act="accent" data-v="' + i + '"></button>'; }).join('') + '</div><p class="mn">' + ACCENTS[accent][0] + '</p>' +
+    '<button type="button" class="mi" role="menuitemcheckbox" aria-checked="' + dark + '" data-act="theme"><span class="ms">dark_mode</span>Dark mode<span class="tog' + (dark ? ' on' : '') + '"></span></button>' +
+    '<button type="button" class="mi" role="menuitem" data-act="refresh"><span class="ms">refresh</span>Refresh</button>' +
+    '<button type="button" class="mi" role="menuitemcheckbox" aria-checked="' + mask + '" data-act="mask"><span class="ms">' + (mask ? 'visibility_off' : 'visibility') + '</span>Hide large amounts<span class="tog' + (mask ? ' on' : '') + '"></span></button>' +
+    '<button type="button" class="mi" role="menuitem" data-act="io"><span class="ms">sync_alt</span>Import and export</button></div>';
+  return o + '</div>';
+}
 function header(title, sub, opts) {
   opts = opts || {};
   if (opts.back) return '<header class="top back"><div class="hl"><button type="button" class="ib" aria-label="Back" data-act="back"><span class="ms">arrow_back</span></button><div class="rl"><h1>' + esc(title) + '</h1>' + (sub ? '<span class="hsub">' + esc(sub) + '</span>' : '') + '</div></div>' + themeBtn() + '</header>';
@@ -324,11 +364,6 @@ function vHome() {
   var H = D.home, now = new Date(D.at);
   var dateStr = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][now.getDay()] + ' ' + now.getDate() + ' ' + MONS[now.getMonth()];
   var o = header('Vault', 'A ledger in a letter · demo with made-up data', { logo: true }) + '<main>';
-  (D.events || []).forEach(function (e) {
-    var when = e.days === 0 ? 'Today' : e.days === 1 ? 'Tomorrow' : 'In ' + e.days + ' days, ' + dayShort(e.date);
-    var bits = [e.start, e.venue, e.booked, e.tickets ? e.tickets + (e.tickets > 1 ? ' tickets' : ' ticket') : ''].filter(Boolean);
-    o += '<div class="event"><span class="ms">event</span><div class="rl"><span style="font-size:14px"><b>' + esc(when) + '</b> · ' + esc(e.name) + '</span><span class="sub">' + esc(bits.join(' · ')) + '</span></div></div>';
-  });
   if (H.emiAlert) {
     var A = H.emiAlert;
     o += '<div class="box ' + (A.critical ? 'r' : 'a') + '" style="margin:0">' + (A.critical ? 'EMI at risk' : 'EMI account below ' + inrC(A.min)) + ': ' + esc(A.bank) + ' holds ' + inrC(A.bal) + ' against the ' + inrC(A.emi) + ' EMI due ' + day(A.due) + '. Top up ' + inrC(A.min - A.bal) + '.</div>';
@@ -916,14 +951,7 @@ function vPremiums() {
   o += '<p class="note">' + (hasNow && est > 0 ? yNow + ' is ' + inrC(byYear[byYear.length - 1]) + ' paid so far plus ' + inrC(est) + ' still to renew this year, at last year\'s premium (dashed). ' : '') + 'Yearly premium now is the latest premium of every policy; growth a year is the compound rate across full years.</p>';
   o += '</section>';
   if (nx) o += '<section class="card"><h2 class="ttl">Next renewal</h2><div class="stats">' + stat('Date', dayShort(nx.due), nx.due.slice(0, 4) + ' · in ' + daysTo(nx.due) + ' days') + stat('Amount', inrC(nx.dueAmt), nx.dueEst ? 'estimate: last premium' : 'as entered') + stat('Policy', esc(nx.type.replace(/^health\s*-\s*/i, '')), esc(nx.person + ' · ' + nx.provider)) + '</div></section>';
-  // Policies: each opens its cover and premium ledger
-  var G = insGroups();
-  o += '<section class="card" style="padding-bottom:8px"><h2 class="ttl">Policies</h2>';
-  P.forEach(function (p, i) {
-    var gi = G.findIndex(function (g) { return g.items.some(function (x) { return x.policy === i; }); });
-    o += '<button type="button" class="rowbtn"' + (gi >= 0 ? ' data-act="insg" data-v="' + gi + '"' : ' disabled') + '><span class="rl"><span><span class="sw" style="background:' + SERIES_COLOURS[i % SERIES_COLOURS.length] + '"></span>' + esc(polName(p)) + '</span><span class="sub">' + esc(p.provider) + (p.cagr != null ? ' · ' + pct(p.cagr, 1, true) + ' a year' : '') + '</span></span><span class="rr"><span class="rl" style="align-items:flex-end"><b class="num">' + (p.last ? inrC(p.last.amt) : '—') + '</b><span class="sub">' + (p.due ? 'renews ' + dayShort(p.due) : '') + '</span></span><span class="ms chev">chevron_right</span></span></button>';
-  });
-  return o + '<p class="note" style="font-size:12px">Each policy is a person, type and provider. Tap one for its cover and premium ledger.</p></section></main>';
+  return o + '<p class="note" style="font-size:12px">For each person\'s covers and premium ledger, tap them in Insurance on Check.</p></main>';
 }
 function polLedger(p) {
   var G = 'display:grid;grid-template-columns:minmax(0,1fr) 84px 70px;gap:8px';
@@ -1036,8 +1064,29 @@ function searchBar() {
 /* ---------- Sheets ---------- */
 function sheetWrap(title, sub, body) { return '<div class="sheet"><button type="button" class="scrim" aria-label="Close" data-act="close"></button><section role="dialog" aria-label="' + esc(title) + '"><div class="grab"><div></div></div><div class="shead"><div class="rl"><span class="ttl">' + esc(title) + '</span>' + (sub ? '<span class="small">' + esc(sub) + '</span>' : '') + '</div><button type="button" class="ib" aria-label="Close" data-act="close"><span class="ms">close</span></button></div><div class="sbody">' + body + '</div></section></div>'; }
 function kvRows(list) { return list.map(function (k) { return '<div class="row"><span class="mute">' + esc(k[0]) + '</span><b class="num" style="text-align:right;white-space:normal">' + k[1] + '</b></div>'; }).join(''); }
+// Import and export: runs in your own Vault through Apps Script; the demo has no server
+function ioDone(r) { S.io = { done: 'Imported. ' + r.replaced.length + ' tabs replaced, ' + r.added.length + ' added. <a href="' + esc(r.backup) + '" target="_blank" rel="noopener">Open the backup</a>' }; render(); load(true); }
+function ioRun(fn, arg, ok) {
+  if (!(window.google && google.script && google.script.run)) { S.io = { err: 'Import and export work in your own Vault, not in this demo.' }; render(); return; }
+  S.io = { busy: fn === 'exportVault' ? 'Exporting to Google Drive…' : 'Importing… a backup copy is saved first.' }; render();
+  google.script.run.withSuccessHandler(function (r) { ok(JSON.parse(r)); }).withFailureHandler(function (e) { S.io = { err: (e && e.message) || String(e) }; render(); })[fn](arg);
+}
+function vIo() {
+  var io = S.io || {}, o = '<p class="sh" style="margin:4px 0 6px">Export</p><p class="note" style="margin:0 0 12px">Makes a new Google Sheet in your Drive: tidy tables of everything Vault works out, plus a copy of every tab, ready to import or to start from.</p>' +
+    '<button type="button" class="btn" data-act="ioexp"' + (io.busy ? ' disabled' : '') + '><span class="ms">upload_file</span>Export to Google Drive</button>' +
+    '<p class="sh" style="margin:22px 0 6px">Import</p><p class="note" style="margin:0 0 12px">Brings in tabs from a Google Sheet or an Excel file. Tabs with the same name are replaced, new ones are added, others stay as they are. A full copy of this sheet is saved to Drive first.</p>' +
+    '<label class="sh" for="iourl" style="display:block;margin:0 0 6px">Google Sheet link</label><input id="iourl" class="tin" type="url" inputmode="url" placeholder="https://docs.google.com/spreadsheets/d/…" autocomplete="off">' +
+    '<button type="button" class="btn sec" style="margin-top:8px" data-act="ioimpurl"' + (io.busy ? ' disabled' : '') + '><span class="ms">link</span>Import from Google Sheet</button>' +
+    '<label class="sh" for="iofile" style="display:block;margin:16px 0 6px">Excel file (.xlsx)</label><input id="iofile" class="tin" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" style="padding-top:10px">' +
+    '<button type="button" class="btn sec" style="margin-top:8px" data-act="ioimpfile"' + (io.busy ? ' disabled' : '') + '><span class="ms">description</span>Import Excel file</button>';
+  if (io.busy) o += '<div class="box b" style="margin-top:16px" role="status">' + esc(io.busy) + '</div>';
+  if (io.err) o += '<div class="box a" style="margin-top:16px" role="alert">' + esc(io.err) + '</div>';
+  if (io.done) o += '<div class="box g" style="margin-top:16px" role="status">' + io.done + '</div>';
+  return sheetWrap('Import and export', null, o);
+}
 function vSheet() {
   var s = S.sheet; if (!s) return '';
+  if (s.type === 'io') return vIo();
   if (s.type === 'tax') {
     var T = D.tax[s.i], chips = '<div class="mchips" style="padding:4px 0 6px">' + D.tax.map(function (t, i) { return '<button type="button" class="' + (i === s.i ? 'on' : '') + '" aria-pressed="' + (i === s.i) + '" data-act="taxsheetfy" data-v="' + i + '">' + esc(t.fy) + '</button>'; }).join('') + '</div>';
     var rows = T.working.map(function (w) { return '<div class="w ' + w.k + '"><span>' + esc(w.l) + '</span><span class="num">' + (w.v == null ? '' : w.k === 'r' ? pct(w.v) : w.v < 0 ? '(' + grp(w.v) + ')' : grp(w.v)) + '</span></div>'; }).join('');
@@ -1167,6 +1216,8 @@ function fromHash() {
   else { S.page = null; S.tab = /^(home|income|spend|invest|check)$/.test(parts[0]) ? parts[0] : 'home'; }
 }
 document.addEventListener('click', function (ev) {
+  // A tap outside the menu closes it
+  if (S.menu && !ev.target.closest('.menuwrap')) { S.menu = false; render(); }
   var el = ev.target.closest('[data-act]'); if (!el) return;
   var a = el.getAttribute('data-act'), v = el.getAttribute('data-v');
   if (a === 'reload') { load(true); return; }
@@ -1194,6 +1245,15 @@ document.addEventListener('click', function (ev) {
     case 'back': if (history.length > 1) history.back(); else go(S.tab); break;
     case 'theme': theme = document.documentElement.classList.contains('dark') ? 'light' : 'dark'; LS.set('theme', theme); applyTheme(); render(); break;
     case 'mask': mask = !mask; LS.set('mask', mask); render(); break;
+    case 'menu': S.menu = !S.menu; render(); break;
+    case 'io': S.menu = false; S.io = null; S.sheet = { type: 'io' }; render(); break;
+    case 'ioexp': ioRun('exportVault', null, function (r) { S.io = { done: 'Exported ' + r.tables + ' tables and ' + r.tabs + ' tabs. <a href="' + esc(r.url) + '" target="_blank" rel="noopener">Open “' + esc(r.name) + '”</a>' }; render(); }); break;
+    case 'ioimpurl': { var u = (document.getElementById('iourl') || {}).value || ''; if (!u.trim()) { S.io = { err: 'Paste the link to a Google Sheet first.' }; render(); break; } ioRun('importVault', { url: u.trim() }, ioDone); break; }
+    case 'ioimpfile': {
+      var fl = (document.getElementById('iofile') || {}).files; if (!fl || !fl[0]) { S.io = { err: 'Choose an Excel file first.' }; render(); break; }
+      var fr = new FileReader(), nm = fl[0].name; fr.onload = function () { ioRun('importVault', { name: nm, b64: String(fr.result).split(',')[1] }, ioDone); }; fr.readAsDataURL(fl[0]); break;
+    }
+    case 'accent': accent = Number(v); LS.set('accent', accent); applyAccent(); render(); break;
     case 'refresh': { var b = el.querySelector('.ms'); if (b) b.classList.add('spin'); el.disabled = true; load(true); break; }
     case 'close': S.sheet = null; render(); break;
     case 'taxsheet': S.sheet = { type: 'tax', i: v != null ? Number(v) : S.taxFy }; if (v != null) S.taxFy = Number(v); render(); break;

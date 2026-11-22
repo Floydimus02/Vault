@@ -96,7 +96,6 @@ The web app adds these readers. They are layer 1 too; keep each one's return sha
 - appLoan_: loan details and the bank statement on the loan tab (EMIs, prepayments, rate changes).
 - appRewards_: the rewards ledger (provider, date, points, multiplier, expiry), reconciled to the points row on the net worth tab.
 - appEpf_: the EPF split on the Portfolio tab and the passbook on the EPF tab.
-- appEvents_: events within APP.EVENT_DAYS_AHEAD days.
 - The insurance block, locker log and premiums inside appCheck_ and appPremiums_.
 - appInsPolicies_: the insurance premiums log. One or more tables, side by side, headed Person, Insurance type, Provider, Premium amount, Premium Date, Coverage amount, Start date, End date, Status. Each person, type and provider is one policy with a row a year; a row dated in the future is the next renewal.
 

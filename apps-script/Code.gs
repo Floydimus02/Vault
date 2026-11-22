@@ -14,6 +14,8 @@
  *   6. Web app (optional): File → + → HTML, name it Index, paste Index.html into it.
  *      Deploy → New deployment → Web app. Execute as: Me. Who has access: Only myself.
  *      After any later change: Deploy → Manage deployments → edit → Version: New version.
+ *   7. Import and export (in the app's menu): run exportVault once from the editor to approve Drive access.
+ *      To import Excel files as well, add the Drive API: Services → + → Drive API → Add.
  *
  * Changed the sheet's layout? See PROMPT.md.
  *
@@ -61,14 +63,13 @@ const CONFIG = {
     coi: /\bcoi\b|computation of income/i,
     locker: /locker/i,
     payouts: /dividend|payout/i,
-    events: /^events?$/i,
     loan: /loan schedule/i,
     ledger: /rewards? ledger/i,
     estimations: /income\s*&\s*estimation/i,
     xirr: /^xirr$/i
   },
-  // Web app: how many days ahead an event shows on Home; how many movers to list for a net worth move of under 0.25%, 1% and more.
-  APP: { EVENT_DAYS_AHEAD: 2, MOVERS: [[0.0025, 3], [0.01, 5], [Infinity, 10]],
+  // Web app: how many movers to list for a net worth move of under 0.25%, 1% and more.
+  APP: { MOVERS: [[0.0025, 3], [0.01, 5], [Infinity, 10]],
     // Tabs the data checks scan. Tabs outside this list (a travel planner, say) are not the app's business.
     CHECK_TABS: /net worth|expense|\bcoi\b|income\s*&\s*estimation|cash flow|portfolio|^xirr$|dividend|payout|^epf$|^nps$|loan schedule|rewards? ledger|locker/i,
     INSURANCE_LOG: /insurance (log|premium)/i }
@@ -1132,12 +1133,10 @@ function buildAppData_() {
   const ref = { d1, past, d7: closest_(past, now.getTime() - 7 * 864e5, 1.5 * 864e5), d30: closest_(past, now.getTime() - 30 * 864e5, 3 * 864e5) };
   const loan = run('Home loan', () => appLoan_(ss, W, now), null);
   const ledger = run('Rewards ledger', () => appRewards_(ss, W, now), null);
-  const events = run('Events', () => appEvents_(ss, now), []);
 
   return {
     at: now.getTime(), today: dayKey_(now.getTime()), closeLabel: CONFIG.CLOSE_LABEL, sheetName: ss.getName(), sheetUrl: ss.getUrl(),
     home: run('Home', () => appHome_(W, A, M, closes, ref, loan, now), null),
-    events,
     income: run('Income', () => appIncome_(I, run('Payout ledger', () => appPayoutLedger_(ss), null)), null),
     tax: run('Tax', () => appTax_(ss, I, now), []),
     payslips: run('Payslips', () => appPayslips_(ss, now), []),
@@ -1204,32 +1203,132 @@ function appHome_(W, A, M, closes, ref, loan, now) {
     markets, marketsAgainst: d1 ? d1.k : null, movers, moveShare, shown, emiAlert };
 }
 
-/* ---------- Events ---------- */
+/* ---------- Export and import ---------- */
 
-/** Events tab: rows whose start date is today or within EVENT_DAYS_AHEAD days, unless skipped or cancelled. */
-function appEvents_(ss, now) {
-  const sh = ss.getSheets().find(s => CONFIG.TABS.events.test(s.getName()));
-  if (!sh) return [];
-  const tz = ss.getSpreadsheetTimeZone ? ss.getSpreadsheetTimeZone() : CONFIG.TIMEZONE;
-  const v = sh.getDataRange().getValues();
-  const hr = v.findIndex(r => r.some(c => /^event name$/i.test(str_(c))));
-  if (hr < 0) return [];
-  const H = v[hr].map(str_), col = re => H.findIndex(h => re.test(h));
-  const K = { cat: col(/^category$/i), status: col(/^status$/i), booked: col(/^booked$/i), name: col(/^event name$/i), artist: col(/^artist$/i), venue: col(/^venue$/i),
-    start: col(/^start date$/i), end: col(/^end date$/i), t0: col(/^start time$/i), t1: col(/^end time$/i), entry: col(/^entry$/i), price: col(/^price$/i), tickets: col(/^tickets$/i), platform: col(/^platform$/i) };
-  const today = startOfDay_(now), out = [];
-  const time = t => t instanceof Date ? Utilities.formatDate(t, tz, 'h:mm a') : str_(t);
-  for (let r = hr + 1; r < v.length; r++) {
-    const d = v[r][K.start];
-    if (!(d instanceof Date) || !str_(v[r][K.name])) continue;
-    const st = str_(v[r][K.status]), bk = str_(v[r][K.booked]);
-    if (/skip/i.test(st) || /cancel/i.test(bk)) continue;
-    const days = Math.round((startOfDay_(d) - today) / 864e5);
-    if (days < 0 || days > CONFIG.APP.EVENT_DAYS_AHEAD) continue;
-    out.push({ days, date: dayKey_(d.getTime()), name: str_(v[r][K.name]), cat: str_(v[r][K.cat]), artist: str_(v[r][K.artist]), venue: str_(v[r][K.venue]),
-      start: K.t0 >= 0 ? time(v[r][K.t0]) : '', booked: bk, entry: str_(v[r][K.entry]), tickets: num_(v[r][K.tickets]) || null, platform: str_(v[r][K.platform]) });
+/** Menu → Export: a new Google Sheet in Drive. "Vault ·" tabs hold tidy tables of everything the app works out; the rest are copies of your own tabs, ready to import or to start from. */
+function exportVault() {
+  const ss = SpreadsheetApp.getActive(), now = new Date(), stamp = Utilities.formatDate(now, CONFIG.TIMEZONE, 'd MMM yyyy, HH:mm');
+  const D = JSON.parse(getAppData(true)), out = SpreadsheetApp.create('Vault export · ' + stamp), blank = out.getSheets()[0];
+  // 1. Tidy tables
+  const T = exportTables_(D, now);
+  T.forEach(t => {
+    const sh = out.insertSheet('Vault · ' + t.name);
+    const rows = [t.head].concat(t.rows.length ? t.rows : [t.head.map(() => '')]);
+    sh.getRange(1, 1, rows.length, t.head.length).setValues(rows.map(r => r.map(cellOut_)));
+    sh.getRange(1, 1, 1, t.head.length).setFontWeight('bold').setBackground('#EEF0FF');
+    sh.setFrozenRows(1);
+    (t.money || []).forEach(c => sh.getRange(2, c + 1, rows.length - 1, 1).setNumberFormat('#,##0'));
+    (t.pct || []).forEach(c => sh.getRange(2, c + 1, rows.length - 1, 1).setNumberFormat('0.00%'));
+    if (t.rows.length) sh.getRange(1, 1, rows.length, t.head.length).createFilter();
+    sh.autoResizeColumns(1, t.head.length);
+  });
+  // 2. Your own tabs: values, formulas and formats, so the export imports straight back
+  const src = ss.getSheets();
+  const dst = src.map(sh => out.insertSheet(sh.getName()));
+  src.forEach((sh, i) => { copySheet_(sh, dst[i]); if (sh.isSheetHidden()) dst[i].hideSheet(); });
+  out.deleteSheet(blank);
+  out.setActiveSheet(out.getSheetByName('Vault · Summary')); out.moveActiveSheet(1);
+  return JSON.stringify({ url: out.getUrl(), name: out.getName(), tables: T.length, tabs: src.length });
+}
+
+/** The tidy tables. Dates go in as dates, money as numbers. */
+function exportTables_(D, now) {
+  const H = D.home || {}, T = [], add = (name, head, rows, money, pct) => T.push({ name, head, rows, money, pct });
+  const C = D.check || {}, sum = a => a.reduce((x, y) => x + (Number(y) || 0), 0);
+  add('Summary', ['Item', 'Value', 'Note'], [
+    ['Exported', now, ''], ['Net worth', H.nw, ''], ['Assets', H.assets, ''], ['Liabilities', H.liab, '']
+  ].concat((H.deltas || []).slice(0, 1).map(x => ['Change ' + x.l, x.d, x.base ? (x.d / x.base * 100).toFixed(2) + '%' : '']))
+    .concat((C.ratios || []).map(r => [r.n, r.v, r.sub || ''])), [1]);
+  add('Net worth log', ['Date', 'Net worth'], (H.series || []).map(x => [x.k, x.nw]), [1]);
+  add('Holdings', ['Holding', 'Type', 'Asset class', 'Category', 'Custodian', 'Liquidity', 'Purpose', 'Value', 'Previous', 'Change', 'XIRR', 'Taxation', 'Note'],
+    Object.keys(D.holdings || {}).map(k => { const h = D.holdings[k]; return [h.name, h.type, h.cls, h.cat, h.cust, h.liq, h.fn, h.val, h.prev, h.d, h.xirr, h.taxation, h.note]; }), [7, 8, 9], [10]);
+  const I = D.income;
+  if (I) add('Income', ['Source'].concat(I.months).concat(['Year so far']), I.sources.map(x => { const m = I.months.map((_, i) => (x.m || [])[i] || 0); return [x.n].concat(m).concat([sum(m)]); }), I.months.map((m, i) => i + 1).concat([I.months.length + 1]));
+  (D.payslips || []).forEach(y => {
+    const heads = []; y.months.forEach(m => (m.earn || []).concat(m.ded || []).forEach(e => { if (heads.indexOf(e[0]) < 0) heads.push(e[0]); }));
+    const FYM = ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'];
+    add('Payslips ' + y.fy.replace(/^FY\s*/, ''), ['Month'].concat(heads).concat(['Gross', 'Deductions', 'Net pay']), y.months.map(m => {
+      const all = (m.earn || []).concat(m.ded || []), get = h => { const e = all.find(x => x[0] === h); return e ? e[1] : ''; };
+      return [FYM[m.i]].concat(heads.map(get)).concat([m.gross, m.ded_, m.net]);
+    }), heads.map((h, i) => i + 1).concat([heads.length + 1, heads.length + 2, heads.length + 3]));
+  });
+  (D.tax || []).forEach(t => add('Tax ' + t.fy.replace(/^FY\s*/, ''), ['Line', 'Amount'], (t.working || []).map(w => Array.isArray(w) ? [w[0], w[1]] : [w.n || w.l || '', w.v != null ? w.v : w.a]), [1]));
+  const Sp = D.spend;
+  if (Sp) add('Spend ' + String(Sp.fy || '').replace(/^FY\s*/, ''), ['Category', 'This month', 'Usual month', 'Year so far', 'Full year'], Sp.cats.map(c => [c.k, c.act, c.usual, c.ytd, c.year]), [1, 2, 3, 4]);
+  const L = D.loan;
+  if (L) add('Loan schedule', ['Date', 'Entry', 'Principal', 'Interest', 'Prepayment', 'Rate from', 'Rate to', 'Balance after', 'Status'],
+    (L.events || []).map(e => [e.k, e.type === 'emi' ? 'EMI' : e.type === 'prepay' ? 'Prepayment' : 'Rate change', e.principal || '', e.interest || '', e.amt || '', e.from || '', e.to || '', e.bal || '', 'Paid'])
+      .concat((L.projection || []).map(e => [e.k, 'EMI', e.principal, e.interest, '', '', '', e.bal, 'Projected'])), [2, 3, 4, 7], [5, 6]);
+  (D.income ? D.income.sources : []).filter(x => x.lines && x.lines.length).forEach(x => add(x.n, ['Date', 'Paid by', 'Period', 'Gross', 'TDS', 'Net', 'Parts'],
+    x.lines.map(l => [l.k, l.what, l.q || l.fy || '', l.gross, l.tds || 0, l.net, (l.parts || []).map(q => q.n + ' ' + Math.round(q.gross)).join(' · ')]), [3, 4, 5]));
+  add('Insurance', ['Person', 'Category', 'Type', 'Cover', 'Paid by'], (C.insurance || []).map(x => [x.person, x.cat, x.type, x.cover, x.by]), [3]);
+  add('Premiums', ['Person', 'Type', 'Provider', 'Premium date', 'Premium', 'Cover', 'Start', 'End', 'Status'],
+    [].concat.apply([], (C.policies || []).map(p => p.lines.map(l => [p.person, p.type, p.provider, l.k, l.amt, l.cover, l.start, l.end, l.paid ? 'Paid' : 'Upcoming']))), [4, 5]);
+  const Lk = C.locker;
+  if (Lk) {
+    add('Locker items', ['Item'], Lk.items.map(x => [x]));
+    add('Locker visits', ['Date', 'By', 'Put in', 'Taken out', 'Items after'], Lk.visits.map(v => [v.d, v.by, v.added.join(', '), v.removed.join(', '), v.after.length]));
   }
-  return out.sort((a, b) => a.days - b.days);
+  add('Definitions', ['Tab', 'What it holds'], [
+    ['Summary', 'Net worth, assets and liabilities at the time of export, the change since the last midnight log, and every ratio.'],
+    ['Net worth log', 'Net worth at each midnight log, oldest first. The last row is the live value at export.'],
+    ['Holdings', 'One row per holding. Change is against the last midnight log. XIRR is the annualised return across every purchase and sale.'],
+    ['Income', 'Each source by month of the financial year, before tax.'],
+    ['Payslips', 'Each month\'s payslip: every earning and deduction, gross, total deductions and net pay.'],
+    ['Tax', 'The computation of income for each financial year, line by line.'],
+    ['Spend', 'Each category: this month, a usual month, the year so far and the full-year estimate.'],
+    ['Loan schedule', 'Every EMI, prepayment and rate change paid so far, then the projected EMIs to the end of the loan.'],
+    ['Dividends, REIT and SGB tabs', 'Every payout: when, from whom, the period, gross, TDS, net and, for REITs, each part.'],
+    ['Insurance', 'Every cover by person and category, and who pays for it.'],
+    ['Premiums', 'Every premium paid or due, with cover and policy dates.'],
+    ['Locker items and visits', 'What the locker holds now, and every visit with what went in and out.'],
+    ['Other tabs', 'Copies of your own tabs, formulas included. Import this file into a Vault sheet to restore them, or use it as a starting point.']
+  ]);
+  return T;
+}
+function cellOut_(v) { if (v == null) return ''; if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v)) return new Date(v + 'T00:00:00'); return v; }
+
+/** Copies one tab into another, cell for cell: formulas where there are formulas, values elsewhere, and the formats that matter. */
+function copySheet_(from, to) {
+  to.clear();
+  const R = from.getMaxRows(), Cn = from.getMaxColumns();
+  if (to.getMaxRows() < R) to.insertRowsAfter(to.getMaxRows(), R - to.getMaxRows());
+  if (to.getMaxColumns() < Cn) to.insertColumnsAfter(to.getMaxColumns(), Cn - to.getMaxColumns());
+  const lr = Math.max(1, from.getLastRow()), lc = Math.max(1, from.getLastColumn()), src = from.getRange(1, 1, lr, lc), dst = to.getRange(1, 1, lr, lc);
+  const f = src.getFormulas(), v = src.getValues();
+  dst.setValues(v.map((r, i) => r.map((x, j) => f[i][j] || x)));
+  dst.setNumberFormats(src.getNumberFormats()); dst.setFontWeights(src.getFontWeights()); dst.setFontColors(src.getFontColors());
+  dst.setBackgrounds(src.getBackgrounds()); dst.setHorizontalAlignments(src.getHorizontalAlignments()); dst.setWraps(src.getWraps());
+  for (let c = 1; c <= lc; c++) to.setColumnWidth(c, from.getColumnWidth(c));
+  to.setFrozenRows(from.getFrozenRows()); to.setFrozenColumns(from.getFrozenColumns());
+}
+
+/**
+ * Menu → Import: brings tabs in from a Google Sheet (a link) or an Excel file (.xlsx).
+ * Tabs with the same name are overwritten in place, so formulas elsewhere keep pointing at them; new tabs are added; nothing else is touched.
+ * A full copy of this sheet is saved to Drive first. Excel needs the Drive API service turned on (Apps Script → Services → + → Drive API).
+ */
+function importVault(src) {
+  const ss = SpreadsheetApp.getActive(), stamp = Utilities.formatDate(new Date(), CONFIG.TIMEZONE, 'd MMM yyyy, HH:mm');
+  let from, temp = null;
+  if (src && src.b64) {
+    if (typeof Drive === 'undefined') throw new Error('To import an Excel file, turn on the Drive API: in Apps Script, click Services, then +, choose Drive API and Add.');
+    const blob = Utilities.newBlob(Utilities.base64Decode(src.b64), MimeType.MICROSOFT_EXCEL, src.name || 'Vault.xlsx');
+    const made = Drive.Files.create({ name: 'Vault import · ' + (src.name || stamp), mimeType: MimeType.GOOGLE_SHEETS }, blob);
+    temp = made.id; from = SpreadsheetApp.openById(made.id);
+  } else {
+    const m = String((src && src.url) || '').match(/[-\w]{25,}/);
+    if (!m) throw new Error('Paste the full link to a Google Sheet.');
+    from = SpreadsheetApp.openById(m[0]);
+  }
+  if (from.getId() === ss.getId()) throw new Error('That link is this sheet.');
+  const backup = DriveApp.getFileById(ss.getId()).makeCopy('Vault backup before import · ' + stamp);
+  const tabs = from.getSheets().filter(sh => !/^Vault · /.test(sh.getName())), done = { replaced: [], added: [] };
+  // Make every tab first, then fill them, so formulas that point across tabs find their targets
+  const pairs = tabs.map(sh => { const name = sh.getName(), old = ss.getSheetByName(name); (old ? done.replaced : done.added).push(name); return [sh, old || ss.insertSheet(name, ss.getSheets().length)]; });
+  pairs.forEach(p => { copySheet_(p[0], p[1]); if (p[0].isSheetHidden() || p[1].getName() === CONFIG.LOG_TAB) p[1].hideSheet(); });
+  if (temp) DriveApp.getFileById(temp).setTrashed(true);
+  return JSON.stringify({ replaced: done.replaced, added: done.added, backup: backup.getUrl() });
 }
 
 /* ---------- Income ---------- */

@@ -47,47 +47,53 @@ I tracked my money for years, changing what I captured, how and when. Rows of nu
 Version 1 was a daily email. Version 2 is an app that lives on any device, opens only for me, and tells me in seconds what used to take an evening.
 
 <p align="center">
-  <img src="assets/app-light-1.png#gh-light-mode-only" alt="Vault: Home, Invest, a holding and Check">
-  <img src="assets/app-dark-1.png#gh-dark-mode-only" alt="Vault: Home, Invest, a holding and Check">
+  <img src="assets/screens-light-1.png#gh-light-mode-only" alt="Vault on three phones: Invest, Home and Check">
+  <img src="assets/screens-dark-1.png#gh-dark-mode-only" alt="Vault on three phones: Invest, Home and Check">
 </p>
 
 ## Function first
 
-### See where you stand
-- **Net worth, every night.** A snapshot at midnight. Trends over 7 days, 30 days or 12 month ends.
-- **What moved today.** Markets, your biggest movers, and changes since last night's close.
-- **Heads-ups that matter.** An event tomorrow, a renewal next week, a thin EMI account.
+### Know where you stand
+- **Your net worth, every morning.** Logged at midnight, compared with yesterday, and charted over a week, a month or a year.
+- **Early warnings.** A renewal coming up, an EMI account running thin, a ratio slipping off target. You hear about it before it costs you.
+- **Ratios with a verdict.** Savings, emergency cover, liquidity, debt and housing, each marked healthy or off target.
 
 ### Make every rupee work
-- **Every holding, down to the lot.** Gain, XIRR, long or short term, and the tax if you sold today.
-- **The honest benchmark.** Each investment against a fixed deposit, after tax. Laggards have nowhere to hide.
+- **Every investment, judged honestly.** Each holding down to the purchase: gain, XIRR, the tax if you sold today, and whether it beat a fixed deposit after tax.
 - **Where it all sits.** Allocation by purpose, asset class, liquidity and custodian.
-- **Ratios with a verdict.** Savings, emergency cover, liquidity, debt and housing, each marked healthy or off target.
+- **Income, read properly.** Salary against the same months last year. Dividends, SGB coupons and REIT payouts split into what is income and what is your own capital coming back.
 
 ### Plug the leaks
 - **Spend with a pace check.** The month so far against your usual, and where it will land.
 - **Tax, worked out.** Both regimes, advance tax due and any interest, from your own payslips and payouts.
 - **The loan, decoded.** EMIs and interest left, rate history, and what a prepayment would save.
 - **Rewards in rupees.** What your points are worth and when they expire.
-- **Insurance with a memory.** Cover per person, renewals 30 days out, premium growth across the years.
+- **Insurance with a memory.** What each person is covered for, when it renews, and how fast premiums are rising.
+- **The locker, accounted for.** What is inside, and who went in and took what out.
 
 ### Keep it yours
 - **Only you get in.** It runs as you and opens only for you. No server, database, tracker or third party.
-- **Private in public.** One tap hides amounts above ₹25 L on Home and ₹1 Cr elsewhere.
+- **Private in public.** One switch hides large amounts, so you can open it anywhere.
 - **Live on refresh.** Every open reads the sheet afresh. Prices follow `GOOGLEFINANCE`, or any better source you plug in.
 - **Your sheet, your rules.** Any structure you like. Leave anything out of net worth. A missing value is skipped, never shown blank.
+- **Never locked in.** Export everything to a Google Sheet in your Drive, or bring a workbook in from Google Sheets or Excel.
 - **Nothing to maintain.** A sheet, a script and a page. Free, on Google.
 
 ## Then form
 
-- **Minimal and visual.** One accent, one typeface, a chart wherever a number needs a story.
-- **Made for the thumb.** Tap search and the bottom bar becomes a search field that suggests from your own holdings, payees, policies and locker items, typos and all.
-- **You never lose your place.** Details open as bottom sheets; going back returns you exactly where you were.
-- **Light or dark.** It follows your device.
+- **Calm by design.** White space, one typeface, one accent. Lakhs and crores where you glance, full rupees where you check.
+- **Made for the thumb.** Search suggests from your own holdings, payees, policies and locker items, typos and all. Details open as bottom sheets, and going back returns you exactly where you were.
+- **Yours to tune.** Eight accent colours, light or dark, all in one menu.
+- **A touch of life.** The logo, a soft blob, breathes while Vault reads your sheet.
 
 <p align="center">
-  <img src="assets/app-light-2.png#gh-light-mode-only" alt="Vault: Income, Spend, Home loan and Search">
-  <img src="assets/app-dark-2.png#gh-dark-mode-only" alt="Vault: Income, Spend, Home loan and Search">
+  <img src="assets/screens-light-2.png#gh-light-mode-only" alt="Vault on three phones: Income, Spend and Home loan">
+  <img src="assets/screens-dark-2.png#gh-dark-mode-only" alt="Vault on three phones: Income, Spend and Home loan">
+</p>
+
+<p align="center">
+  <img src="assets/screens-light-3.png#gh-light-mode-only" alt="Vault on three phones: Locker, the menu and Insurance premiums">
+  <img src="assets/screens-dark-3.png#gh-dark-mode-only" alt="Vault on three phones: Locker, the menu and Insurance premiums">
 </p>
 
 ## Every day you don't look, the leaks win
@@ -149,9 +155,11 @@ Click the clock icon (**Triggers**) and add two triggers:
 3. **Deploy → New deployment →** gear icon **→ Web app**. Set **Execute as: Me** and **Who has access: Only myself**. Click **Deploy**.
 4. Open the **Web app URL** and bookmark it. To use your own domain, point it at this URL.
 5. On your phone, open the same URL signed in to the same Google account, then add it to your home screen: Safari → Share → **Add to Home Screen**, or Chrome → ⋮ → **Add to home screen**.
+6. For **Import and export** in the menu, run `exportVault` once from the editor and allow Drive access. To import Excel files too, click **Services → + → Drive API → Add**.
 
 **6. Put your money in**
 1. Replace the example rows with yours, tab by tab. Keep the tab names, headings and row labels; the script finds everything by them. Delete any tab you don't need and its section disappears.
+   Already have a workbook laid out like the template? In the app, open **☰ → Import and export** and import it from a Google Sheet link or an `.xlsx` file.
 2. For live prices, use formulas such as `=GOOGLEFINANCE("INDEXNSE:NIFTY_50")` in the Markets block on **Portfolio**, and `=GOOGLEFINANCE("NSE:ITC")` in each holding's **Current Price**.
 
 ## Day to day
@@ -177,14 +185,15 @@ Click the clock icon (**Triggers**) and add two triggers:
 | When it happens | Dividend, SGB coupon or REIT payout | **Dividends & payouts** |
 | When it happens | Reward points earned or redeemed | **Rewards ledger**, and the balance on **Net worth** |
 | When it happens | Insurance renewal | **Insurance premiums** |
-| When it happens | Locker visit or event | **Locker log**, **Events** |
+| When it happens | Locker visit | **Locker log** |
 | At each review | Values at review and the review date | **Net worth**: `Amount: T - X`, `Last updated` |
 | Every April | New financial year | Copy **Expenses** and **CoI**, renamed for the new year |
+| Before a big change | A backup | **☰ → Import and export → Export to Google Drive** |
 
 ## Make it yours
 
-1. **Change a setting.** Edit `CONFIG` at the top of `Code.gs`: recipients, time zone, what's left out of net worth (`EXCLUDE`), rewards, the EMI alert, and how many days ahead events show.
-2. **Change the look.** Edit the colour tokens under `:root` at the top of `Index.html`; `html.dark` holds the dark theme.
+1. **Change a setting.** Edit `CONFIG` at the top of `Code.gs`: recipients, time zone, what's left out of net worth (`EXCLUDE`), rewards and the EMI alert.
+2. **Change the look.** Pick a theme colour in **☰**. For more, edit the colour tokens under `:root` near the top of `Index.html`; `html.dark` holds the dark theme, and `ACCENTS` lists the menu's colours.
 3. **Fit a different sheet.** Run `describeWorkbook` in Apps Script, then follow [`PROMPT.md`](PROMPT.md). An AI assistant rewrites only the parts that read your sheet.
 4. **Publish it.** After any change: **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**. The URL stays the same. To check first, open **Deploy → Test deployments**.
 
