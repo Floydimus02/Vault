@@ -133,7 +133,7 @@ button.card{border:0}
 button.card.rowbtn{border-bottom:0}
 </style>
 <style>
-/* Theme: warm marketplace look. White canvas, one coral accent used sparingly, soft radii, modest weights, hairlines over fills, one shadow tier. */
+/* Theme: warm marketplace look. White canvas, one blue accent used sparingly, soft radii, modest weights, hairlines over fills, one shadow tier. */
 :root{--bg:#FFFFFF;--card:#FFFFFF;--well:#F7F7F7;--ink:#222222;--mute:#6A6A6A;--line:#EBEBEB;--soft:#DDDDDD;--acc:#4F46E5;--acc2:#4338CA;--pos:#008A05;--posbg:#EBF7EC;--neg:#C13515;--negbg:#FDEDEA;--amber:#B4690E;--amberbg:#FFF5E6;--blue:#222222;--bluebg:#F2F2F2;--scrim:rgba(0,0,0,.5);--lift:0 0 0 1px rgba(0,0,0,.02),0 2px 6px rgba(0,0,0,.04),0 4px 8px rgba(0,0,0,.1);--shadow:var(--lift);--selbg:rgba(79,70,229,.10);--selbd:rgba(79,70,229,.32);--selfg:#4338CA;--bar:rgba(79,70,229,.30)}
 html.dark{--bg:#121212;--card:#1A1A1A;--well:#242424;--ink:#F7F7F7;--mute:#A3A3A3;--line:#2A2A2A;--soft:#3A3A3A;--acc:#818CF8;--acc2:#A5B4FC;--pos:#4CC38A;--posbg:#12301F;--neg:#FF6B5E;--negbg:#3A1714;--amber:#F2B04B;--amberbg:#352612;--blue:#F7F7F7;--bluebg:#2A2A2A;--scrim:rgba(0,0,0,.6);--lift:0 0 0 1px rgba(255,255,255,.04),0 4px 12px rgba(0,0,0,.5);--selbg:rgba(129,140,248,.16);--selbd:rgba(129,140,248,.45);--selfg:#A5B4FC;--bar:rgba(129,140,248,.40);color-scheme:dark}
 html,body{font-family:Inter,-apple-system,system-ui,Roboto,'Helvetica Neue',sans-serif}
@@ -182,21 +182,8 @@ div:has(> .seg) > .ttl{white-space:nowrap}
 .trk{background:var(--line);height:6px}
 .fil{background:var(--bar)}
 .fil.over{background:var(--neg);opacity:.75}
-/* Top bar menu */
-.menuwrap{position:relative}
-.menu{position:absolute;right:0;top:48px;z-index:40;width:264px;background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--lift);padding:8px}
-.menu .mh{margin:4px 10px 8px;font-size:12px;font-weight:600;color:var(--mute)}
-.menu .mn{margin:0 10px 6px;font-size:12px;color:var(--mute)}
-.sws{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 10px 8px}
-.sws button{height:30px;border-radius:8px;border:0;cursor:pointer;padding:0}
-.sws button.on{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--ink)}
-.mi{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:8px 10px;border:0;border-top:1px solid var(--line);background:transparent;font-size:14px;font-weight:500;color:var(--ink);cursor:pointer;text-align:left}
-.mi:hover{background:var(--well)}
-.mi .ms{color:var(--mute);font-size:20px}
-.tog{margin-left:auto;flex:none;width:38px;height:22px;border-radius:999px;background:var(--soft);position:relative;transition:background .15s}
-.tog::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#FFFFFF;transition:left .15s}
-.tog.on{background:var(--acc)}
-.tog.on::after{left:19px}
+/* Top bar: the dark mode and privacy toggles, highlighted when on */
+header.top .ib.on{background:var(--selbg);border-color:var(--selbd);color:var(--acc)}
 button.card{border:1px solid var(--line)}
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;border:0;border-radius:10px;background:var(--acc);color:#FFFFFF;font-size:15px;font-weight:600;cursor:pointer}
 .btn.sec{background:var(--well);color:var(--ink);border:1px solid var(--line)}
@@ -215,6 +202,7 @@ button.card{border:1px solid var(--line)}
 /* Chart series: distinct from gains green and losses red */
 :root{--s2:#7B8BA3;--s3:#E2A03F;--s4:#2E9E95;--s5:#C2649A;--s6:#3FA7D6}
 html.dark{--s2:#9AA8BD;--s3:#F0B65E;--s4:#4FC2B8;--s5:#E08BBD;--s6:#6CC4EA}
+#tip{position:fixed;z-index:100;display:none;transform:translate(-50%,-100%);background:var(--ink);color:var(--bg);font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;pointer-events:none;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 4px 14px rgba(0,0,0,.18)}
 .grp{display:flex;justify-content:space-between;align-items:center}
 .w.t{border-bottom:2px solid var(--ink)}
 /* Bottom navigation: no fill, coral marks where you are */
@@ -247,15 +235,7 @@ nav.tabs button.on .ms{font-variation-settings:'wght' 500}
 var D = null, S = { tab: 'home', page: null, hid: null, sheet: null, taxFy: 0, payFy: 0, payMode: 'm', payMonth: null, alloc: 'fn', openType: null, loanView: 'now', spendView: 'm', nwRange: 'w', q: '', searchOpen: false, phI: 0 };
 var LS = { get: function (k, d) { try { var v = localStorage.getItem('vault_' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
   set: function (k, v) { try { localStorage.setItem('vault_' + k, JSON.stringify(v)); } catch (e) {} } };
-var mask = LS.get('mask', false), theme = LS.get('theme', null), accent = Number(LS.get('accent', 0)) || 0;
-function applyTheme() {
-  var dark = theme ? theme === 'dark' : !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
-  document.documentElement.classList.toggle('dark', dark);
-  applyAccent();
-  return dark;
-}
-applyTheme();
-if (window.matchMedia) try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (!theme) { applyTheme(); render(); } }); } catch (e) {}
+var mask = LS.get('mask', false), theme = LS.get('theme', null);
 
 /* ---------- Formatting ---------- */
 var MONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -268,6 +248,8 @@ function hidden(n) { return mask && (onHome() ? Math.abs(n) > 25e5 : Math.abs(n)
 var DOTS = '₹ ••••••';
 function inr(n, sign) { if (n == null || isNaN(n)) return '—'; if (hidden(n)) return DOTS; return (n < 0 ? '−' : sign && n > 0 ? '+' : '') + '₹' + grp(n); }
 function inrC(n, sign) { if (n == null || isNaN(n)) return '—'; if (hidden(n)) return DOTS; var a = Math.abs(n), s = n < 0 ? '−' : sign && n > 0 ? '+' : ''; return a >= 1e7 ? s + '₹' + (a / 1e7).toFixed(2) + ' Cr' : a >= 1e5 ? s + '₹' + (a / 1e5).toFixed(2) + ' L' : s + '₹' + grp(a); }
+// Tooltips: the short form, in crore, lakh or thousand (₹1.23 Cr, ₹4.56 L, ₹21.32 K); under ₹1,000 in full
+function inrK(n) { if (n == null || isNaN(n)) return '—'; if (hidden(n)) return DOTS; var a = Math.abs(n), s = n < 0 ? '−' : ''; return a >= 1e7 ? s + '₹' + (a / 1e7).toFixed(2) + ' Cr' : a >= 1e5 ? s + '₹' + (a / 1e5).toFixed(2) + ' L' : a >= 1e3 ? s + '₹' + (a / 1e3).toFixed(2) + ' K' : s + '₹' + grp(a); }
 function pct(p, d, sign) { if (p == null || isNaN(p)) return '—'; return (p < 0 ? '−' : sign && p > 0 ? '+' : '') + Math.abs(p * 100).toFixed(d == null ? 1 : d) + '%'; }
 function inrRange(lo, hi) {
   if (hidden(lo) || hidden(hi)) return DOTS;
@@ -307,31 +289,26 @@ function load(refresh) {
 }
 
 /* ---------- Pieces ---------- */
-// Accent colours: [name, light, light deep, dark, dark deep]
-var ACCENTS = [['Electric indigo', '#4F46E5', '#4338CA', '#818CF8', '#A5B4FC'], ['Ultramarine', '#3D5AFE', '#2F45D9', '#7C93FF', '#A3B3FF'], ['Royal blue', '#2563EB', '#1D4ED8', '#60A5FA', '#93C5FD'], ['Violet', '#7C3AED', '#6D28D9', '#A78BFA', '#C4B5FD'],
-  ['Cyan', '#0891B2', '#0E7490', '#22D3EE', '#67E8F9'], ['Magenta', '#D6249F', '#B01E85', '#F472D0', '#F9A8E4'], ['Tangerine', '#EA580C', '#C2410C', '#FB923C', '#FDBA74'], ['Coral', '#FF385C', '#D70F45', '#FF5A76', '#FF8FA3']];
-applyAccent();
+// One accent, blue, in a light and a dark shade. The deep shade is for selected text; the tints are for selected fills, borders and bars.
+var ACC = { light: ['#1F5BD8', '#1849B0'], dark: ['#8AB4FF', '#B3CEFF'] };
 function rgb(h) { return [1, 3, 5].map(function (i) { return parseInt(h.slice(i, i + 2), 16); }).join(','); }
-function applyAccent() {
-  if (!ACCENTS) return;
-  var a = ACCENTS[accent] || ACCENTS[0], dark = document.documentElement.classList.contains('dark'), c = dark ? a[3] : a[1], deep = dark ? a[4] : a[2], st = document.documentElement.style;
-  st.setProperty('--acc', c); st.setProperty('--acc2', deep); st.setProperty('--selfg', deep);
-  st.setProperty('--selbg', 'rgba(' + rgb(c) + ',' + (dark ? .16 : .10) + ')'); st.setProperty('--selbd', 'rgba(' + rgb(c) + ',' + (dark ? .45 : .32) + ')'); st.setProperty('--bar', 'rgba(' + rgb(c) + ',' + (dark ? .40 : .30) + ')');
+// Light or dark: follows the phone until the toggle is tapped, then remembers the choice
+function applyTheme() {
+  var dark = theme ? theme === 'dark' : !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches), a = ACC[dark ? 'dark' : 'light'], st = document.documentElement.style;
+  document.documentElement.classList.toggle('dark', dark);
+  st.setProperty('--acc', a[0]); st.setProperty('--acc2', a[1]); st.setProperty('--selfg', a[1]);
+  st.setProperty('--selbg', 'rgba(' + rgb(a[0]) + ',' + (dark ? .16 : .10) + ')'); st.setProperty('--selbd', 'rgba(' + rgb(a[0]) + ',' + (dark ? .45 : .32) + ')'); st.setProperty('--bar', 'rgba(' + rgb(a[0]) + ',' + (dark ? .40 : .30) + ')');
+  return dark;
 }
-// One menu in the top bar: accent colour, light or dark, refresh, and hiding large amounts
-function themeBtn() {
-  var dark = document.documentElement.classList.contains('dark'), o = '<div class="menuwrap"><button type="button" class="ib" aria-label="Menu" aria-haspopup="true" aria-expanded="' + !!S.menu + '" data-act="menu"><span class="ms">' + (S.menu ? 'close' : 'menu') + '</span></button>';
-  if (S.menu) o += '<div class="menu" role="menu"><p class="mh">Theme colour</p><div class="sws">' + ACCENTS.map(function (x, i) { return '<button type="button" role="menuitemradio" aria-checked="' + (i === accent) + '" aria-label="' + x[0] + '" title="' + x[0] + '" class="' + (i === accent ? 'on' : '') + '" style="background:' + (dark ? x[3] : x[1]) + '" data-act="accent" data-v="' + i + '"></button>'; }).join('') + '</div><p class="mn">' + ACCENTS[accent][0] + '</p>' +
-    '<button type="button" class="mi" role="menuitemcheckbox" aria-checked="' + dark + '" data-act="theme"><span class="ms">dark_mode</span>Dark mode<span class="tog' + (dark ? ' on' : '') + '"></span></button>' +
-    '<button type="button" class="mi" role="menuitem" data-act="refresh"><span class="ms">refresh</span>Refresh</button>' +
-    '<button type="button" class="mi" role="menuitemcheckbox" aria-checked="' + mask + '" data-act="mask"><span class="ms">' + (mask ? 'visibility_off' : 'visibility') + '</span>Hide large amounts<span class="tog' + (mask ? ' on' : '') + '"></span></button>' +
-    '<button type="button" class="mi" role="menuitem" data-act="io"><span class="ms">sync_alt</span>Import and export</button></div>';
-  return o + '</div>';
-}
+applyTheme();
+if (window.matchMedia) try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () { if (!theme) { applyTheme(); render(); } }); } catch (e) {}
+// Top bar: dark mode, then hiding large amounts
+function themeToggle() { var dark = document.documentElement.classList.contains('dark'), t = dark ? 'Switch to light mode' : 'Switch to dark mode'; return '<button type="button" class="ib' + (dark ? ' on' : '') + '" aria-pressed="' + dark + '" aria-label="' + t + '" title="' + t + '" data-act="theme"><span class="ms">' + (dark ? 'light_mode' : 'dark_mode') + '</span></button>'; }
+function privacyBtn() { var t = mask ? 'Show large amounts' : 'Hide large amounts'; return '<button type="button" class="ib' + (mask ? ' on' : '') + '" aria-pressed="' + mask + '" aria-label="' + t + '" title="' + t + '" data-act="mask"><span class="ms">' + (mask ? 'visibility_off' : 'visibility') + '</span></button>'; }
 function header(title, sub, opts) {
   opts = opts || {};
-  if (opts.back) return '<header class="top back"><div class="hl"><button type="button" class="ib" aria-label="Back" data-act="back"><span class="ms">arrow_back</span></button><div class="rl"><h1>' + esc(title) + '</h1>' + (sub ? '<span class="hsub">' + esc(sub) + '</span>' : '') + '</div></div>' + themeBtn() + '</header>';
-  return '<header class="top"><div class="hl">' + (opts.logo !== false ? '<div class="logo" aria-hidden="true">' + BLOB + '</div>' : '') + '<div class="rl"><h1>' + esc(title) + '</h1>' + (sub ? '<span class="hsub">' + esc(sub) + '</span>' : '') + '</div></div>' + themeBtn() + '</header>';
+  if (opts.back) return '<header class="top back"><div class="hl"><button type="button" class="ib" aria-label="Back" data-act="back"><span class="ms">arrow_back</span></button><div class="rl"><h1>' + esc(title) + '</h1>' + (sub ? '<span class="hsub">' + esc(sub) + '</span>' : '') + '</div></div>' + '<div style="display:flex;align-items:center">' + themeToggle() + privacyBtn() + '</div></header>';
+  return '<header class="top"><div class="hl">' + (opts.logo !== false ? '<div class="logo" aria-hidden="true">' + BLOB + '</div>' : '') + '<div class="rl"><h1>' + esc(title) + '</h1>' + (sub ? '<span class="hsub">' + esc(sub) + '</span>' : '') + '</div></div>' + '<div style="display:flex;align-items:center">' + themeToggle() + privacyBtn() + '</div></header>';
 }
 function nav() {
   var T = [['home', 'home', 'Home'], ['income', 'payments', 'Income'], ['spend', 'shopping_bag', 'Spend'], ['invest', 'trending_up', 'Invest'], ['check', 'fact_check', 'Check'], ['search', 'search', 'Search']];
@@ -346,7 +323,8 @@ function bars(values, opts) {
   values.forEach(function (v, i) {
     var est = opts.est && opts.est(i), hi = opts.hi == null || opts.hi === i;
     var bg = est ? 'background:var(--proj);border:1px dashed var(--projb)' : 'background:' + (hi ? 'var(--acc)' : 'var(--soft)');
-    out += '<div style="height:' + Math.max(2, Math.round(Math.abs(v || 0) / mx * h)) + 'px;' + bg + '"></div>';
+    var tip = (opts.labels ? opts.labels[i] + ': ' : '') + inrK(v || 0) + (est ? ' (estimate)' : '');
+    out += '<div data-tip="' + esc(tip) + '" style="height:' + h + 'px;display:flex;align-items:flex-end;cursor:default"><div style="width:100%;height:' + Math.max(2, Math.round(Math.abs(v || 0) / mx * h)) + 'px;' + bg + '"></div></div>';
   });
   out += '</div>';
   if (opts.labels) out += '<div class="blab" style="grid-template-columns:repeat(' + n + ',minmax(0,1fr))">' + opts.labels.map(function (l) { return '<span>' + esc(l) + '</span>'; }).join('') + '</div>';
@@ -546,7 +524,7 @@ function payTable(earn, ded, gross, net, label) {
 }
 function splitBar(gross, tds, net) {
   var other = gross - tds - net;
-  return '<div style="display:flex;height:12px;gap:2px;border-radius:4px;overflow:hidden;margin-top:14px" role="img" aria-label="Gross split into TDS, other deductions and net pay"><div style="width:' + (tds / gross * 100) + '%;background:var(--s2)"></div><div style="width:' + (other / gross * 100) + '%;background:var(--soft)"></div><div style="width:' + (net / gross * 100) + '%;background:var(--acc)"></div></div>' +
+  return '<div style="display:flex;height:12px;gap:2px;border-radius:4px;overflow:hidden;margin-top:14px" role="img" aria-label="Gross split into TDS, other deductions and net pay"><div data-tip="Tax (TDS): ' + inrK(tds) + '" style="width:' + (tds / gross * 100) + '%;background:var(--s2)"></div><div data-tip="PF and other: ' + inrK(other) + '" style="width:' + (other / gross * 100) + '%;background:var(--soft)"></div><div data-tip="Net pay: ' + inrK(net) + '" style="width:' + (net / gross * 100) + '%;background:var(--acc)"></div></div>' +
     '<div class="legend"><span><span class="sw" style="background:var(--s2)"></span>Tax (TDS)</span><span><span class="sw" style="background:var(--soft)"></span>PF and other</span><span><span class="sw" style="background:var(--acc)"></span>Net pay</span></div>';
 }
 function vPayslips() {
@@ -599,12 +577,15 @@ function vSpend() {
     var yr = S.spendView === 'y', cats = X.cats.slice().sort(function (a, b) { return (yr ? b.year - a.year : b.act - a.act); });
     var tot = sum(cats.map(function (c) { return yr ? c.year : c.act; }));
     o += '<section class="card" style="padding-bottom:8px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding-bottom:10px"><h2 class="ttl">Categories</h2><div class="seg" role="group" aria-label="Period" style="width:150px"><button type="button" class="' + (!yr ? 'on' : '') + '" aria-pressed="' + !yr + '" data-act="spendview" data-v="m">' + esc(X.month) + '</button><button type="button" class="' + (yr ? 'on' : '') + '" aria-pressed="' + yr + '" data-act="spendview" data-v="y">Year</button></div></div>';
-    o += '<div class="small" style="padding-bottom:4px">' + (yr ? esc(X.fy) + ', all 12 months as filled in · share of the year' : 'So far this month · usual month') + '</div>';
+    // Column headings sit over the numbers they name: the category on the left, the two figures right-aligned in fixed columns
+    var CG = 'display:grid;grid-template-columns:minmax(0,1fr) 84px 64px;gap:8px;align-items:baseline;width:100%';
+    o += '<div class="th" style="' + CG + ';padding:4px 0 6px;border-bottom:1px solid var(--line)"><span>Category</span><span style="text-align:right">' + (yr ? esc(X.fy) : 'So far') + '</span><span style="text-align:right">' + (yr ? 'Share' : 'Usual') + '</span></div>';
     var mx = Math.max.apply(null, cats.map(function (c) { return yr ? c.year : c.act; }).concat([1]));
     cats.forEach(function (c) {
       var i = X.cats.indexOf(c), val = yr ? c.year : c.act;
-      o += '<button type="button" class="rowbtn" data-act="cat" data-v="' + i + '" style="flex-direction:column;align-items:stretch;gap:6px"><span style="display:flex;justify-content:space-between;width:100%"><span>' + esc(c.k) + '</span><span class="num"><b>' + inrC(val) + '</b> <span class="mute">· ' + (yr ? pct(tot ? val / tot : 0, 0) : inrC(c.usual)) + '</span></span></span><span class="trk"><span class="fil" style="width:' + (val / mx * 100) + '%"></span></span></button>';
+      o += '<button type="button" class="rowbtn" data-act="cat" data-v="' + i + '" style="flex-direction:column;align-items:stretch;gap:6px"><span style="' + CG + '"><span>' + esc(c.k) + '</span><b class="num" style="text-align:right">' + inrC(val) + '</b><span class="num mute" style="text-align:right">' + (yr ? pct(tot ? val / tot : 0, 0) : inrC(c.usual)) + '</span></span><span class="trk"><span class="fil" style="width:' + (val / mx * 100) + '%"></span></span></button>';
     });
+    if (yr) o += '<p class="note" style="font-size:12px">Year: all 12 months as filled in, including months still to come.</p>';
     o += '</section>';
   }
   var L = X.loan;
@@ -899,7 +880,7 @@ function lineChart(labels, series, opts) {
   if (hi === lo) { hi = hi * 1.1 || 1; lo = opts.zero ? 0 : lo * 0.9; }
   var pad = (hi - lo) * 0.12; hi += pad; if (!opts.zero) lo = Math.max(0, lo - pad);
   var n = labels.length, x = function (i) { return n === 1 ? (L + (W - R)) / 2 : L + i * (W - L - R) / (n - 1); }, y = function (v) { return T + (1 - (v - lo) / (hi - lo)) * (H - T - B); };
-  var o = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="' + esc(opts.label || 'Line chart') + '" style="display:block;overflow:visible">';
+  var hits = '', o = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" role="img" aria-label="' + esc(opts.label || 'Line chart') + '" style="display:block;overflow:visible">';
   // Axis labels: more decimals when a narrow range would print the same label twice
   var ticks = [lo, (lo + hi) / 2, hi], tl = ticks.map(function (v) { return inrC(v); });
   for (var dd = 3; dd <= 5 && (tl[0] === tl[1] || tl[1] === tl[2]) && !hidden(hi); dd++) tl = ticks.map(function (v) { var a = Math.abs(v); return a >= 1e7 ? '₹' + (a / 1e7).toFixed(dd) + ' Cr' : a >= 1e5 ? '₹' + (a / 1e5).toFixed(dd - 1) + ' L' : '₹' + grp(a); });
@@ -910,9 +891,11 @@ function lineChart(labels, series, opts) {
     var solid = sr.estLast && pts.length > 1 ? pts.slice(0, -1) : pts, fmt = function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); };
     if (solid.length > 1) o += '<polyline fill="none" stroke="' + sr.color + '" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" points="' + solid.map(fmt).join(' ') + '"/>';
     if (sr.estLast && pts.length > 1) o += '<polyline fill="none" stroke="' + sr.color + '" stroke-width="2" stroke-dasharray="4 4" points="' + fmt(pts[pts.length - 2]) + ' ' + fmt(pts[pts.length - 1]) + '"/>';
+    sr.values.forEach(function (v, i) { if (v == null) return; hits += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="11" fill="transparent" data-tip="' + esc(labels[i] + (series.length > 1 ? ' · ' + sr.name : '') + ': ' + inrK(v) + (sr.estLast && i === sr.values.length - 1 ? ' (estimate)' : '')) + '"/>'; });
     pts.forEach(function (p, k) { var est = sr.estLast && k === pts.length - 1; if (opts.dots === false && k !== pts.length - 1) return; o += '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (k === pts.length - 1 ? 3.6 : 2.6) + '" fill="' + (est ? 'var(--card)' : sr.color) + '" stroke="' + (est ? sr.color : 'var(--card)') + '" stroke-width="' + (est ? 2 : 1.5) + '"/>'; });
   });
-  return o + '</svg>' + (series.length > 1 ? '<div class="legend">' + series.map(function (sr) { return '<span><span class="sw" style="background:' + sr.color + '"></span>' + esc(sr.name) + '</span>'; }).join('') + '</div>' : '');
+  // Hover and tap targets go last so they sit above the drawn points
+  return o + hits + '</svg>' + (series.length > 1 ? '<div class="legend">' + series.map(function (sr) { return '<span><span class="sw" style="background:' + sr.color + '"></span>' + esc(sr.name) + '</span>'; }).join('') + '</div>' : '');
 }
 var SERIES_COLOURS = ['var(--acc)', 'var(--s4)', 'var(--s3)', 'var(--s5)', 'var(--s6)', 'var(--s2)'];
 function polName(p) { return p.person + ' · ' + p.type.replace(/^health\s*-\s*/i, 'Health, ').replace(/^term$/i, 'Term'); }
@@ -1066,28 +1049,8 @@ function searchBar() {
 function sheetWrap(title, sub, body) { return '<div class="sheet"><button type="button" class="scrim" aria-label="Close" data-act="close"></button><section role="dialog" aria-label="' + esc(title) + '"><div class="grab"><div></div></div><div class="shead"><div class="rl"><span class="ttl">' + esc(title) + '</span>' + (sub ? '<span class="small">' + esc(sub) + '</span>' : '') + '</div><button type="button" class="ib" aria-label="Close" data-act="close"><span class="ms">close</span></button></div><div class="sbody">' + body + '</div></section></div>'; }
 function kvRows(list) { return list.map(function (k) { return '<div class="row"><span class="mute">' + esc(k[0]) + '</span><b class="num" style="text-align:right;white-space:normal">' + k[1] + '</b></div>'; }).join(''); }
 // Import and export: runs in your own Vault through Apps Script; the demo has no server
-function ioDone(r) { S.io = { done: 'Imported. ' + r.replaced.length + ' tabs replaced, ' + r.added.length + ' added. <a href="' + esc(r.backup) + '" target="_blank" rel="noopener">Open the backup</a>' }; render(); load(true); }
-function ioRun(fn, arg, ok) {
-  if (!(window.google && google.script && google.script.run)) { S.io = { err: 'Import and export work in your own Vault, not in this demo.' }; render(); return; }
-  S.io = { busy: fn === 'exportVault' ? 'Exporting to Google Drive…' : 'Importing… a backup copy is saved first.' }; render();
-  google.script.run.withSuccessHandler(function (r) { ok(JSON.parse(r)); }).withFailureHandler(function (e) { S.io = { err: (e && e.message) || String(e) }; render(); })[fn](arg);
-}
-function vIo() {
-  var io = S.io || {}, o = '<p class="sh" style="margin:4px 0 6px">Export</p><p class="note" style="margin:0 0 12px">Makes a new Google Sheet in your Drive with all of your data as clean tables: one tab per subject, one row per record, with IDs to join them. A starting point to analyse, extend or build your own models on.</p>' +
-    '<button type="button" class="btn" data-act="ioexp"' + (io.busy ? ' disabled' : '') + '><span class="ms">upload_file</span>Export to Google Drive</button>' +
-    '<p class="sh" style="margin:22px 0 6px">Import</p><p class="note" style="margin:0 0 12px">Brings in a workbook laid out like the Vault template, from a Google Sheet or an Excel file. Tabs with the same name are replaced, new ones are added, others stay as they are. A full copy of this sheet is saved to Drive first.</p>' +
-    '<label class="sh" for="iourl" style="display:block;margin:0 0 6px">Google Sheet link</label><input id="iourl" class="tin" type="url" inputmode="url" placeholder="https://docs.google.com/spreadsheets/d/…" autocomplete="off">' +
-    '<button type="button" class="btn sec" style="margin-top:8px" data-act="ioimpurl"' + (io.busy ? ' disabled' : '') + '><span class="ms">link</span>Import from Google Sheet</button>' +
-    '<label class="sh" for="iofile" style="display:block;margin:16px 0 6px">Excel file (.xlsx)</label><input id="iofile" class="tin" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" style="padding-top:10px">' +
-    '<button type="button" class="btn sec" style="margin-top:8px" data-act="ioimpfile"' + (io.busy ? ' disabled' : '') + '><span class="ms">description</span>Import Excel file</button>';
-  if (io.busy) o += '<div class="box b" style="margin-top:16px" role="status">' + esc(io.busy) + '</div>';
-  if (io.err) o += '<div class="box a" style="margin-top:16px" role="alert">' + esc(io.err) + '</div>';
-  if (io.done) o += '<div class="box g" style="margin-top:16px" role="status">' + io.done + '</div>';
-  return sheetWrap('Import and export', null, o);
-}
 function vSheet() {
   var s = S.sheet; if (!s) return '';
-  if (s.type === 'io') return vIo();
   if (s.type === 'tax') {
     var T = D.tax[s.i], chips = '<div class="mchips" style="padding:4px 0 6px">' + D.tax.map(function (t, i) { return '<button type="button" class="' + (i === s.i ? 'on' : '') + '" aria-pressed="' + (i === s.i) + '" data-act="taxsheetfy" data-v="' + i + '">' + esc(t.fy) + '</button>'; }).join('') + '</div>';
     var rows = T.working.map(function (w) { return '<div class="w ' + w.k + '"><span>' + esc(w.l) + '</span><span class="num">' + (w.v == null ? '' : w.k === 'r' ? pct(w.v) : w.v < 0 ? '(' + grp(w.v) + ')' : grp(w.v)) + '</span></div>'; }).join('');
@@ -1171,6 +1134,7 @@ function vSheet() {
 /* ---------- Render and events ---------- */
 function render() {
   if (!D) return;
+  tipHide();
   var body = S.searchOpen ? vSearch() : S.page === 'payslips' ? vPayslips() : S.page === 'loan' ? vLoan() : S.page === 'holding' ? vHolding() : S.page === 'source' ? vSource() : S.page === 'locker' ? vLocker() : S.page === 'premiums' ? vPremiums() :
     S.tab === 'income' ? vIncome() : S.tab === 'spend' ? vSpend() : S.tab === 'invest' ? vInvest() : S.tab === 'check' ? vCheck() : vHome();
   var app = document.getElementById('app'), m = app.querySelector('main'), top = m ? m.scrollTop : 0, key = viewKey(), same = app.dataset.view === key;
@@ -1217,8 +1181,6 @@ function fromHash() {
   else { S.page = null; S.tab = /^(home|income|spend|invest|check)$/.test(parts[0]) ? parts[0] : 'home'; }
 }
 document.addEventListener('click', function (ev) {
-  // A tap outside the menu closes it
-  if (S.menu && !ev.target.closest('.menuwrap')) { S.menu = false; render(); }
   var el = ev.target.closest('[data-act]'); if (!el) return;
   var a = el.getAttribute('data-act'), v = el.getAttribute('data-v');
   if (a === 'reload') { load(true); return; }
@@ -1246,16 +1208,6 @@ document.addEventListener('click', function (ev) {
     case 'back': if (history.length > 1) history.back(); else go(S.tab); break;
     case 'theme': theme = document.documentElement.classList.contains('dark') ? 'light' : 'dark'; LS.set('theme', theme); applyTheme(); render(); break;
     case 'mask': mask = !mask; LS.set('mask', mask); render(); break;
-    case 'menu': S.menu = !S.menu; render(); break;
-    case 'io': S.menu = false; S.io = null; S.sheet = { type: 'io' }; render(); break;
-    case 'ioexp': ioRun('exportVault', null, function (r) { S.io = { done: 'Exported ' + r.tables + ' tables, ' + r.rows + ' rows. <a href="' + esc(r.url) + '" target="_blank" rel="noopener">Open “' + esc(r.name) + '”</a>' }; render(); }); break;
-    case 'ioimpurl': { var u = (document.getElementById('iourl') || {}).value || ''; if (!u.trim()) { S.io = { err: 'Paste the link to a Google Sheet first.' }; render(); break; } ioRun('importVault', { url: u.trim() }, ioDone); break; }
-    case 'ioimpfile': {
-      var fl = (document.getElementById('iofile') || {}).files; if (!fl || !fl[0]) { S.io = { err: 'Choose an Excel file first.' }; render(); break; }
-      var fr = new FileReader(), nm = fl[0].name; fr.onload = function () { ioRun('importVault', { name: nm, b64: String(fr.result).split(',')[1] }, ioDone); }; fr.readAsDataURL(fl[0]); break;
-    }
-    case 'accent': accent = Number(v); LS.set('accent', accent); applyAccent(); render(); break;
-    case 'refresh': { var b = el.querySelector('.ms'); if (b) b.classList.add('spin'); el.disabled = true; load(true); break; }
     case 'close': S.sheet = null; render(); break;
     case 'taxsheet': S.sheet = { type: 'tax', i: v != null ? Number(v) : S.taxFy }; if (v != null) S.taxFy = Number(v); render(); break;
     case 'taxsheetfy': S.sheet = { type: 'tax', i: Number(v) }; S.taxFy = Number(v); render(); break;
@@ -1283,6 +1235,18 @@ document.addEventListener('click', function (ev) {
       break;
   }
 });
+// Chart tooltips: anything carrying data-tip shows its value on hover (mouse) or tap (touch), above the mark
+var TIP = null;
+function tipShow(el) {
+  if (!TIP) { TIP = document.createElement('div'); TIP.id = 'tip'; TIP.setAttribute('role', 'status'); document.body.appendChild(TIP); }
+  var r = el.getBoundingClientRect(); TIP.textContent = el.getAttribute('data-tip');
+  TIP.style.display = 'block'; var w = TIP.offsetWidth, cx = Math.min(window.innerWidth - w / 2 - 8, Math.max(w / 2 + 8, r.left + r.width / 2));
+  TIP.style.left = cx + 'px'; TIP.style.top = Math.max(8, r.top - 8) + 'px';
+}
+function tipHide() { if (TIP) TIP.style.display = 'none'; }
+document.addEventListener('pointerover', function (ev) { if (ev.pointerType !== 'mouse') return; var el = ev.target.closest && ev.target.closest('[data-tip]'); if (el) tipShow(el); else tipHide(); });
+document.addEventListener('pointerdown', function (ev) { if (ev.pointerType === 'mouse') return; var el = ev.target.closest && ev.target.closest('[data-tip]'); if (el) tipShow(el); else tipHide(); });
+document.addEventListener('scroll', tipHide, true);
 document.addEventListener('change', function (ev) {
   var el = ev.target, c = el.getAttribute && el.getAttribute('data-chg'); if (!c) return;
   if (c === 'taxfy') S.taxFy = Number(el.value);

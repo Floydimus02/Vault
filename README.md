@@ -73,18 +73,17 @@ Version 1 was a daily email. Version 2 is an app that lives on any device, opens
 
 ### Keep it yours
 - **Only you get in.** It runs as you and opens only for you. No server, database, tracker or third party.
-- **Private in public.** One switch hides large amounts, so you can open it anywhere.
-- **Live on refresh.** Every open reads the sheet afresh. Prices follow `GOOGLEFINANCE`, or any better source you plug in.
+- **Private in public.** The eye in the top bar hides large amounts, so you can open it anywhere.
+- **Live on open.** Every open reads the sheet afresh. Prices follow `GOOGLEFINANCE`, or any better source you plug in.
 - **Your sheet, your rules.** Any structure you like. Leave anything out of net worth. A missing value is skipped, never shown blank.
-- **Your data, ready to build on.** Export everything to a new Google Sheet as clean tables: holdings and every transaction, income, payslips, tax, expenses, payouts, EPF, the loan, rewards, insurance and the locker. One row per record, IDs to join them.
-- **Bring your own.** Import a workbook laid out like the template, from Google Sheets or Excel; a backup is saved first.
 - **Nothing to maintain.** A sheet, a script and a page. Free, on Google.
 
 ## Then form
 
 - **Calm by design.** White space, one typeface, one accent. Lakhs and crores where you glance, full rupees where you check.
 - **Made for the thumb.** Search suggests from your own holdings, payees, policies and locker items, typos and all. Details open as bottom sheets, and going back returns you exactly where you were.
-- **Yours to tune.** Eight accent colours, light or dark, all in one menu.
+- **Light or dark.** One tap in the top bar, or let it follow your phone.
+- **Numbers on touch.** Tap or hover over any point or bar on a chart to read its value.
 - **A touch of life.** The logo, a soft blob, breathes while Vault reads your sheet.
 
 <p align="center">
@@ -93,8 +92,8 @@ Version 1 was a daily email. Version 2 is an app that lives on any device, opens
 </p>
 
 <p align="center">
-  <img src="assets/screens-light-3.png#gh-light-mode-only" alt="Vault on three phones: Locker, the menu and Insurance premiums">
-  <img src="assets/screens-dark-3.png#gh-dark-mode-only" alt="Vault on three phones: Locker, the menu and Insurance premiums">
+  <img src="assets/screens-light-3.png#gh-light-mode-only" alt="Vault on three phones: Locker, a fund's ledger and Insurance premiums">
+  <img src="assets/screens-dark-3.png#gh-dark-mode-only" alt="Vault on three phones: Locker, a fund's ledger and Insurance premiums">
 </p>
 
 ## Every day you don't look, the leaks win
@@ -156,11 +155,9 @@ Click the clock icon (**Triggers**) and add two triggers:
 3. **Deploy → New deployment →** gear icon **→ Web app**. Set **Execute as: Me** and **Who has access: Only myself**. Click **Deploy**.
 4. Open the **Web app URL** and bookmark it. To use your own domain, point it at this URL.
 5. On your phone, open the same URL signed in to the same Google account, then add it to your home screen: Safari → Share → **Add to Home Screen**, or Chrome → ⋮ → **Add to home screen**.
-6. For **Import and export** in the menu, run `exportVault` once from the editor and allow Drive access. To import Excel files too, click **Services → + → Drive API → Add**.
 
 **6. Put your money in**
 1. Replace the example rows with yours, tab by tab. Keep the tab names, headings and row labels; the script finds everything by them. Delete any tab you don't need and its section disappears.
-   Already have a workbook laid out like the template? In the app, open **☰ → Import and export** and import it from a Google Sheet link or an `.xlsx` file.
 2. For live prices, use formulas such as `=GOOGLEFINANCE("INDEXNSE:NIFTY_50")` in the Markets block on **Portfolio**, and `=GOOGLEFINANCE("NSE:ITC")` in each holding's **Current Price**.
 
 ## Day to day
@@ -171,7 +168,7 @@ Click the clock icon (**Triggers**) and add two triggers:
 |---|---|
 | Net worth snapshot | Every night at midnight |
 | Prices and NAVs | As `GOOGLEFINANCE` refreshes |
-| Every figure, ratio and estimate | Each time you open the app or tap refresh |
+| Every figure, ratio and estimate | Each time you open the app |
 | The letter | On your schedule |
 
 **You update**
@@ -189,12 +186,11 @@ Click the clock icon (**Triggers**) and add two triggers:
 | When it happens | Locker visit | **Locker log** |
 | At each review | Values at review and the review date | **Net worth**: `Amount: T - X`, `Last updated` |
 | Every April | New financial year | Copy **Expenses** and **CoI**, renamed for the new year |
-| Any time | All your data as clean tables, to analyse or build on | **☰ → Import and export → Export to Google Drive** |
 
 ## Make it yours
 
 1. **Change a setting.** Edit `CONFIG` at the top of `Code.gs`: recipients, time zone, what's left out of net worth (`EXCLUDE`), rewards and the EMI alert.
-2. **Change the look.** Pick a theme colour in **☰**. For more, edit the colour tokens under `:root` near the top of `Index.html`; `html.dark` holds the dark theme, and `ACCENTS` lists the menu's colours.
+2. **Change the look.** Edit the colour tokens under `:root` near the top of `Index.html`; `html.dark` holds the dark theme, and `ACC` sets the accent colour in both.
 3. **Fit a different sheet.** Run `describeWorkbook` in Apps Script, then follow [`PROMPT.md`](PROMPT.md). An AI assistant rewrites only the parts that read your sheet.
 4. **Publish it.** After any change: **Deploy → Manage deployments → ✏️ → Version: New version → Deploy**. The URL stays the same. To check first, open **Deploy → Test deployments**.
 
