@@ -64,12 +64,13 @@ const CONFIG = {
     loan: /loan schedule/i,
     ledger: /rewards? ledger/i,
     estimations: /income\s*&\s*estimation/i,
-    xirr: /^xirr$/i
+    xirr: /^xirr$/i,
+    subs: /subscription|recurring/i
   },
   // Web app: how many movers to list for a net worth move of under 0.25%, 1% and more.
   APP: { MOVERS: [[0.0025, 3], [0.01, 5], [Infinity, 10]],
     // Tabs the data checks scan. Tabs outside this list (a travel planner, say) are not the app's business.
-    CHECK_TABS: /net worth|expense|\bcoi\b|income\s*&\s*estimation|cash flow|portfolio|^xirr$|dividend|payout|^epf$|^nps$|loan schedule|rewards? ledger|locker/i,
+    CHECK_TABS: /net worth|expense|\bcoi\b|income\s*&\s*estimation|cash flow|portfolio|^xirr$|dividend|payout|^epf$|^nps$|loan schedule|rewards? ledger|locker|subscription|recurring/i,
     INSURANCE_LOG: /insurance (log|premium)/i }
 };
 
@@ -1144,6 +1145,7 @@ function buildAppData_() {
     epf: run('EPF', () => appEpf_(ss), null),
     loan,
     check: run('Check', () => appCheck_(ss, W, A, X, I, closes, now, ledger), null),
+    subs: run('Subscriptions', () => appSubs_(ss, now), null),
     issues
   };
 }
@@ -1929,4 +1931,83 @@ function appCheck_(ss, W, A, X, I, closes, now, R2) {
   (W.excluded || []).forEach(x => checks.push({ ok: true, n: 'Left out of net worth', sub: x.name + ' · ' + (x.val != null ? '₹' + Math.round(x.val).toLocaleString('en-IN') : 'value not readable') + ' · tracked on Invest only', val: x.val, id: x.key, cells: [] }));
   return { ratios: R, insurance: ins, policies, locker, checks };
 }
+/**
+ * Subscriptions and giving: one row per payment, headed Entity, Enrollment, Plan type, Frequency, Billing date,
+ * Subscription start, Subscription expiry, Base amount, Tax, Total, Status (headings matched loosely, in any order).
+ * Payments group into one item per service and plan; gifts and one-off purchases group per payee. Each item carries
+ * its payments, its price now, a monthly equivalent, the next renewal and every price change.
+ */
+function appSubs_(ss, now) {
+  const sh = ss.getSheets().find(s => CONFIG.TABS.subs.test(s.getName()));
+  if (!sh) return null;
+  const v = sh.getDataRange().getValues(), today = startOfDay_(now), todayK = dayKey_(today.getTime());
+  const hr = v.slice(0, 10).findIndex(r => r.some(c => /^(entity|service|name|payee)$/i.test(str_(c))) && r.some(c => /total|amount/i.test(str_(c))));
+  if (hr < 0) throw new Error('No heading row with Entity and Total');
+  const H = v[hr].map(c => str_(c).toLowerCase()), col = (re, not) => H.findIndex(h => re.test(h) && !(not && not.test(h)));
+  const K = { e: col(/^(entity|service|name|payee)$/), t: col(/enrol|category|kind/), p: col(/plan/), f: col(/freq|cycle/),
+    d: col(/billing|paid on|payment date|premium date|^date$/), s: col(/start/), x: col(/expir|^end|valid till|renew/),
+    b: col(/base/), g: col(/^tax|gst/), a: col(/^total|^amount/), st: col(/status/) };
+  const asDate = x => x instanceof Date ? x : (typeof x === 'number' && x > 20000 && x < 80000 ? new Date(Math.round((x - 25569) * 864e5)) : parseLooseDate_(x));
+  const kindOf = (t, f) => /donat|seva|charit|gift|offering|tithe/i.test(t) ? 'Giving' : /member/i.test(t) ? 'Memberships' : /purchase|lifetime/i.test(t) || /one.?time|once/i.test(f) ? 'Purchases' : 'Subscriptions';
+  const months = f => /month/i.test(f) ? 1 : /quarter/i.test(f) ? 3 : /half|semi|six/i.test(f) ? 6 : /annual|year/i.test(f) ? 12 : /week/i.test(f) ? 12 / 52 : null;
+  const items = {}, order = [];
+  for (let r = hr + 1; r < v.length; r++) {
+    const row = v[r], name = str_(row[K.e]);
+    if (!name) continue;
+    const type = K.t >= 0 ? str_(row[K.t]) : '', freq = K.f >= 0 ? str_(row[K.f]) : '', plan = K.p >= 0 ? str_(row[K.p]) : '';
+    const base = K.b >= 0 ? num_(row[K.b]) : NaN, tax = K.g >= 0 ? num_(row[K.g]) : NaN, tot = K.a >= 0 ? num_(row[K.a]) : NaN;
+    const amt = !isNaN(tot) ? tot : (isNaN(base) ? NaN : base + (isNaN(tax) ? 0 : tax));
+    if (isNaN(amt) || amt === 0) continue;
+    const d = K.d >= 0 ? asDate(row[K.d]) : null, s0 = K.s >= 0 ? asDate(row[K.s]) : null, x0 = K.x >= 0 ? asDate(row[K.x]) : null;
+    const kind = kindOf(type, freq), loose = kind === 'Giving' || kind === 'Purchases' || /^ad\s*hoc$/i.test(plan);
+    const key = loose ? name + '|' + kind : name + '|' + plan;
+    if (!items[key]) { items[key] = { id: 's' + order.length, name, plan: loose ? '' : plan, kind, lines: [] }; order.push(key); }
+    const k = d || s0;
+    items[key].lines.push({ k: k ? dayKey_(k.getTime()) : null, amt: Math.round(amt * 100) / 100, base: isNaN(base) ? null : base, tax: isNaN(tax) ? null : Math.round(tax * 100) / 100,
+      start: s0 ? dayKey_(s0.getTime()) : null, end: x0 ? dayKey_(x0.getTime()) : null, plan, type, freq, status: K.st >= 0 ? str_(row[K.st]) : '', r: r + 1 });
+  }
+  const out = order.map(key => {
+    const it = items[key], L = it.lines;
+    // Dated payments in the order of the periods they pay for (period start, else payment date; same day: sheet order).
+    // Undated payments count in totals only.
+    const ord = l => l.start || l.k;
+    const dated = L.filter(l => l.k).sort((a, b) => ord(a) < ord(b) ? -1 : ord(a) > ord(b) ? 1 : a.r - b.r), last = dated[dated.length - 1] || L[L.length - 1];
+    it.lines = dated.concat(L.filter(l => !l.k));
+    it.freq = last.freq; it.type = last.type; it.status = last.status;
+    it.total = Math.round(sum_(L.map(l => l.amt)) * 100) / 100; it.n = L.length; it.undated = L.length - dated.length;
+    it.first = dated[0] ? dated[0].k : null; it.last = dated.length ? last.k : null;
+    it.until = dated.length ? (last.end && last.end >= last.k ? last.end : last.k) : null;
+    it.cur = last.amt; it.curBase = last.base; it.curTax = last.tax;
+    const m = months(it.freq);
+    it.recurring = it.kind !== 'Purchases' && m != null && !/one.?time|once/i.test(it.freq);
+    it.active = !/cancel|ended|stopp|closed|lapsed|inactive/i.test(it.status) && it.kind !== 'Purchases' && (it.recurring || it.kind === 'Giving');
+    it.monthly = it.active && it.recurring && it.kind !== 'Giving' ? Math.round(it.cur / m * 100) / 100 : 0;
+    // Next renewal: the day after the paid period ends, else the last payment plus one billing period
+    it.due = null;
+    if (it.active && it.recurring && last.k) {
+      let due;
+      // An expiry on the anniversary of the start (25 Apr to 25 Apr) renews that day; one the day before (25 Aug to 24 Aug) renews the day after
+      if (last.end && last.end >= last.k) { due = new Date(last.end + 'T00:00:00'); if (!(last.start && last.start.slice(5) === last.end.slice(5))) due.setDate(due.getDate() + 1); }
+      else { due = new Date(last.k + 'T00:00:00'); if (m >= 1) due.setMonth(due.getMonth() + m); else due.setDate(due.getDate() + 7); }
+      it.due = dayKey_(due.getTime());
+      it.dueEst = !(last.end && last.end >= last.k) || it.kind === 'Giving';
+      it.overdue = it.due < todayK && (today - new Date(it.due + 'T00:00:00')) / 864e5 > 7;
+    }
+    // Price changes between consecutive payments of a recurring plan (amount paid, tax included)
+    it.changes = [];
+    if (it.recurring && it.kind !== 'Giving') for (let i = 1; i < dated.length; i++) {
+      const a = dated[i - 1], b = dated[i], ma = months(a.freq) || 1, mb = months(b.freq) || 1;
+      // A switch of billing cycle compares the cost a month, so quarterly to annual at the same rate is no change
+      const pa = a.amt / ma, pb = b.amt / mb;
+      if (!(pa > 0) || Math.abs(pb - pa) / pa <= 0.005) continue;
+      it.changes.push({ k: b.k, from: a.amt, to: b.amt, fromF: a.freq, toF: b.freq, pct: (pb - pa) / pa,
+        why: a.freq !== b.freq ? 'billing changed to ' + b.freq.toLowerCase() : b.plan !== a.plan ? 'plan changed to ' + b.plan : (a.tax || 0) === 0 && (b.tax || 0) > 0 && Math.abs((b.base || 0) - (a.base || 0)) < 0.01 ? 'tax added' : '' });
+    }
+    const f0 = dated[0], yrs = f0 && last.k ? (new Date(last.k) - new Date(f0.k)) / (365.25 * 864e5) : 0;
+    it.cagr = it.recurring && f0 && f0.amt > 0 && yrs >= 0.9 && f0.freq === last.freq ? Math.pow(last.amt / f0.amt, 1 / yrs) - 1 : null;
+    return it;
+  });
+  return { items: out, payments: out.reduce((s, i) => s + i.n, 0), undated: out.reduce((s, i) => s + i.undated, 0) };
+}
+
 function appA1_(r, c) { let s = ''; for (c++; c > 0; c = Math.floor((c - 1) / 26)) s = String.fromCharCode(65 + (c - 1) % 26) + s; return s + (r + 1); }

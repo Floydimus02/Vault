@@ -202,6 +202,9 @@ button.card{border:1px solid var(--line)}
 /* Chart series: distinct from gains green and losses red */
 :root{--s2:#7B8BA3;--s3:#E2A03F;--s4:#2E9E95;--s5:#C2649A;--s6:#3FA7D6}
 html.dark{--s2:#9AA8BD;--s3:#F0B65E;--s4:#4FC2B8;--s5:#E08BBD;--s6:#6CC4EA}
+/* Tags with time to spare: the accent blue on a light tint */
+:root{--tb:#1F5BD8;--tbb:#E3EEFF}
+html.dark{--tb:#8AB4FF;--tbb:#162545}
 #tip{position:fixed;z-index:100;display:none;transform:translate(-50%,-100%);background:var(--ink);color:var(--bg);font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;pointer-events:none;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 4px 14px rgba(0,0,0,.18)}
 .grp{display:flex;justify-content:space-between;align-items:center}
 .w.t{border-bottom:2px solid var(--ink)}
@@ -312,7 +315,7 @@ function header(title, sub, opts) {
 }
 function nav() {
   var T = [['home', 'home', 'Home'], ['income', 'payments', 'Income'], ['spend', 'shopping_bag', 'Spend'], ['invest', 'trending_up', 'Invest'], ['check', 'fact_check', 'Check'], ['search', 'search', 'Search']];
-  var cur = S.page === 'payslips' || S.page === 'source' ? 'income' : S.page === 'loan' ? 'spend' : S.page === 'locker' || S.page === 'premiums' ? 'check' : S.page === 'holding' ? (S.tab === 'home' || S.tab === 'check' || S.tab === 'search' ? S.tab : 'invest') : S.tab;
+  var cur = S.page === 'payslips' || S.page === 'source' ? 'income' : S.page === 'loan' || S.page === 'subs' ? 'spend' : S.page === 'locker' || S.page === 'premiums' ? 'check' : S.page === 'holding' ? (S.tab === 'home' || S.tab === 'check' || S.tab === 'search' ? S.tab : 'invest') : S.tab;
   return '<nav class="tabs" aria-label="Primary">' + T.map(function (t) { return '<button type="button" class="' + (cur === t[0] ? 'on' : '') + '"' + (cur === t[0] ? ' aria-current="page"' : '') + ' data-act="tab" data-v="' + t[0] + '"><span class="ms">' + t[1] + '</span>' + t[2] + '</button>'; }).join('') + '</nav>';
 }
 function stat(l, n, s, ncls) { return '<div class="stat"><span class="l">' + esc(l) + '</span><span class="n ' + (ncls || '') + '">' + n + '</span>' + (s != null ? '<span class="s">' + s + '</span>' : '') + '</div>'; }
@@ -596,6 +599,7 @@ function vSpend() {
     if (bank) o += '<span style="display:flex;align-items:center;gap:8px;font-size:13px;padding-top:8px;border-top:1px solid var(--line);width:100%"><span class="ms ' + (ok ? 'pos' : 'amb') + '" style="font-size:18px">' + (ok ? 'check_circle' : 'error') + '</span><span>' + esc(bank.name) + ' <b class="num">' + inrC(bank.bal) + '</b> <span class="mute">' + (ok ? 'covers it.' : 'is below ' + inrC(bank.min) + '.') + ' Alert fires below ' + inrC(bank.min) + ' in the ' + bank.daysBefore + ' days before.</span></span></span>';
     o += '</button>';
   }
+  o += vSubsCard();
   var R = X.rewards;
   if (R) {
     o += '<section class="card"><div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px"><h2 class="ttl">Rewards and balances</h2><b class="num" style="font-size:13px">' + inrC(R.total) + '</b></div>';
@@ -610,6 +614,109 @@ function vSpend() {
     o += '</section>';
   }
   return o + '</main>';
+}
+
+/* ---------- Subscriptions (a view only: the payments are already in the month's spend) ---------- */
+function fyOf(k) { var y = Number(k.slice(0, 4)), m = Number(k.slice(5, 7)); return m >= 4 ? y : y - 1; }
+function fyLab(y) { return ('0' + (y % 100)).slice(-2) + '-' + ('0' + ((y + 1) % 100)).slice(-2); }
+function fyBar(y) { return fyLab(y).replace('-', '‑'); }
+function subPer(f) { return /month/i.test(f) ? 'a month' : /quarter/i.test(f) ? 'a quarter' : /half|semi|six/i.test(f) ? 'every 6 months' : /annual|year/i.test(f) ? 'a year' : ''; }
+// Plans (subscriptions, memberships) run on a cadence; everything else is a payment now and then
+function subPlan(it) { return it.kind !== 'Giving' && it.kind !== 'Purchases'; }
+// The payment in force at the end of a financial year: the latest one up to 31 March
+function subPriceAt(it, y) { var b = (y + 1) + '-03-31', p = it.lines.filter(function (l) { return l.k && l.k <= b; }); return p.length ? p[p.length - 1] : null; }
+// Tag colours: blue when there is time, amber within 30 days, red within 7 days or missed, green when done or active, grey for cycle and kind
+var TAGC = { on: 'background:var(--posbg);color:var(--pos)', done: 'background:var(--posbg);color:var(--pos)', off: 'background:var(--chip);color:var(--mute)', later: 'background:var(--tbb);color:var(--tb)', soon: 'background:var(--amberbg);color:var(--amber)', now: 'background:var(--negbg);color:var(--neg)', cyc: 'background:var(--chip);color:var(--mute)' };
+function tag(t, c) { return '<span class="pill" style="font-size:11px;font-weight:700;padding:2px 8px;' + TAGC[c || 'cyc'] + '">' + esc(t) + '</span>'; }
+// Every row carries three tags in the same order: what it is, how often, and when
+function tagWhat(it, endedBy) { return subPlan(it) ? (!it.active && (!endedBy || it.until <= endedBy) ? tag('Cancelled ' + monYr(it.until), 'off') : tag('Active', 'on')) : tag(it.type || (it.kind === 'Giving' ? 'Donation' : 'Purchase')); }
+function tagCyc(it) { return tag(/ad\s*hoc/i.test(it.freq) || !it.freq ? 'Ad hoc' : it.freq); }
+function tagDue(it) {
+  if (it.overdue) return tag('Due ' + dayShort(it.due) + ' · not logged', 'now');
+  var d = daysTo(it.due), c = d <= 7 ? 'now' : d <= 30 ? 'soon' : 'later';
+  if (!subPlan(it)) return tag('Next around ' + monYr(it.due), c);
+  return tag(d === 0 ? 'Renews today' : 'Renews ' + dayShort(it.due) + ' · ' + d + (d === 1 ? ' day' : ' days'), c);
+}
+function tagPaid(k) { return tag('Paid ' + day(k), 'done'); }
+// A row: name and plan on the left with tags beneath, the amount on the right
+function subRow(it, amt, under, tags) {
+  return '<button type="button" class="rowbtn" data-act="sub" data-v="' + esc(it.id) + '" style="align-items:flex-start;gap:10px"><span class="rl" style="gap:2px"><span style="font-weight:600">' + esc(it.name) + '</span>' + (it.plan ? '<span class="sub">' + esc(it.plan) + '</span>' : '') +
+    '<span style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">' + tags + '</span></span><span class="rr" style="align-items:flex-start;padding-top:1px"><span style="display:flex;flex-direction:column;align-items:flex-end"><b class="num">' + amt + '</b>' + (under ? '<span class="mute num" style="font-size:11px">' + under + '</span>' : '') + '</span><span class="ms chev">chevron_right</span></span></button>';
+}
+// Spend tab: only what is still to be paid. Gifts and one-off payments show only when the next falls in this financial year.
+function vSubsCard() {
+  var Sb = D.subs; if (!Sb || !Sb.items.length) return '';
+  var fyEnd = (fyOf(D.today) + 1) + '-03-31';
+  var up = Sb.items.filter(function (x) { return x.due && (x.due >= D.today || x.overdue) && (subPlan(x) || x.due <= fyEnd); }).sort(function (a, b) { return a.due < b.due ? -1 : 1; });
+  var o = '<section class="card" style="padding-bottom:6px"><h2 class="ttl" style="padding-bottom:10px;border-bottom:1px solid var(--line)">Subscriptions</h2>';
+  if (!up.length) o += '<p class="note">Nothing due before 31 March.</p>';
+  up.forEach(function (it) { o += subRow(it, inr(it.cur), subPlan(it) ? subPer(it.freq) : 'last paid', tagWhat(it) + tagCyc(it) + tagDue(it)); });
+  o += '<button type="button" class="rowbtn" data-act="page" data-v="subs" style="border-bottom:0;font-weight:600;color:var(--acc)"><span>All plans and payments by year</span><span class="ms chev" style="color:var(--acc)">chevron_right</span></button>';
+  return o + '</section>';
+}
+// One financial year: every plan that ran in it and every other payment made in it
+function subYear(I, y) {
+  var a = y + '-04-01', b = (y + 1) + '-03-31', out = [];
+  I.forEach(function (it) {
+    var inY = it.lines.filter(function (l) { return l.k && fyOf(l.k) === y; }), paid = sum(inY.map(function (l) { return l.amt; })), f = it.lines.filter(function (l) { return l.k; })[0] || {};
+    if (!subPlan(it)) { if (paid) out.push({ it: it, paid: paid, st: 'Other', lastK: inY[inY.length - 1].k }); return; }
+    var start = f.start && f.start < (f.k || '9') ? f.start : f.k;
+    if (!(start && it.until && start <= b && it.until >= a) && !paid) return;
+    out.push({ it: it, paid: paid, st: !it.active && it.until <= b ? 'Cancelled' : 'Active' });
+  });
+  var rank = { Active: 0, Other: 1, Cancelled: 2 };
+  return out.sort(function (p, q) { return rank[p.st] - rank[q.st] || q.paid - p.paid || (p.it.name < q.it.name ? -1 : 1); });
+}
+function vSubs() {
+  var Sb = D.subs, o = header('Subscriptions', null, { back: true }) + '<main>';
+  if (!Sb || !Sb.items.length) return o + '<p class="note">No subscriptions logged yet.</p></main>';
+  var I = Sb.items, fyNow = fyOf(D.today), ks = []; I.forEach(function (it) { it.lines.forEach(function (l) { if (l.k) ks.push(fyOf(l.k)); }); });
+  var y0 = Math.min.apply(null, ks.concat([fyNow])), years = []; for (var y = fyNow; y >= y0; y--) years.push(y);
+  var sel = S.subFy != null && years.indexOf(S.subFy) >= 0 ? S.subFy : fyNow, cur = sel === fyNow, rows = subYear(I, sel), endK = (sel + 1) + '-03-31';
+  var paidSel = sum(rows.map(function (x) { return x.paid; })), activeN = rows.filter(function (x) { return x.st === 'Active'; }).length;
+  o += '<section class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:-8px 0 12px"><h2 class="ttl">Overview</h2><label class="sr" for="subfy">Financial year</label><select id="subfy" class="sel" data-chg="subfy">' +
+    years.map(function (yy) { return '<option value="' + yy + '"' + (yy === sel ? ' selected' : '') + '>FY ' + fyLab(yy) + '</option>'; }).join('') + '</select></div>';
+  o += '<div class="stats">' + stat('Since ' + y0, inrC(sum(I.map(function (x) { return x.total; }))), Sb.payments + ' payments') + stat(cur ? 'This FY so far' : 'FY ' + fyLab(sel), inrC(paidSel), cur ? 'to ' + dayShort(D.today) : 'full year') + stat('Active plans', String(activeN), 'in FY ' + fyLab(sel)) + '</div>';
+  var hist = years.slice().reverse();
+  if (hist.length > 1) o += '<div style="margin:16px 0 0">' + bars(hist.map(function (yy) { return sum(subYear(I, yy).map(function (x) { return x.paid; })); }), { labels: hist.map(fyBar), hi: hist.indexOf(sel), h: 56, label: 'Paid each financial year' }) + '</div>';
+  o += '</section>';
+  o += '<section class="card" style="padding-bottom:6px"><div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:10px"><h2 class="ttl">FY ' + fyLab(sel) + '</h2><span class="small">Paid in the year</span></div>';
+  if (!rows.length) o += '<p class="note">Nothing ran or was paid in this year.</p>';
+  rows.forEach(function (x) {
+    var it = x.it, p = !subPlan(it) ? null : cur && it.active ? { amt: it.cur, freq: it.freq } : subPriceAt(it, sel);
+    var when = !subPlan(it) ? tagPaid(x.lastK) : cur && x.st === 'Active' && it.due ? tagDue(it) : '';
+    o += subRow(it, inr(x.paid), p ? inr(p.amt) + ' ' + subPer(p.freq) : '', tagWhat(it, endK) + tagCyc(it) + when);
+  });
+  return o + '</section></main>';
+}
+// One plan or payee: tags; since when, paid so far, last paid; one line on what stands out; the chart; every payment
+function subSheet(it) {
+  var L = it.lines.filter(function (l) { return l.k; }), plan = subPlan(it), last = L[L.length - 1], first = L[0];
+  var years = [], fy0 = first ? fyOf(first.k) : null, fyN = last ? fyOf(last.k) : null; for (var y = fy0; fy0 != null && y <= fyN; y++) years.push(y);
+  var o = '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">' + tagWhat(it) + tagCyc(it) + (it.due && (it.active || !plan) ? tagDue(it) : '') + '</div>';
+  o += '<div class="stats">' +
+    stat(plan ? (it.active ? 'Active since' : 'Ran from') : 'First paid', first ? monYr(first.k) : '—', plan ? (it.active ? 'to date' : 'to ' + monYr(it.until)) : first ? day(first.k) : '') +
+    stat('Paid so far', inrC(it.total), it.n + (it.n === 1 ? ' payment' : ' payments')) +
+    stat('Last paid', last ? inr(last.amt) : '—', last ? day(last.k) : '') + '</div>';
+  // One line: the price trend for a plan, the pattern for gifts and one-off payments
+  var line = '';
+  if (plan && first && last) line = it.changes.length ? (it.cagr != null ? 'Price ' + (it.cagr >= 0 ? 'up ' : 'down ') + pct(Math.abs(it.cagr), 1) + ' a year since ' + monYr(first.k) + ', from ' + inr(first.amt) + ' to ' + inr(last.amt) + '.' : it.changes.length + (it.changes.length === 1 ? ' price change' : ' price changes') + ', latest ' + pct(it.changes[it.changes.length - 1].pct, 1, true) + ' in ' + monYr(it.changes[it.changes.length - 1].k) + '.') : 'Price unchanged at ' + inr(last.amt) + ' ' + subPer(last.freq) + ' since ' + monYr(first.k) + '.';
+  else if (L.length > 1) { var big = L.reduce(function (m, l) { return l.amt > m.amt ? l : m; }); line = L.length + ' payments since ' + monYr(first.k) + ', about one every ' + Math.max(1, Math.round((new Date(last.k) - new Date(first.k)) / (L.length - 1) / (30.44 * 864e5))) + ' months. Largest ' + inr(big.amt) + ' in ' + monYr(big.k) + '.'; }
+  else if (last) line = 'A single payment on ' + day(last.k) + '.';
+  if (it.undated) line += ' ' + it.undated + (it.undated === 1 ? ' payment has' : ' payments have') + ' no date.';
+  if (line) o += '<p class="note">' + esc(line.trim()) + '</p>';
+  if (years.length > 1) o += '<div style="margin:12px 0 4px">' + bars(years.map(function (yy) { return sum(L.filter(function (l) { return fyOf(l.k) === yy; }).map(function (l) { return l.amt; })); }), { labels: years.map(fyBar), hi: years.length - 1, label: 'Paid each financial year' }) + '</div>';
+  // Plans show the change from the payment before; gifts and one-off payments have no price to compare
+  var G = 'display:grid;grid-template-columns:minmax(0,1fr) 84px' + (plan ? ' 62px' : '') + ';gap:8px', rows = it.lines.slice().reverse(), all = S.subAll || rows.length <= 12;
+  o += '<div class="th" style="' + G + ';padding:12px 0 6px;border-bottom:1px solid var(--line)"><span>Paid on</span><span style="text-align:right">Amount</span>' + (plan ? '<span style="text-align:right">Change</span>' : '') + '</div>';
+  (all ? rows : rows.slice(0, 12)).forEach(function (l, i) {
+    var prev = rows.slice(i + 1).find(function (x) { return x.k && x.freq === l.freq; }), chg = plan && l.k && prev && prev.amt ? (l.amt - prev.amt) / prev.amt : null;
+    var sub = [l.start && l.end && l.end > l.start ? 'Covers ' + dayShort(l.start) + ' ' + l.start.slice(2, 4) + ' to ' + dayShort(l.end) + ' ' + l.end.slice(2, 4) : '', l.tax ? inr(l.base) + ' + ' + inr(l.tax) + ' tax' : '', !plan && l.plan && !/ad\s*hoc/i.test(l.plan) ? l.plan : ''].filter(Boolean).map(esc).join(' · ');
+    var cyc = plan && it.freq !== l.freq ? ' ' + tag(l.freq) : '';
+    o += '<div class="row" style="' + G + ';font-size:13px"><span class="rl"><span>' + (l.k ? day(l.k) : 'No date') + cyc + '</span>' + (sub ? '<span class="sub">' + sub + '</span>' : '') + '</span><b class="num" style="text-align:right">' + inr(l.amt) + '</b>' + (plan ? '<span class="num ' + (chg > 0.005 ? 'neg' : chg < -0.005 ? 'pos' : 'mute') + '" style="text-align:right">' + (chg == null ? '' : Math.abs(chg) <= 0.005 ? '0.0%' : pct(chg, 1, true)) + '</span>' : '') + '</div>';
+  });
+  if (!all) o += '<button type="button" class="rowbtn" data-act="suball" style="justify-content:center;color:var(--acc);font-weight:600;border-bottom:0">Show all ' + rows.length + ' payments</button>';
+  return sheetWrap(it.name, it.plan || '', o);
 }
 
 /* ---------- Home loan ---------- */
@@ -994,6 +1101,7 @@ function searchIndex() {
   ((C.locker || {}).items || []).forEach(function (it) { X.push(['Check', it, 'In the locker', '', { act: 'page', v: 'locker' }]); });
   (C.policies || []).forEach(function (p) { X.push(['Check', p.provider, polName(p) + ' · premium', p.last ? inrC(p.last.amt) : '', { act: 'page', v: 'premiums' }]); });
   (C.ratios || []).forEach(function (r, i) { X.push(['Check', r.n, r.sub, ratioFmt(r), { act: 'ratio', v: i, tab: 'check' }]); });
+  ((D.subs || {}).items || []).forEach(function (it) { X.push(['Spend', it.name, [it.plan, it.kind === 'Purchases' ? 'one-time purchase' : it.kind === 'Giving' ? 'giving' : (it.active ? 'active, ' : 'cancelled, ') + it.freq.toLowerCase()].filter(Boolean).join(' · '), inr(it.kind === 'Giving' || it.kind === 'Purchases' ? it.total : it.cur), { act: 'sub', v: it.id }]); });
   if (D.loan) X.push(['Pages', 'Home loan', D.loan.provider, inrC(D.loan.outstanding), { act: 'page', v: 'loan' }]);
   ((D.spend || {}).rewards || { programmes: [] }).programmes.forEach(function (p, i) { X.push(['Spend', p.n + ' reward points', grp(p.pts) + ' pts', inrC(p.val), { act: 'reward', v: i, tab: 'spend' }]); });
   return X;
@@ -1051,6 +1159,7 @@ function kvRows(list) { return list.map(function (k) { return '<div class="row">
 // Import and export: runs in your own Vault through Apps Script; the demo has no server
 function vSheet() {
   var s = S.sheet; if (!s) return '';
+  if (s.type === 'sub') { var si = ((D.subs || {}).items || []).find(function (x) { return x.id === s.v; }); if (si) return subSheet(si); }
   if (s.type === 'tax') {
     var T = D.tax[s.i], chips = '<div class="mchips" style="padding:4px 0 6px">' + D.tax.map(function (t, i) { return '<button type="button" class="' + (i === s.i ? 'on' : '') + '" aria-pressed="' + (i === s.i) + '" data-act="taxsheetfy" data-v="' + i + '">' + esc(t.fy) + '</button>'; }).join('') + '</div>';
     var rows = T.working.map(function (w) { return '<div class="w ' + w.k + '"><span>' + esc(w.l) + '</span><span class="num">' + (w.v == null ? '' : w.k === 'r' ? pct(w.v) : w.v < 0 ? '(' + grp(w.v) + ')' : grp(w.v)) + '</span></div>'; }).join('');
@@ -1135,7 +1244,7 @@ function vSheet() {
 function render() {
   if (!D) return;
   tipHide();
-  var body = S.searchOpen ? vSearch() : S.page === 'payslips' ? vPayslips() : S.page === 'loan' ? vLoan() : S.page === 'holding' ? vHolding() : S.page === 'source' ? vSource() : S.page === 'locker' ? vLocker() : S.page === 'premiums' ? vPremiums() :
+  var body = S.searchOpen ? vSearch() : S.page === 'payslips' ? vPayslips() : S.page === 'loan' ? vLoan() : S.page === 'holding' ? vHolding() : S.page === 'source' ? vSource() : S.page === 'locker' ? vLocker() : S.page === 'premiums' ? vPremiums() : S.page === 'subs' ? vSubs() :
     S.tab === 'income' ? vIncome() : S.tab === 'spend' ? vSpend() : S.tab === 'invest' ? vInvest() : S.tab === 'check' ? vCheck() : vHome();
   var app = document.getElementById('app'), m = app.querySelector('main'), top = m ? m.scrollTop : 0, key = viewKey(), same = app.dataset.view === key;
   if (m && app.dataset.view) SCROLL[app.dataset.view] = top;
@@ -1149,7 +1258,7 @@ function render() {
   if (m2) { if (same) m2.scrollTop = top; else if (S.restore && SCROLL[key] != null) m2.scrollTop = SCROLL[key]; }
   S.restore = false;
 }
-var ICONS = [[/^net worth ·/i, 'account_balance_wallet'], [/net worth trend/i, 'monitoring'], [/inside now/i, 'inventory_2'], [/last visit/i, 'history'], [/locker details/i, 'lock'], [/^log$/i, 'receipt_long'], [/^visits$/i, 'history'], [/salary ·/i, 'work'], [/^markets/i, 'candlestick_chart'], [/movers/i, 'swap_vert'], [/^income ·/i, 'payments'], [/^by source/i, 'call_split'], [/^payslips/i, 'receipt_long'], [/^tax/i, 'account_balance'],
+var ICONS = [[/^subscriptions/i, 'subscriptions'], [/^overview$/i, 'bar_chart'], [/^net worth ·/i, 'account_balance_wallet'], [/net worth trend/i, 'monitoring'], [/inside now/i, 'inventory_2'], [/last visit/i, 'history'], [/locker details/i, 'lock'], [/^log$/i, 'receipt_long'], [/^visits$/i, 'history'], [/salary ·/i, 'work'], [/^markets/i, 'candlestick_chart'], [/movers/i, 'swap_vert'], [/^income ·/i, 'payments'], [/^by source/i, 'call_split'], [/^payslips/i, 'receipt_long'], [/^tax/i, 'account_balance'],
   [/^spent/i, 'shopping_bag'], [/^categories/i, 'category'], [/\bemi\b/i, 'home'], [/rewards|points/i, 'redeem'], [/total assets/i, 'account_balance_wallet'], [/allocation/i, 'donut_small'], [/^by type/i, 'format_list_bulleted'],
   [/ratios/i, 'speed'], [/insurance/i, 'verified_user'], [/^locker/i, 'lock'], [/data checks/i, 'fact_check'], [/loan details/i, 'real_estate_agent'], [/linked bank/i, 'account_balance'], [/^schedule/i, 'event_note'],
   [/^ledger/i, 'receipt_long'], [/^premiums paid/i, 'show_chart'], [/^premium growth/i, 'trending_up'], [/^policies/i, 'verified_user'], [/^next renewal/i, 'event_upcoming'], [/salary/i, 'work'], [/^(reit|sgb|dividends|savings)/i, 'payments'], [/^fy|^[a-z]+ 20\d\d/i, 'calendar_month']];
@@ -1175,7 +1284,7 @@ window.addEventListener('popstate', function () { fromHash(); S.restore = true; 
 function fromHash() {
   var h = decodeURIComponent((location.hash || '').slice(1)), parts = h.split('/');
   S.sheet = null;
-  if (/^(payslips|loan|locker|premiums)$/.test(parts[0])) { S.page = parts[0]; S.tab = parts[0] === 'loan' ? 'spend' : /locker|premiums/.test(parts[0]) ? 'check' : 'income'; }
+  if (/^(payslips|loan|locker|premiums|subs)$/.test(parts[0])) { S.page = parts[0]; S.tab = /^(loan|subs)$/.test(parts[0]) ? 'spend' : /locker|premiums/.test(parts[0]) ? 'check' : 'income'; }
   else if (parts[0] === 'holding' && parts[1]) { S.page = 'holding'; S.hid = parts.slice(1).join('/'); S.tab = 'invest'; }
   else if (parts[0] === 'source' && parts[1]) { S.page = 'source'; S.hid = parts[1]; S.tab = 'income'; }
   else { S.page = null; S.tab = /^(home|income|spend|invest|check)$/.test(parts[0]) ? parts[0] : 'home'; }
@@ -1189,9 +1298,11 @@ document.addEventListener('click', function (ev) {
     case 'tab': if (v === 'search') openSearch(); else go(v); break;
     case 'closesearch': S.searchOpen = false; S.q = ''; S.restore = true; render(); break;
     case 'insg': S.sheet = { type: 'insg', i: Number(v) }; render(); break;
-    case 'page': go(v === 'loan' ? 'spend' : v === 'locker' || v === 'premiums' ? 'check' : 'income', v); break;
+    case 'page': go(v === 'loan' || v === 'subs' ? 'spend' : v === 'locker' || v === 'premiums' ? 'check' : 'income', v); break;
     case 'pol': S.openPol = S.openPol === v ? null : v; render(); break;
     case 'premview': S.premView = v; render(); break;
+    case 'sub': S.subAll = false; S.sheet = { type: 'sub', v: v }; render(); break;
+    case 'suball': S.subAll = true; render(); break;
     case 'lgrp': S.lockGrp = S.lockGrp === v ? null : v; render(); break;
     case 'lvisit': S.sheet = { type: 'lvisit', i: Number(v) }; render(); break;
     case 'logall': S.logAll = true; render(); break;
@@ -1230,6 +1341,7 @@ document.addEventListener('click', function (ev) {
       else if (t.act === 'page') go(t.v === 'locker' || t.v === 'premiums' ? 'check' : 'spend', t.v);
       else if (t.act === 'payslips') { S.payFy = t.v; go('income', 'payslips'); }
       else if (t.act === 'reward') { go('spend'); S.sheet = { type: 'reward', i: t.v }; render(); }
+      else if (t.act === 'sub') { go('spend', 'subs'); S.subAll = false; S.sheet = { type: 'sub', v: t.v }; render(); }
       else if (t.act === 'tab') go(t.v);
       else { S.searchOpen = false; go(t.tab); S.sheet = t.act === 'taxsheet' ? { type: 'tax', i: t.v } : t.act === 'locker' ? { type: 'locker', v: t.v } : { type: t.act, i: t.v }; render(); }
       break;
@@ -1251,6 +1363,7 @@ document.addEventListener('change', function (ev) {
   var el = ev.target, c = el.getAttribute && el.getAttribute('data-chg'); if (!c) return;
   if (c === 'taxfy') S.taxFy = Number(el.value);
   if (c === 'payfy') { S.payFy = Number(el.value); S.payMonth = null; }
+  if (c === 'subfy') S.subFy = Number(el.value);
   render();
 });
 document.addEventListener('input', function (ev) {

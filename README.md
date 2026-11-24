@@ -68,6 +68,7 @@ Version 1 was a daily email. Version 2 is an app that lives on any device, opens
 - **Tax, worked out.** Both regimes, advance tax due and any interest, from your own payslips and payouts.
 - **The loan, decoded.** EMIs and interest left, rate history, and what a prepayment would save.
 - **Rewards in rupees.** What your points are worth and when they expire.
+- **Subscriptions, watched.** What renews next, and when. Every price rise, every plan you cancelled, every gift and one-off buy, year by year.
 - **Insurance with a memory.** What each person is covered for, when it renews, and how fast premiums are rising.
 - **The locker, accounted for.** What is inside, and who went in and took what out.
 
@@ -92,8 +93,8 @@ Version 1 was a daily email. Version 2 is an app that lives on any device, opens
 </p>
 
 <p align="center">
-  <img src="assets/screens-light-3.png#gh-light-mode-only" alt="Vault on three phones: Locker, a fund's ledger and Insurance premiums">
-  <img src="assets/screens-dark-3.png#gh-dark-mode-only" alt="Vault on three phones: Locker, a fund's ledger and Insurance premiums">
+  <img src="assets/screens-light-3.png#gh-light-mode-only" alt="Vault on three phones: Locker, Subscriptions and Insurance premiums">
+  <img src="assets/screens-dark-3.png#gh-dark-mode-only" alt="Vault on three phones: Locker, Subscriptions and Insurance premiums">
 </p>
 
 ## Every day you don't look, the leaks win
@@ -183,6 +184,7 @@ Click the clock icon (**Triggers**) and add two triggers:
 | When it happens | Dividend, SGB coupon or REIT payout | **Dividends & payouts** |
 | When it happens | Reward points earned or redeemed | **Rewards ledger**, and the balance on **Net worth** |
 | When it happens | Insurance renewal | **Insurance premiums** |
+| When it happens | A subscription payment, donation or app purchase | **Subscriptions** |
 | When it happens | Locker visit | **Locker log** |
 | At each review | Values at review and the review date | **Net worth**: `Amount: T - X`, `Last updated` |
 | Every April | New financial year | Copy **Expenses** and **CoI**, renamed for the new year |

@@ -98,6 +98,7 @@ The web app adds these readers. They are layer 1 too; keep each one's return sha
 - appEpf_: the EPF split on the Portfolio tab and the passbook on the EPF tab.
 - The insurance block, locker log and premiums inside appCheck_ and appPremiums_.
 - appInsPolicies_: the insurance premiums log. One or more tables, side by side, headed Person, Insurance type, Provider, Premium amount, Premium Date, Coverage amount, Start date, End date, Status. Each person, type and provider is one policy with a row a year; a row dated in the future is the next renewal.
+- appSubs_: the subscriptions log, one row per payment, headed Entity, Enrollment, Plan type, Frequency, Billing/Premium date, Subscription start, Subscription expiry, Base amount, Tax, Total, Status. Payments group into one item per service and plan; donations, seva and one-off purchases group per payee.
 
 ## My workbook
 
