@@ -121,6 +121,11 @@ function describeWorkbook() {
  * Add ?view=email to the web app URL to see the email instead.
  */
 function doGet(e) {
+  const caller = Session.getActiveUser().getEmail();
+  const owner = Session.getEffectiveUser().getEmail();
+  if (!caller || !owner || caller !== owner) {
+    return HtmlService.createHtmlOutput('Access denied.').setTitle('Vault');
+  }
   if (e && e.parameter && e.parameter.view === 'email') {
     const s = buildSnapshot_('web');
     return HtmlService.createHtmlOutput(s.html).setTitle('Vault').addMetaTag('viewport', 'width=device-width, initial-scale=1');
