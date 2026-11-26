@@ -203,8 +203,12 @@ button.card{border:1px solid var(--line)}
 :root{--s2:#7B8BA3;--s3:#E2A03F;--s4:#2E9E95;--s5:#C2649A;--s6:#3FA7D6}
 html.dark{--s2:#9AA8BD;--s3:#F0B65E;--s4:#4FC2B8;--s5:#E08BBD;--s6:#6CC4EA}
 /* Tags with time to spare: the accent blue on a light tint */
-:root{--tb:#1F5BD8;--tbb:#E3EEFF}
-html.dark{--tb:#8AB4FF;--tbb:#162545}
+/* Status colours: each a pastel fill, a bold shade for text and a brighter shade for charts and bars.
+   Green: done, healthy, gain. Yellow: watch. Amber: act soon. Red: urgent, loss, missed. Blue: all clear, time to spare. */
+:root{--pos:#12823B;--posbg:#E3F6E9;--posb:#22B05A;--yel:#8A6800;--yelbg:#FFF5C7;--yelb:#F2C200;--amber:#C25700;--amberbg:#FFEBD8;--ambb:#FF8A1F;--neg:#D12C2C;--negbg:#FFE4E4;--negb:#F0453F;--tb:var(--acc2);--tbb:var(--selbg)}
+html.dark{--pos:#5BE08F;--posbg:#10301D;--posb:#3CCB74;--yel:#FFD84D;--yelbg:#352C08;--yelb:#E9BE1C;--amber:#FFAA5C;--amberbg:#3A2410;--ambb:#FF9433;--neg:#FF8A85;--negbg:#3D1616;--negb:#FF5C57;--tb:var(--acc);--tbb:var(--selbg)}
+.pill.a{background:var(--yelbg);color:var(--yel)}
+.fil.over{background:var(--negb);opacity:1}.trk.overtrk{background:var(--negbg)}
 #tip{position:fixed;z-index:100;display:none;transform:translate(-50%,-100%);background:var(--ink);color:var(--bg);font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;pointer-events:none;white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 4px 14px rgba(0,0,0,.18)}
 .grp{display:flex;justify-content:space-between;align-items:center}
 .w.t{border-bottom:2px solid var(--ink)}
@@ -293,7 +297,7 @@ function load(refresh) {
 
 /* ---------- Pieces ---------- */
 // One accent, blue, in a light and a dark shade. The deep shade is for selected text; the tints are for selected fills, borders and bars.
-var ACC = { light: ['#1F5BD8', '#1849B0'], dark: ['#8AB4FF', '#B3CEFF'] };
+var ACC = { light: ['#2F80FF', '#1C64DB'], dark: ['#7FB2FF', '#A9CBFF'] };
 function rgb(h) { return [1, 3, 5].map(function (i) { return parseInt(h.slice(i, i + 2), 16); }).join(','); }
 // Light or dark: follows the phone until the toggle is tapped, then remembers the choice
 function applyTheme() {
@@ -570,7 +574,7 @@ function vSpend() {
   if (X.month) {
     var vsAvg = X.thisMonth - X.monthAvg, w = X.monthAvg ? Math.min(100, X.thisMonth / X.monthAvg * 100) : 0, we = X.monthAvg ? Math.min(100, X.estMonth / X.monthAvg * 100) : 0;
     o += '<section class="card"><h2 class="ttl" style="margin-bottom:10px">Spent in ' + esc(X.month) + ' so far</h2><div class="big" style="font-size:30px">' + inrC(X.thisMonth) + '</div>';
-    o += '<span class="trk" style="height:8px;margin-top:12px" role="img" aria-label="Spend so far against the monthly average, with the month\'s estimate marked"><span class="fil ' + (vsAvg > 0 ? 'over' : '') + '" style="width:' + w + '%"></span><span class="tick" style="left:' + we + '%;height:14px"></span></span>';
+    o += '<span class="trk' + (vsAvg > 0 ? ' overtrk' : '') + '" style="height:8px;margin-top:12px" role="img" aria-label="Spend so far against the monthly average, with the month\'s estimate marked"><span class="fil ' + (vsAvg > 0 ? 'over' : '') + '" style="width:' + w + '%"></span><span class="tick" style="left:' + we + '%;height:14px"></span></span>';
     o += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-top:6px"><span>Bar: so far against the monthly average</span><span>Tick: month estimate</span></div>';
     o += '<div class="stats" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">' +
       stat(X.month + ', est.', inrC(X.estMonth), 'fixed ' + inrC(X.fixedNow) + ' + rest at pace') +
@@ -586,7 +590,7 @@ function vSpend() {
     var mx = Math.max.apply(null, cats.map(function (c) { return yr ? c.year : c.act; }).concat([1]));
     cats.forEach(function (c) {
       var i = X.cats.indexOf(c), val = yr ? c.year : c.act;
-      o += '<button type="button" class="rowbtn" data-act="cat" data-v="' + i + '" style="flex-direction:column;align-items:stretch;gap:6px"><span style="' + CG + '"><span>' + esc(c.k) + '</span><b class="num" style="text-align:right">' + inrC(val) + '</b><span class="num mute" style="text-align:right">' + (yr ? pct(tot ? val / tot : 0, 0) : inrC(c.usual)) + '</span></span><span class="trk"><span class="fil" style="width:' + (val / mx * 100) + '%"></span></span></button>';
+      o += '<button type="button" class="rowbtn" data-act="cat" data-v="' + i + '" style="flex-direction:column;align-items:stretch;gap:6px"><span style="' + CG + '"><span>' + esc(c.k) + '</span><b class="num" style="text-align:right">' + inrC(val) + '</b><span class="num mute" style="text-align:right">' + (yr ? pct(tot ? val / tot : 0, 0) : inrC(c.usual)) + '</span></span><span class="trk"' + (!yr && c.usual ? ' style="background:' + paceCol(c.act / c.usual)[0] + '"' : '') + '><span class="fil" style="width:' + (val / mx * 100) + '%' + (!yr && c.usual ? ';background:' + paceCol(c.act / c.usual)[1] : '') + '"></span></span></button>';
     });
     if (yr) o += '<p class="note" style="font-size:12px">Year: all 12 months as filled in, including months still to come.</p>';
     o += '</section>';
@@ -626,17 +630,19 @@ function subPlan(it) { return it.kind !== 'Giving' && it.kind !== 'Purchases'; }
 // The payment in force at the end of a financial year: the latest one up to 31 March
 function subPriceAt(it, y) { var b = (y + 1) + '-03-31', p = it.lines.filter(function (l) { return l.k && l.k <= b; }); return p.length ? p[p.length - 1] : null; }
 // Tag colours: blue when there is time, amber within 30 days, red within 7 days or missed, green when done or active, grey for cycle and kind
-var TAGC = { on: 'background:var(--posbg);color:var(--pos)', done: 'background:var(--posbg);color:var(--pos)', off: 'background:var(--chip);color:var(--mute)', later: 'background:var(--tbb);color:var(--tb)', soon: 'background:var(--amberbg);color:var(--amber)', now: 'background:var(--negbg);color:var(--neg)', cyc: 'background:var(--chip);color:var(--mute)' };
+var TAGC = { on: 'background:var(--posbg);color:var(--pos)', done: 'background:var(--posbg);color:var(--pos)', off: 'background:var(--chip);color:var(--mute)', later: 'background:var(--tbb);color:var(--tb)', yel: 'background:var(--yelbg);color:var(--yel)', amb: 'background:var(--amberbg);color:var(--amber)', soon: 'background:var(--amberbg);color:var(--amber)', now: 'background:var(--negbg);color:var(--neg)', cyc: 'background:var(--chip);color:var(--mute)' };
 function tag(t, c) { return '<span class="pill" style="font-size:11px;font-weight:700;padding:2px 8px;' + TAGC[c || 'cyc'] + '">' + esc(t) + '</span>'; }
 // Every row carries three tags in the same order: what it is, how often, and when
 function tagWhat(it, endedBy) { return subPlan(it) ? (!it.active && (!endedBy || it.until <= endedBy) ? tag('Cancelled ' + monYr(it.until), 'off') : tag('Active', 'on')) : tag(it.type || (it.kind === 'Giving' ? 'Donation' : 'Purchase')); }
 function tagCyc(it) { return tag(/ad\s*hoc/i.test(it.freq) || !it.freq ? 'Ad hoc' : it.freq); }
 function tagDue(it) {
   if (it.overdue) return tag('Due ' + dayShort(it.due) + ' · not logged', 'now');
-  var d = daysTo(it.due), c = d <= 7 ? 'now' : d <= 30 ? 'soon' : 'later';
+  var d = daysTo(it.due), c = d <= 7 ? 'now' : d <= 14 ? 'amb' : d <= 30 ? 'yel' : 'later';
   if (!subPlan(it)) return tag('Next around ' + monYr(it.due), c);
   return tag(d === 0 ? 'Renews today' : 'Renews ' + dayShort(it.due) + ' · ' + d + (d === 1 ? ' day' : ' days'), c);
 }
+// Spend categories: each bar takes the colour of its pace against the usual month
+function paceCol(r) { return r < 0.9 ? ['var(--posbg)', 'var(--posb)'] : r <= 1 ? ['var(--yelbg)', 'var(--yelb)'] : r <= 1.2 ? ['var(--amberbg)', 'var(--ambb)'] : ['var(--negbg)', 'var(--negb)']; }
 function tagPaid(k) { return tag('Paid ' + day(k), 'done'); }
 // A row: name and plan on the left with tags beneath, the amount on the right
 function subRow(it, amt, under, tags) {
@@ -996,6 +1002,7 @@ function lineChart(labels, series, opts) {
   series.forEach(function (sr) {
     var pts = sr.values.map(function (v, i) { return v == null ? null : [x(i), y(v)]; }).filter(Boolean);
     var solid = sr.estLast && pts.length > 1 ? pts.slice(0, -1) : pts, fmt = function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); };
+    if (series.length === 1 && solid.length > 1) o += '<polygon fill="' + sr.color + '" fill-opacity="0.12" stroke="none" points="' + solid[0][0].toFixed(1) + ',' + (H - B) + ' ' + solid.map(fmt).join(' ') + ' ' + solid[solid.length - 1][0].toFixed(1) + ',' + (H - B) + '"/>';
     if (solid.length > 1) o += '<polyline fill="none" stroke="' + sr.color + '" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" points="' + solid.map(fmt).join(' ') + '"/>';
     if (sr.estLast && pts.length > 1) o += '<polyline fill="none" stroke="' + sr.color + '" stroke-width="2" stroke-dasharray="4 4" points="' + fmt(pts[pts.length - 2]) + ' ' + fmt(pts[pts.length - 1]) + '"/>';
     sr.values.forEach(function (v, i) { if (v == null) return; hits += '<circle cx="' + x(i).toFixed(1) + '" cy="' + y(v).toFixed(1) + '" r="11" fill="transparent" data-tip="' + esc(labels[i] + (series.length > 1 ? ' · ' + sr.name : '') + ': ' + inrK(v) + (sr.estLast && i === sr.values.length - 1 ? ' (estimate)' : '')) + '"/>'; });
