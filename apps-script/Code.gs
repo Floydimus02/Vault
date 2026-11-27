@@ -251,7 +251,8 @@ function readMarkets_(ss) {
   const WANT = [
     ['Nifty 50', /^nifty 50$/i, 'idx'], ['Nasdaq 100', /^nasdaq 100$/i, 'idx'],
     ['USD/INR', /^usd$/i, 'fx'], ['EUR/INR', /^eur$/i, 'fx'], ['GBP/INR', /^gbp$/i, 'fx'],
-    ['Gold 24K · 10 g', /^gold\s*-\s*24k$/i, 'inr'], ['Gold 22K · 10 g', /^gold\s*-\s*22k$/i, 'inr'], ['Silver 999 · kg', /^silver\s*-\s*999k?$/i, 'inr']
+    ['Gold 24K · 10 g', /^gold\s*-\s*24k$/i, 'inr'], ['Gold 22K · 10 g', /^gold\s*-\s*22k$/i, 'inr'], ['Silver 999 · kg', /^silver\s*-\s*999k?$/i, 'inr'],
+    ['Crude oil · barrel', /^(crude(\s*oil)?|brent(\s*crude)?|wti(\s*crude)?)(\s*[-·(]?\s*(brent|wti|usd|\$)\)?)?$/i, 'usd']
   ];
   const list = []; let cpi = null, repo = null, cpiDate = null, repoDate = null;
   for (let r = 0; r < v.length; r++) for (let c = 0; c < v[r].length; c++) {
@@ -723,7 +724,7 @@ function renderEmail_(o) {
   if (M.list.length) {
     const rows = M.list.map(x => {
       const p = ref.d1 && ref.d1.mkt[x.label];
-      const lvl = x.kind === 'inr' ? inr_(x.val) : x.kind === 'fx' ? '₹' + x.val.toFixed(2) : num2_(x.val);
+      const lvl = x.kind === 'inr' ? inr_(x.val) : x.kind === 'fx' ? '₹' + x.val.toFixed(2) : x.kind === 'usd' ? '$' + x.val.toFixed(2) : num2_(x.val);
       return [x.label, lvl, p != null ? pctDelta_((x.val - p) / p) : ''];
     }).concat([['Inflation', pct_(M.cpi, 2), ''], ['RBI repo rate', pct_(M.repo, 2), '']].filter(r => r[1] !== '—'));
     const keep = [0, 1, 2].filter(i => i < 2 || rows.some(r => r[i] !== ''));

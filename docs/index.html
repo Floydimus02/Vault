@@ -342,7 +342,7 @@ function bars(values, opts) {
 // Small symbol badges for the markets table: currency signs, and Au / Ag for gold and silver
 function mktBadge(label) {
   var t = /^usd/i.test(label) ? ['$', 'var(--bluebg)', 'var(--blue)'] : /^eur/i.test(label) ? ['€', 'var(--bluebg)', 'var(--blue)'] : /^gbp/i.test(label) ? ['£', 'var(--bluebg)', 'var(--blue)'] :
-    /^gold/i.test(label) ? ['Au', '#F6E7B0', '#7A5A00'] : /^silver/i.test(label) ? ['Ag', '#E3E7EE', '#4A5568'] : /nifty|nasdaq/i.test(label) ? ['↗', 'var(--posbg)', 'var(--pos)'] : /inflation/i.test(label) ? ['%', 'var(--amberbg)', 'var(--amber)'] : /repo/i.test(label) ? ['₹', 'var(--amberbg)', 'var(--amber)'] : null;
+    /^gold/i.test(label) ? ['Au', '#F6E7B0', '#7A5A00'] : /^silver/i.test(label) ? ['Ag', '#E3E7EE', '#4A5568'] : /^crude/i.test(label) ? ['<span class="ms" style="font-size:17px">oil_barrel</span>', '#ECE6DC', '#5B4630'] : /nifty|nasdaq/i.test(label) ? ['↗', 'var(--posbg)', 'var(--pos)'] : /inflation/i.test(label) ? ['%', 'var(--amberbg)', 'var(--amber)'] : /repo/i.test(label) ? ['₹', 'var(--amberbg)', 'var(--amber)'] : null;
   return t ? '<span aria-hidden="true" style="flex:none;width:26px;height:26px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:' + t[1] + ';color:' + t[2] + '">' + t[0] + '</span>' : '';
 }
 function vHome() {
@@ -387,7 +387,7 @@ function vHome() {
     o += '<section class="card"><h2 class="ttl">Markets</h2><div class="lead">' + (H.marketsAgainst ? 'Change against the ' + dayShort(H.marketsAgainst) + ' close' : 'Day change') + '</div>';
     o += '<div class="grid3" style="padding-bottom:6px;border-bottom:1px solid var(--line)"><span></span><span class="th" style="text-align:right">Level</span><span class="th" style="text-align:right">Since close</span></div>';
     H.markets.forEach(function (m) {
-      var lvl = m.kind === 'pct' ? pct(m.val, 2) : m.kind === 'inr' ? inr(m.val) : m.kind === 'fx' ? '₹' + m.val.toFixed(2) : m.val.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+      var lvl = m.kind === 'pct' ? pct(m.val, 2) : m.kind === 'inr' ? inr(m.val) : m.kind === 'fx' ? '₹' + m.val.toFixed(2) : m.kind === 'usd' ? '$' + m.val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : m.val.toLocaleString('en-IN', { maximumFractionDigits: 2 });
       o += '<div class="grid3" style="padding:8px 0;border-bottom:1px solid var(--line);font-size:14px"><span style="display:flex;align-items:center;gap:8px;min-width:0">' + mktBadge(m.label) + '<span>' + esc(m.label) + '</span></span><span class="num" style="text-align:right">' + lvl + '</span>' +
         (m.pct != null ? '<span class="num ' + cls(m.pct) + '" style="text-align:right;font-weight:600">' + pct(m.pct, 2, true) + '</span>' : '<span class="small" style="text-align:right">' + (m.asOf ? 'as of ' + dayShort(m.asOf) : '') + '</span>') + '</div>';
     });
